@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Line Insertion Tutorial - Dwell Click</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* ---------- Modern Design System ---------- */
+    :root {
+      /* Dark theme colors */
+      --dark-bg: #000000;
+      --dark-surface: #1e1e1e;
+      --dark-surface-2: #2a2a2a;
+      --dark-primary: #4ade80;
+      --dark-secondary: #8b5cf6;
+      --dark-error: #f87171; /* Red for errors/mic off */
+      --dark-text: #e5e5e5;
+      --dark-text-secondary: #a0a0a0;
+      --dark-border: #383838;
+      --dark-shadow: rgba(0, 0, 0, 0.4);
+      --dark-shadow-light: rgba(0, 0, 0, 0.2);
+
+      /* Light theme colors */
+      --light-bg: #f8f9fa;
+      --light-surface: #ffffff;
+      --light-surface-2: #f1f3f5;
+      --light-primary: #10b981;
+      --light-secondary: #6366f1;
+      --light-error: #ef4444; /* Red for errors/mic off */
+      --light-text: #212529;
+      --light-text-secondary: #6c757d;
+      --light-border: #dee2e6;
+      --light-shadow: rgba(0, 0, 0, 0.08);
+      --light-shadow-light: rgba(0, 0, 0, 0.04);
+
+      /* Base layout values */
+      --spacing-xs: 4px;
+      --spacing-sm: 8px;
+      --spacing-md: 16px;
+      --spacing-lg: 24px;
+      --spacing-xl: 32px;
+      --border-radius-sm: 6px;
+      --border-radius-md: 10px;
+      --border-radius-lg: 16px;
+      --transition-fast: 0.15s ease-in-out;
+      --transition-normal: 0.25s ease-in-out;
+      --font-main: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    }
+
+    /* ---------- Global Styles ---------- */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-main);
+      background-color: var(--dark-bg);
+      color: var(--dark-text);
+      padding: env(safe-area-inset-top, 20px) env(safe-area-inset-right, 20px) env(safe-area-inset-bottom, 80px) env(safe-area-inset-left, 20px);
+      transition: background-color var(--transition-normal), color var(--transition-normal);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow-x: hidden;
+    }
+    .light-theme { background-color: var(--light-bg); color: var(--light-text); }
+    .container { width: 100%; max-width: 1000px; padding: 0 var(--spacing-lg); margin: 0 auto; display: flex; flex-direction: column; gap: var(--spacing-xl); transition: padding var(--transition-normal), max-width var(--transition-normal); }
+
+    /* ---------- Header ---------- */
+    .header { width: 100%; display: flex; justify-content: space-between; align-items: center; padding: var(--spacing-lg) 0; border-bottom: 1px solid var(--dark-border); margin-bottom: var(--spacing-xl); transition: border-color var(--transition-normal), display var(--transition-fast) 0.1s; }
+    .light-theme .header { border-bottom-color: var(--light-border); }
+    .header h1 { font-size: 2rem; font-weight: 700; text-align: left; }
+
+    /* ---------- Control Bar ---------- */
+    .control-bar { display: flex; flex-wrap: wrap; gap: var(--spacing-md); justify-content: center; align-items: center; margin-bottom: var(--spacing-xl); transition: display var(--transition-fast) 0.1s; }
+
+    /* ---------- Buttons (General) ---------- */
+    .btn, .alpha-nav-btn, .holo-nav-btn { padding: var(--spacing-sm) var(--spacing-lg); font-size: 0.95rem; font-weight: 600; border: none; border-radius: var(--border-radius-md); cursor: pointer; transition: all var(--transition-fast); display: inline-flex; align-items: center; justify-content: center; gap: var(--spacing-sm); text-decoration: none; white-space: nowrap; outline: none; /* Added for dwell feedback */ position: relative; overflow: hidden; }
+    .btn:focus-visible, .alpha-nav-btn:focus-visible, .holo-nav-btn:focus-visible { box-shadow: 0 0 0 3px var(--dark-primary); outline: 2px solid transparent; outline-offset: 2px; }
+    .light-theme .btn:focus-visible, .light-theme .alpha-nav-btn:focus-visible, .light-theme .holo-nav-btn:focus-visible { box-shadow: 0 0 0 3px var(--light-primary); }
+    .btn { background-color: var(--dark-surface-2); color: var(--dark-text); }
+    .light-theme .btn { background-color: var(--light-surface-2); color: var(--light-text); }
+    .btn:hover:not(:disabled) { background-color: var(--dark-border); transform: translateY(-2px); box-shadow: 0 4px 8px var(--dark-shadow-light); }
+    .light-theme .btn:hover:not(:disabled) { background-color: var(--light-border); transform: translateY(-2px); box-shadow: 0 4px 8px var(--light-shadow-light); }
+    .btn:active:not(:disabled) { transform: translateY(0); opacity: 0.9; box-shadow: none; }
+    .btn-primary { background-color: var(--dark-primary); color: #000000; box-shadow: 0 2px 5px var(--dark-shadow-light); }
+    .light-theme .btn-primary { background-color: var(--light-primary); color: var(--light-surface); box-shadow: 0 2px 5px var(--light-shadow-light); }
+    .btn-primary:hover:not(:disabled) { opacity: 0.85; background-color: var(--dark-primary); box-shadow: 0 6px 12px var(--dark-shadow-light); }
+    .light-theme .btn-primary:hover:not(:disabled) { opacity: 0.85; background-color: var(--light-primary); box-shadow: 0 6px 12px var(--light-shadow-light); }
+    .btn:disabled, .alpha-nav-btn:disabled, .holo-nav-btn:disabled { background-color: var(--dark-surface-2); color: var(--dark-text-secondary); cursor: not-allowed; opacity: 0.6; transform: none; box-shadow: none; }
+    .light-theme .btn:disabled, .light-theme .alpha-nav-btn:disabled, .light-theme .holo-nav-btn:disabled { background-color: var(--light-surface-2); color: var(--light-text-secondary); }
+    .btn-icon { font-size: 1.1rem; line-height: 1; }
+
+    /* ---------- Main Content ---------- */
+    .main-content { position: relative; display: flex; flex-direction: column; gap: var(--spacing-lg); width: 100%; }
+
+    /* ---------- Step Box ---------- */
+    .step-card { background-color: var(--dark-surface); border-radius: var(--border-radius-lg); padding: var(--spacing-xl); box-shadow: 0 6px 15px var(--dark-shadow); transition: all var(--transition-normal); border: 1px solid var(--dark-border); }
+    .light-theme .step-card { background-color: var(--light-surface); box-shadow: 0 6px 20px var(--light-shadow); border: 1px solid var(--light-border); }
+    #stepBox { font-size: 1.6rem; line-height: 1.6; text-align: center; min-height: 150px; display: flex; align-items: center; justify-content: center; font-weight: 500; }
+    #status { margin-top: var(--spacing-md); font-size: 0.95rem; color: var(--dark-text-secondary); text-align: center; font-weight: 500; transition: color var(--transition-normal); }
+    .light-theme #status { color: var(--light-text-secondary); }
+
+    /* ---------- Progress Container ---------- */
+    #progressContainer { width: 100%; margin: var(--spacing-lg) 0; }
+    #progressBarBackground { width: 100%; height: 10px; background: var(--dark-surface-2); border-radius: var(--border-radius-sm); overflow: hidden; margin-bottom: var(--spacing-sm); border: 1px solid var(--dark-border); }
+    .light-theme #progressBarBackground { background: var(--light-surface-2); border-color: var(--light-border); }
+    #progressBar { width: 0%; height: 100%; background: linear-gradient(90deg, var(--dark-secondary), var(--dark-primary)); transition: width 0.3s ease-out; border-radius: var(--border-radius-sm); }
+    .light-theme #progressBar { background: linear-gradient(90deg, var(--light-secondary), var(--light-primary)); }
+    #progressText { font-size: 0.9rem; color: var(--dark-text-secondary); text-align: center; }
+    .light-theme #progressText { color: var(--light-text-secondary); }
+
+    /* ---------- Alpha/Holo Nav Buttons (Defaults Hidden) ---------- */
+    #alphaNavButtons { display: none; gap: var(--spacing-md); margin: var(--spacing-lg) 0; width: 100%; justify-content: space-between; }
+    .alpha-nav-btn { padding: var(--spacing-md) var(--spacing-xl); font-size: 1rem; }
+    .alpha-nav-btn:hover:not(:disabled) { opacity: 0.85; transform: translateY(-2px); }
+    .alpha-nav-btn:active:not(:disabled) { transform: translateY(0); }
+    #prevBtn, #nextBtn { background-color: var(--dark-primary); color: #000000; }
+    .light-theme #prevBtn, .light-theme #nextBtn { background-color: var(--light-primary); color: var(--light-surface); }
+    #restartBtn { background-color: var(--dark-secondary); color: var(--dark-text); }
+    .light-theme #restartBtn { background-color: var(--light-secondary); color: var(--light-surface); }
+
+    #holoNavButtons { display: none; justify-content: space-around; align-items: center; position: fixed; left: 0; right: 0; bottom: 10%; width: 100%; padding: 0 var(--spacing-lg); gap: var(--spacing-lg); }
+    .holo-nav-btn { flex-direction: column; width: 160px; height: 160px; font-size: 1.8rem; font-weight: 600; border-radius: 50%; background-color: var(--dark-primary); color: #000000; box-shadow: 0 8px 25px var(--dark-shadow); padding: var(--spacing-md); }
+    .light-theme .holo-nav-btn { background-color: var(--light-primary); box-shadow: 0 8px 25px var(--light-shadow); color: var(--light-surface); }
+    .holo-nav-btn:hover:not(:disabled) { opacity: 0.9; transform: scale(1.05); }
+    .holo-nav-btn:active:not(:disabled) { transform: scale(1.0); }
+    .holo-nav-btn .btn-icon { font-size: 3.5rem; margin-bottom: var(--spacing-sm); }
+    #holoPrevBtn .btn-icon { transform: rotate(180deg); }
+    #holoRestartBtn { background-color: var(--dark-secondary); color: var(--dark-text); }
+    .light-theme #holoRestartBtn { background-color: var(--light-secondary); color: var(--light-surface); }
+
+    /* ---------- Dwell Visual Feedback ---------- */
+     .alpha-nav-btn, .holo-nav-btn {
+         /* position: relative; overflow: hidden; already added above */
+     }
+     .alpha-nav-btn::after, .holo-nav-btn::after {
+         content: '';
+         position: absolute;
+         bottom: 0;
+         left: 0;
+         height: 4px; /* Height of the progress bar */
+         width: 0; /* Starts at 0 width */
+         background-color: rgba(255, 255, 255, 0.5); /* Semi-transparent white feedback */
+         transition: width 2s linear; /* Animate width over DWELL_TIME_MS */
+         pointer-events: none; /* Don't interfere with mouse events */
+         z-index: 1; /* Ensure it's above background but below text/icon if needed */
+     }
+     .light-theme .alpha-nav-btn::after,
+     .light-theme .holo-nav-btn::after {
+          background-color: rgba(0, 0, 0, 0.3); /* Darker feedback on light theme */
+     }
+     /* Class added by JS when dwell starts */
+     .alpha-nav-btn.dwelling::after,
+     .holo-nav-btn.dwelling::after {
+         width: 100%; /* Animate to full width */
+     }
+     /* Ensure feedback doesn't show/animate on disabled buttons */
+     .alpha-nav-btn:disabled::after,
+     .holo-nav-btn:disabled::after {
+          width: 0 !important;
+          transition: none !important; /* Prevent animation on disable */
+          display: none;
+     }
+
+    /* ---------- Log Container ---------- */
+    #logContainer { margin-top: var(--spacing-xl); background: var(--dark-surface); border-radius: var(--border-radius-lg); overflow-y: auto; max-height: 200px; padding: var(--spacing-lg); box-shadow: 0 4px 10px var(--dark-shadow); border: 1px solid var(--dark-border); transition: all var(--transition-normal), display var(--transition-fast) 0.1s; }
+    .light-theme #logContainer { background: var(--light-surface); box-shadow: 0 4px 15px var(--light-shadow); border: 1px solid var(--light-border); }
+    #logContainer h3 { margin-bottom: var(--spacing-md); font-size: 1.2rem; font-weight: 600; border-bottom: 1px solid var(--dark-border); padding-bottom: var(--spacing-md); color: var(--dark-primary); transition: border-color var(--transition-normal), color var(--transition-normal); }
+    .light-theme #logContainer h3 { border-bottom-color: var(--light-border); color: var(--light-primary); }
+    .log-entry { font-size: 0.9rem; border-bottom: 1px solid var(--dark-border); padding: var(--spacing-sm) 0; color: var(--dark-text-secondary); transition: border-color var(--transition-normal), color var(--transition-normal); }
+    .log-entry:first-child { border-top: none; }
+    .log-entry:last-child { border-bottom: none; }
+    .light-theme .log-entry { border-bottom-color: var(--light-border); color: var(--light-text-secondary); }
+
+    /* ---------- Live Transcript (Always Visible) ---------- */
+    #liveTranscript { position: fixed; bottom: 0; left: 0; right: 0; background: var(--dark-surface); color: var(--dark-text-secondary); padding: var(--spacing-sm) var(--spacing-lg); font-size: 0.9rem; font-family: monospace; z-index: 998; box-shadow: 0 -2px 10px var(--dark-shadow); border-top: 1px solid var(--dark-border); text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: all var(--transition-normal); height: 45px; display: flex; align-items: center; justify-content: center; }
+    .light-theme #liveTranscript { background: var(--light-surface); color: var(--light-text-secondary); box-shadow: 0 -2px 10px var(--light-shadow); border-top: 1px solid var(--light-border); }
+    #liveTranscript.mic-active { color: var(--dark-primary); font-weight: 600; }
+    .light-theme #liveTranscript.mic-active { color: var(--light-primary); }
+    #liveTranscript.mic-error { color: var(--dark-error); }
+    .light-theme #liveTranscript.mic-error { color: var(--light-error); }
+
+    /* ---------- Mic Toggle Button ---------- */
+    #micToggleBtn { position: fixed; bottom: calc(45px + var(--spacing-md)); right: var(--spacing-md); z-index: 1000; display: none; padding: var(--spacing-md); width: 50px; height: 50px; border-radius: 50%; background-color: var(--dark-secondary); color: var(--dark-text); box-shadow: 0 4px 12px var(--dark-shadow); justify-content: center; }
+    .light-theme #micToggleBtn { background-color: var(--light-secondary); color: var(--light-surface); box-shadow: 0 4px 12px var(--light-shadow); }
+    #micToggleBtn:hover:not(:disabled) { opacity: 0.9; transform: scale(1.05); }
+    #micToggleBtn:active:not(:disabled) { transform: scale(0.98); }
+    #micToggleBtn .btn-icon { font-size: 1.5rem; margin: 0; line-height: 1; }
+    #micToggleBtn.mic-active { background-color: var(--dark-error); }
+    .light-theme #micToggleBtn.mic-active { background-color: var(--light-error); }
+    #micToggleBtn:disabled { background-color: var(--dark-surface-2); opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+    .light-theme #micToggleBtn:disabled { background-color: var(--light-surface-2); }
+
+    /* ---------- Mode Specific Styles ---------- */
+    .beta-mode, .alpha-mode, .hololens-mode { & .header, & .control-bar, & #status, & #logContainer { display: none; } & .container { padding: 0; max-width: 100%; gap: 0; } }
+    .beta-mode { & #stepBox { font-size: 2rem; } & .step-card { position: fixed; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 85%; max-width: 750px; } & #progressContainer { position: fixed; left: 50%; transform: translateX(-50%); bottom: 25%; width: 80%; max-width: 700px; } & #micToggleBtn { display: inline-flex !important; } & #alphaNavButtons, & #holoNavButtons, & #exitAlphaBtn, & #exitHoloBtn { display: none !important; } & #exitBetaBtn { display: block !important; } }
+    .alpha-mode { & #stepBox { font-size: 2rem; } & .step-card { position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 85%; max-width: 700px; } & #progressContainer { position: fixed; left: 50%; transform: translateX(-50%); top: 65%; width: 80%; max-width: 700px; } & #alphaNavButtons { display: flex !important; position: fixed; left: 50%; transform: translateX(-50%); bottom: 15%; width: 80%; max-width: 600px; } & #holoNavButtons, & #micToggleBtn, & #exitBetaBtn, & #exitHoloBtn { display: none !important; } & #exitAlphaBtn { display: block !important; } }
+    .hololens-mode { & .step-card { position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 800px; padding: var(--spacing-xl); border: 2px solid var(--dark-primary); } .light-theme.hololens-mode .step-card { border-color: var(--light-primary); } & #stepBox { font-size: 2.5rem; line-height: 1.4; font-weight: 600; } & #progressContainer { position: fixed; left: 50%; transform: translateX(-50%); top: calc(40% + 110px); width: 80%; max-width: 750px; } & #holoNavButtons { display: flex !important; position: fixed; left: 0; right: 0; bottom: 15%; width: 100%; padding: 0 var(--spacing-lg); gap: var(--spacing-lg); } & #exitHoloBtn { display: flex !important; align-items: center; justify-content: center; position: fixed; top: 30px; right: 30px; padding: 10px 18px; width: auto; height: auto; border-radius: var(--border-radius-lg); font-size: 1.3rem; font-weight: 600; white-space: nowrap; background-color: rgba(30, 30, 30, 0.6); backdrop-filter: blur(8px); border: 2px solid var(--dark-text-secondary); color: var(--dark-text); z-index: 1001; cursor: pointer; transition: all var(--transition-normal); box-shadow: 0 2px 10px var(--dark-shadow);} .light-theme.hololens-mode #exitHoloBtn { background-color: rgba(255, 255, 255, 0.5); border-color: var(--light-text-secondary); color: var(--light-text); } & #exitHoloBtn:hover { background-color: rgba(50, 50, 50, 0.8); border-color: var(--dark-text); transform: scale(1.1); } .light-theme.hololens-mode #exitHoloBtn:hover { background-color: rgba(240, 240, 240, 0.7); border-color: var(--light-text); } & #alphaNavButtons, & #micToggleBtn, & #exitBetaBtn, & #exitAlphaBtn { display: none !important; } .gaze-indicator, .gaze-progress { position: absolute; width: 40px; height: 40px; border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); z-index: 1000; display: none; transition: all 0.1s ease; } .gaze-indicator { border: 3px solid var(--dark-primary); } .gaze-progress { border: 3px solid transparent; border-top-color: var(--dark-primary); animation: spin 1.5s linear infinite; z-index: 1001; } .light-theme .gaze-indicator { border-color: var(--light-primary); } .light-theme .gaze-progress { border-color: transparent; border-top-color: var(--light-primary); } @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } } }
+
+    /* ---------- Exit Mode Buttons (Shared Styling) ---------- */
+    .exit-btn { position: fixed; top: 20px; right: 20px; padding: var(--spacing-sm) var(--spacing-md); font-size: 0.85rem; font-weight: 600; background-color: var(--dark-surface); color: var(--dark-text-secondary); border: 1px solid var(--dark-border); border-radius: var(--border-radius-md); display: none; cursor: pointer; z-index: 1001; box-shadow: 0 2px 10px var(--dark-shadow); transition: all var(--transition-normal); opacity: 0.8; }
+    .light-theme .exit-btn { background-color: var(--light-surface); color: var(--light-text-secondary); border: 1px solid var(--light-border); box-shadow: 0 2px 10px var(--light-shadow); }
+    .exit-btn:hover { opacity: 1; background-color: var(--dark-surface-2); color: var(--dark-text); transform: translateY(-1px); }
+    .light-theme .exit-btn:hover { background-color: var(--light-surface-2); color: var(--light-text); }
+
+  </style>
+</head>
+<body>
+  <button id="exitBetaBtn" class="exit-btn">Exit Voice Mode</button>
+  <button id="exitAlphaBtn" class="exit-btn">Exit Touch Mode</button>
+  <button id="exitHoloBtn" class="exit-btn">Exit Quest Mode</button>
+
+  <button id="micToggleBtn" class="btn">
+      <span class="btn-icon">🎤</span>
+  </button>
+
+  <div class="gaze-indicator"></div>
+  <div class="gaze-progress"></div>
+
+  <div class="container">
+    <header class="header">
+      <h1>Line Insertion Tutorial</h1>
+    </header>
+
+    <div class="control-bar">
+      <button id="fullscreenBtn" class="btn">
+        <span class="btn-icon">⛶</span> <span class="btn-text">Enter Fullscreen</span>
+      </button>
+      <button id="themeToggleBtn" class="btn">
+        <span class="btn-icon">☀</span> <span class="btn-text">Light Mode</span> </button>
+      <button id="betaModeBtn" class="btn btn-primary">
+        <span class="btn-icon">🎤</span> Voice Mode
+      </button>
+      <button id="alphaModeBtn" class="btn btn-primary">
+        <span class="btn-icon">👆</span> Touch Mode
+      </button>
+       <button id="holoModeBtn" class="btn btn-primary">
+        <span class="btn-icon">👓</span> Quest Mode
+      </button>
+    </div>
+
+    <div class="main-content">
+      <div class="step-card">
+        <div id="stepBox">Select a navigation mode above to begin the tutorial...</div>
+        <div id="status">Tutorial ready</div>
+      </div>
+
+      <div id="progressContainer">
+        <div id="progressBarBackground">
+          <div id="progressBar"></div>
+        </div>
+        <div id="progressText">0% Complete</div>
+      </div>
+
+      <div id="alphaNavButtons">
+        <button id="prevBtn" class="alpha-nav-btn" disabled>Previous</button>
+        <button id="restartBtn" class="alpha-nav-btn">Restart</button>
+        <button id="nextBtn" class="alpha-nav-btn">Next</button>
+      </div>
+
+      <div id="holoNavButtons">
+         <button id="holoPrevBtn" class="holo-nav-btn" disabled>
+           <span class="btn-icon">▶</span> Previous
+         </button>
+         <button id="holoRestartBtn" class="holo-nav-btn">
+           <span class="btn-icon">🔄</span> Restart
+         </button>
+         <button id="holoNextBtn" class="holo-nav-btn">
+           <span class="btn-icon">▶</span> Next
+         </button>
+       </div>
+
+      <div id="logContainer">
+        <h3>Activity Log</h3>
+        <div id="log">
+          <div class="log-entry">Welcome! Select a mode or use controls.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="liveTranscript">🎤 Mic status will appear here.</div>
+
+  <script>
+    // Code generated: Wednesday, April 2, 2025 at 6:22 PM EDT (approx)
+    // ----- Tutorial Steps -----
+    const steps = [
+        "Step 1.1: Place the introducer needle into the vein.",
+        "Step 1.2: Advance the needle.",
+        "Step 1.3: Hold negative pressure.",
+        "Step 1.4: Stabilize the needle.",
+        "Step 1.5: Disconnect syringe.",
+        "Step 2.1: Thread guidewire.",
+        "Step 2.2: Stabilize wire at 15 cm.",
+        "Step 2.3: Remove needle, hold pressure.",
+        "Step 2.4: Reimage with ultrasound.",
+        "Step 3.1: Preload dilator.",
+        "Step 3.2: Skin Incision.",
+        "Step 3.3: Insert dilator.",
+        "Step 3.4: Remove dilator.",
+        "Step 3.5: Thread catheter.",
+        "Step 3.6: Remove guidewire.",
+        "Step 3.7: Flush and cap line.",
+        "Step 3.8: Clean site.",
+        "Step 3.9: Place sterile dressing."
+    ];
+    let currentStep = -1;
+    let isDarkTheme = true;
+    let recognition = null;
+    let isListening = false; // Tracks if recognition *should* be active
+    let speechSupported = true; // Assume supported initially
+
+    // --- Dwell-to-click timer variable ---
+    let dwellTimer = null;
+    const DWELL_TIME_MS = 500; // 2 seconds
+
+    // ----- DOM Elements -----
+    const body = document.body;
+    const stepBox = document.getElementById("stepBox");
+    const statusDisplay = document.getElementById("status");
+    const progressBar = document.getElementById("progressBar");
+    const progressText = document.getElementById("progressText");
+    const logDiv = document.getElementById("log");
+    const liveTranscript = document.getElementById("liveTranscript");
+
+    // Navigation Buttons
+    const prevBtn = document.getElementById("prevBtn");
+    const nextBtn = document.getElementById("nextBtn");
+    const restartBtn = document.getElementById("restartBtn");
+    const holoPrevBtn = document.getElementById("holoPrevBtn");
+    const holoNextBtn = document.getElementById("holoNextBtn");
+    const holoRestartBtn = document.getElementById("holoRestartBtn");
+
+    // Control Buttons
+    const fullscreenBtn = document.getElementById("fullscreenBtn");
+    const themeToggleBtn = document.getElementById("themeToggleBtn");
+    const betaModeBtn = document.getElementById("betaModeBtn");
+    const alphaModeBtn = document.getElementById("alphaModeBtn");
+    const holoModeBtn = document.getElementById("holoModeBtn");
+
+    // Mic Toggle Button
+    const micToggleBtn = document.getElementById("micToggleBtn");
+
+    // Exit Buttons
+    const exitBetaBtn = document.getElementById("exitBetaBtn");
+    const exitAlphaBtn = document.getElementById("exitAlphaBtn");
+    const exitHoloBtn = document.getElementById("exitHoloBtn");
+
+    // ----- Update Step -----
+    function updateStep(newStep) {
+        if (newStep < 0 || newStep >= steps.length) return;
+        currentStep = newStep;
+        if(stepBox) stepBox.innerText = steps[currentStep];
+        speakText(steps[currentStep]); // Speak the step text
+        const isFirstStep = currentStep === 0;
+        const isLastStep = currentStep === steps.length - 1;
+        if(statusDisplay) statusDisplay.innerText = isLastStep ? `✅ Final Step (${currentStep + 1}/${steps.length})` : `Step ${currentStep + 1} of ${steps.length}`;
+
+        // Update button disabled state first
+        if (prevBtn) prevBtn.disabled = isFirstStep;
+        if (nextBtn) nextBtn.disabled = isLastStep;
+        if (holoPrevBtn) holoPrevBtn.disabled = isFirstStep;
+        if (holoNextBtn) holoNextBtn.disabled = isLastStep;
+
+        // Cancel any dwell timer if the associated button just became disabled
+        cancelDwell(); // General cancel check is sufficient here
+
+        updateProgressBar();
+    }
+
+    // ----- Navigate Steps -----
+    function nextStep() { if (currentStep < steps.length - 1) { updateStep(currentStep + 1); logCommand("Navigate: Next"); } else { if(statusDisplay) statusDisplay.innerText = "🚫 Already at the final step."; logCommand("Navigate: Attempted Next on Last Step"); } }
+    function prevStep() { if (currentStep > 0) { updateStep(currentStep - 1); logCommand("Navigate: Previous"); } else { if(statusDisplay) statusDisplay.innerText = "🚫 Already at the first step."; logCommand("Navigate: Attempted Previous on First Step"); } }
+    function restartTutorial() { updateStep(0); if(statusDisplay) statusDisplay.innerText = "🔄 Tutorial Restarted."; logCommand("Navigate: Restart"); }
+
+    // ----- Update Progress Bar -----
+    function updateProgressBar() {
+        if (!progressBar || !progressText) return;
+        if (currentStep < 0) { progressBar.style.width = "0%"; progressText.innerText = `${steps.length} Steps Total`; return; }
+        const fraction = (currentStep + 1) / steps.length;
+        progressBar.style.width = `${fraction * 100}%`;
+        const stepsRemaining = steps.length - (currentStep + 1);
+        progressText.innerText = stepsRemaining > 0 ? `${stepsRemaining} step${stepsRemaining !== 1 ? "s" : ""} remaining` : "All steps complete!";
+    }
+
+    // ----- Log Commands -----
+    function logCommand(text) {
+        if (!logDiv) return;
+        const entry = document.createElement("div");
+        entry.className = "log-entry";
+        const timeString = new Intl.DateTimeFormat(
+          'en-US', 
+          { 
+            hour: 'numeric',
+            minute: 'numeric', 
+            second: 'numeric', 
+            hour12: true 
+          }
+        ).format(new Date());
+        entry.textContent = `${timeString}: ${text}`;
+        logDiv.insertBefore(entry, logDiv.firstChild);
+        const maxLogEntries = 50;
+        while (logDiv.children.length > maxLogEntries) { logDiv.removeChild(logDiv.lastChild); 
+        }
+    }
+
+    // ----- Dwell-to-Click Functions -----
+    function startDwell(buttonElement, actionFunction) {
+        if (!buttonElement || buttonElement.disabled) { return; } // Ignore if disabled
+        cancelDwell(); // Clear any previous timer
+
+        buttonElement.classList.add('dwelling'); // Add visual cue class
+        logCommand(`Dwell: Started on ${buttonElement.id || 'button'}`);
+
+        dwellTimer = setTimeout(() => {
+            // Timer finished - check button state again before acting
+            const stillDwellingButton = document.querySelector(`#${buttonElement.id}.dwelling`); // Check if class still present
+            if (stillDwellingButton && !stillDwellingButton.disabled) {
+                logCommand(`Dwell: Fired for ${buttonElement.id || 'button'}`);
+                actionFunction(); // Perform the action
+            } else {
+                 logCommand(`Dwell: Timer fired but button ${buttonElement.id || 'button'} no longer valid.`);
+            }
+            // Clean up after firing or if invalid
+            if (stillDwellingButton) stillDwellingButton.classList.remove('dwelling');
+            dwellTimer = null;
+        }, DWELL_TIME_MS);
+    }
+
+    function cancelDwell(buttonElement) {
+        if (dwellTimer) {
+            clearTimeout(dwellTimer);
+            dwellTimer = null;
+            logCommand(`Dwell: Cancelled${buttonElement ? ` on ${buttonElement.id || 'button'}` : ''}`);
+        }
+        // Remove visual cue class if element provided
+        if (buttonElement) {
+             buttonElement.classList.remove('dwelling');
+        } else {
+            // Clear from all potentially dwelling buttons if no specific one given
+            document.querySelectorAll('.dwelling').forEach(el => el.classList.remove('dwelling'));
+        }
+    }
+
+    // ----- Button Event Listeners (including dwell) -----
+    if (nextBtn) {
+        nextBtn.addEventListener("click", nextStep);
+        nextBtn.addEventListener("mouseenter", function() { startDwell(this, nextStep); });
+        nextBtn.addEventListener("mouseleave", function() { cancelDwell(this); });
+        // Cancel dwell also if button becomes disabled while mouse is over it
+        new MutationObserver((mutations) => {
+            if (mutations.some(m => m.attributeName === 'disabled' && nextBtn.disabled)) cancelDwell(nextBtn);
+        }).observe(nextBtn, { attributes: true });
+    }
+    if (prevBtn) {
+        prevBtn.addEventListener("click", prevStep);
+        prevBtn.addEventListener("mouseenter", function() { startDwell(this, prevStep); });
+        prevBtn.addEventListener("mouseleave", function() { cancelDwell(this); });
+        new MutationObserver((mutations) => {
+             if (mutations.some(m => m.attributeName === 'disabled' && prevBtn.disabled)) cancelDwell(prevBtn);
+         }).observe(prevBtn, { attributes: true });
+    }
+    if (restartBtn) restartBtn.addEventListener("click", restartTutorial);
+
+    if (holoNextBtn) {
+        holoNextBtn.addEventListener("click", nextStep);
+        holoNextBtn.addEventListener("mouseenter", function() { startDwell(this, nextStep); });
+        holoNextBtn.addEventListener("mouseleave", function() { cancelDwell(this); });
+         new MutationObserver((mutations) => {
+            if (mutations.some(m => m.attributeName === 'disabled' && holoNextBtn.disabled)) cancelDwell(holoNextBtn);
+        }).observe(holoNextBtn, { attributes: true });
+    }
+    if (holoPrevBtn) {
+        holoPrevBtn.addEventListener("click", prevStep);
+        holoPrevBtn.addEventListener("mouseenter", function() { startDwell(this, prevStep); });
+        holoPrevBtn.addEventListener("mouseleave", function() { cancelDwell(this); });
+         new MutationObserver((mutations) => {
+            if (mutations.some(m => m.attributeName === 'disabled' && holoPrevBtn.disabled)) cancelDwell(holoPrevBtn);
+        }).observe(holoPrevBtn, { attributes: true });
+    }
+    if (holoRestartBtn) holoRestartBtn.addEventListener("click", restartTutorial);
+
+    if (micToggleBtn) micToggleBtn.addEventListener("click", toggleMicListening);
+
+
+    // ----- Update Live Transcript & Mic Button UI -----
+    function updateMicStatusUI() {
+        if (!liveTranscript || !micToggleBtn) return;
+        const micIcon = micToggleBtn.querySelector('.btn-icon');
+
+        liveTranscript.classList.remove('mic-active', 'mic-error');
+
+        if (!speechSupported) {
+            liveTranscript.innerText = "🚫 Speech Recognition Not Supported.";
+            micToggleBtn.disabled = true;
+            micToggleBtn.classList.remove('mic-active');
+            micToggleBtn.style.display = 'none';
+            micToggleBtn.title = "Speech not supported";
+            if(micIcon) micIcon.textContent = '🚫';
+            return;
+        }
+
+        if (body.classList.contains('beta-mode')) {
+            micToggleBtn.disabled = false;
+            micToggleBtn.style.display = 'inline-flex'; // Ensure visible
+
+            if (isListening) {
+                 // Update transcript text cautiously - don't overwrite results/errors
+                 if (!liveTranscript.innerText.includes('Heard:') && !liveTranscript.innerText.includes('Command not recognized') && !liveTranscript.innerText.includes('Error:')) {
+                     liveTranscript.innerText = "🎤 Listening...";
+                 }
+                 liveTranscript.classList.add('mic-active');
+                 micToggleBtn.classList.add('mic-active');
+                 micToggleBtn.title = "Mute Microphone";
+                 if(micIcon) micIcon.textContent = '🔇'; // Mute icon
+            } else {
+                liveTranscript.innerText = "🎤 Mic Off. Press  Mute/Unmute button.";
+                micToggleBtn.classList.remove('mic-active');
+                micToggleBtn.title = "Unmute Microphone";
+                if(micIcon) micIcon.textContent = '🎤'; // Mic icon
+            }
+        } else {
+            liveTranscript.innerText = "🎤 Voice commands inactive.";
+            micToggleBtn.disabled = true;
+            micToggleBtn.style.display = 'none'; // Hide button
+            micToggleBtn.classList.remove('mic-active');
+             if(micIcon) micIcon.textContent = '🎤';
+             micToggleBtn.title = "Enable Voice Mode to use mic";
+        }
+    }
+
+    function updateTranscriptWithMessage(message, isError = false) {
+        if (!liveTranscript) return;
+        liveTranscript.classList.remove('mic-active', 'mic-error');
+        liveTranscript.innerText = message;
+        if (isError) { liveTranscript.classList.add('mic-error'); }
+    }
+
+
+    // ----- Speech Recognition -----
+    function setupSpeechRecognition() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            speechSupported = false;
+            if (betaModeBtn) { betaModeBtn.disabled = true; betaModeBtn.title = "Speech recognition not supported"; }
+            logCommand("Error: Speech recognition not supported.");
+            updateMicStatusUI();
+            return null;
+        }
+
+        speechSupported = true;
+        recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = false;
+        recognition.lang = "en-US";
+
+        recognition.onresult = (event) => {
+            const raw = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+            const cleaned = raw.replace(/[.,!?;:]/g, "").trim();
+            if (!isListening || !body.classList.contains('beta-mode')) { logCommand(`Voice: Heard "${raw}" but ignored (not listening or not in beta mode).`); return; }
+
+            updateTranscriptWithMessage(`🎤 Heard: "${raw}"`);
+            logCommand(`Voice: "${raw}" (Cleaned: "${cleaned}")`);
+
+            if (cleaned.includes("next")) { nextStep(); }
+            else if (cleaned.includes("previous") || cleaned.includes("back") || cleaned.includes("go back")) { prevStep(); }
+            else if (cleaned.includes("restart") || cleaned.includes("start over")) { restartTutorial(); }
+            else { updateTranscriptWithMessage(`❓ Command not recognized: "${raw}"`); logCommand(`Voice: Unrecognized command "${raw}"`); }
+            // UI update happens in onend or next startListening call
+        };
+
+        recognition.onerror = (event) => {
+            let errorMsg = `Speech Error: ${event.error}`;
+             let shouldStopListening = true;
+            if (event.error === 'no-speech') { errorMsg = "🎤 Didn't hear anything. Still listening..."; shouldStopListening = false; }
+            else if (event.error === 'audio-capture') { errorMsg = "🎤 Mic Error. Check connection/permission."; }
+            else if (event.error === 'not-allowed') { errorMsg = "🎤 Mic access denied. Enable in browser."; speechSupported = false; }
+            else { errorMsg = `🎤 Error: ${event.error}.`; }
+
+            if (statusDisplay) statusDisplay.innerText = `⚠ ${errorMsg.substring(2)}`;
+            updateTranscriptWithMessage(`⚠ ${errorMsg}`, true);
+            logCommand(`ERROR: ${errorMsg}`);
+
+            if (shouldStopListening) { isListening = false; }
+            updateMicStatusUI(); // Update UI based on outcome
+        };
+
+        recognition.onend = () => {
+          /*if (body.classList.contains('beta-mode')) {
+            logCommand("Speech: recognition ended, preparing to restart...");
+
+            // Optional visual blink to indicate restart
+            liveTranscript.classList.add("blinking");
+            setTimeout(() => liveTranscript.classList.remove("blinking"), 500);
+
+            // Give Chrome time to release the audio stream
+            setTimeout(() => {
+              try {
+                recognition.abort(); // clear lingering session
+
+                // Restart after short delay for safety
+                setTimeout(() => {
+                  recognition.start();
+                  isListening = true;
+                  updateMicStatusUI();
+
+                  // Show message on transcript bar
+                  updateTranscriptWithMessage("🎤 Listening restarted...");
+                  liveTranscript.classList.add("mic-active");
+
+                  // Fade back to normal listening prompt
+                  setTimeout(() => {
+                    if (body.classList.contains('beta-mode') && isListening) {
+                      liveTranscript.innerText = "🎤 Listening...";
+                    }
+                  }, 2000);
+
+                  logCommand("Speech: listening restarted successfully.");
+                }, 300);
+
+              } catch (err) {
+                logCommand("Speech restart failed: " + err.message);
+                isListening = false;
+                updateMicStatusUI();
+              }
+            }, 700);
+
+          } else {
+            // If not in voice mode, stop everything
+            isListening = false;
+            updateMicStatusUI();
+            logCommand("Speech: listening ended (not in beta mode).");
+          }
+        };*/
+            if (body.classList.contains('beta-mode') && isListening) {
+                 setTimeout(() => { if (body.classList.contains('beta-mode') && isListening) { startListening(); } }, 100);
+            } else {
+                 isListening = false;
+                 if (body.classList.contains('beta-mode')) { updateMicStatusUI(); }
+                 logCommand("Speech: Listening ended.");
+            }
+        };
+        logCommand("Speech: Recognition setup complete.");
+        return recognition;
+    }
+
+    function startListening() {
+        if (!speechSupported || !recognition) { logCommand("Speech: Cannot start - Not supported or setup failed."); updateMicStatusUI(); return; }
+        if (recognition && typeof recognition.start !== 'function') { logCommand("Speech: Recognition object invalid."); return; }
+        if (isListening) { logCommand("Speech: Start called but already listening."); return; }
+
+        try {
+            recognition.start();
+            isListening = true;
+            logCommand("Speech: Listening started via startListening().");
+        } catch (e) {
+            console.error("Error starting recognition:", e); logCommand(`Error starting speech: ${e.message}`); isListening = false;
+        }
+        updateMicStatusUI();
+    }
+
+    function stopListening() {
+        const wasListening = isListening;
+        isListening = false; // Set desired state OFF immediately
+
+        if (recognition && wasListening) { // Only abort if we thought we were listening
+            try { recognition.abort(); logCommand("Speech: Stop/Abort requested."); }
+            catch (e) { console.error("Error stopping recognition:", e); logCommand(`Error stopping speech: ${e.message}`); }
+        } else { logCommand("Speech: Stop called but not listening or recognition unavailable."); }
+        updateMicStatusUI(); // Update UI immediately
+    }
+
+    function toggleMicListening() {
+        if (!body.classList.contains('beta-mode') || !speechSupported) { return; } // Guard clauses
+        if (isListening) { logCommand("Mic Toggle: Turning OFF."); stopListening(); }
+        else { logCommand("Mic Toggle: Turning ON."); startListening(); }
+    }
+
+    // ----- Fullscreen Toggle -----
+    function toggleFullscreen() { /* ... (Code as before) ... */
+      if (!document.fullscreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
+        openFullscreen();
+      } else {
+        closeFullscreen();
+      }
+     }
+
+    function openFullscreen() { /* ... (Code as before) ... */ 
+      const elem = document.documentElement; // whole page
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) { // Safari
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) { // IE/Edge
+        elem.msRequestFullscreen();
+      }
+    }
+
+    function closeFullscreen() { /* ... (Code as before) ... */ 
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.webkitExitFullscreen) { // Safari
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) { // IE/Edge
+        document.msExitFullscreen();
+      }
+    }
+
+    if (fullscreenBtn) fullscreenBtn.addEventListener("click", toggleFullscreen);
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('msfullscreenchange', handleFullscreenChange);
+
+    function handleFullscreenChange() { /* ... (Code as before) ... */
+      const icon = fullscreenBtn.querySelector(".btn-icon");
+      const text = fullscreenBtn.querySelector(".btn-text");
+
+      if (document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement) {
+        if (icon) icon.textContent = "🡼"; // exit icon (you can pick another symbol)
+        if (text) text.textContent = "Exit Fullscreen";
+      } else {
+        if (icon) icon.textContent = "⛶"; // enter icon
+        if (text) text.textContent = "Enter Fullscreen";
+      }
+     }
+
+    // ----- Theme Toggle -----
+    function toggleTheme() { 
+      /* ... (Code as before) ... */ 
+      isDarkTheme = !isDarkTheme; // flip state
+      body.classList.toggle("light-theme", !isDarkTheme);
+      updateThemeButton(isDarkTheme);
+    }
+    
+    function updateThemeButton(isCurrentlyDark) { /* ... (Code as before) ... */
+      const icon = themeToggleBtn.querySelector(".btn-icon");
+      const text = themeToggleBtn.querySelector(".btn-text");
+      if (isCurrentlyDark) {
+        // currently dark → offer light mode
+        if (icon) icon.textContent = "☀";
+        if (text) text.textContent = "Light Mode";
+      } else {
+        // currently light → offer dark mode
+        if (icon) icon.textContent = "🌙";
+        if (text) text.textContent = "Dark Mode";
+      }      
+     }
+    if (themeToggleBtn) themeToggleBtn.addEventListener("click", toggleTheme);
+
+    // ----- Mode Switching -----
+    function setMode(mode) {
+        cancelDwell(); // Cancel dwell timer on any mode change
+
+        const currentModeClass = body.className.match(/(alpha|beta|hololens)-mode/)?.[0];
+        const targetModeClass = mode !== 'none' ? `${mode}-mode` : null;
+        if (currentModeClass === targetModeClass) { logCommand(`Mode: Already in ${mode} mode.`); return; }
+
+        logCommand(`Mode: Switching to ${mode === 'none' ? 'Standard View' : mode + ' mode'}`);
+        const wasBeta = body.classList.contains('beta-mode');
+
+        // Stop/Cleanup Actions for Previous Mode
+        if (wasBeta) { stopListening(); }
+        if (micToggleBtn) micToggleBtn.style.display = 'none'; // Always hide mic toggle initially
+
+        // Set New Mode
+        body.classList.remove("alpha-mode", "beta-mode", "hololens-mode");
+
+        switch (mode) {
+            case "alpha":
+                body.classList.add("alpha-mode"); logCommand("Mode: Entered Touch Mode (Alpha)"); if (currentStep < 0) restartTutorial(); break;
+            case "beta":
+                body.classList.add("beta-mode"); logCommand("Mode: Entered Voice Mode (Beta)"); if (!recognition) { recognition = setupSpeechRecognition(); } if (speechSupported) { startListening(); } else { logCommand("Voice Mode active, but speech not supported."); } if (currentStep < 0) restartTutorial(); break;
+            case "holo":
+                body.classList.add("hololens-mode"); logCommand("Mode: Entered Quest Mode"); if (currentStep < 0) restartTutorial(); break;
+            case "none": default: logCommand("Mode: Returned to Standard View"); updateProgressBar(); break;
+        }
+        updateMicStatusUI(); // Update global UI state after mode change
+    }
+
+    // Mode Activation/Exit Buttons Listeners
+    if (alphaModeBtn) alphaModeBtn.addEventListener("click", () => setMode("alpha"));
+    if (betaModeBtn) betaModeBtn.addEventListener("click", () => setMode("beta"));
+    if (holoModeBtn) holoModeBtn.addEventListener("click", () => setMode("holo"));
+    if (exitAlphaBtn) exitAlphaBtn.addEventListener("click", () => setMode("none"));
+    if (exitBetaBtn) exitBetaBtn.addEventListener("click", () => setMode("none"));
+    if (exitHoloBtn) exitHoloBtn.addEventListener("click", () => setMode("none"));
+
+    // ----- Detect Meta Quest Browser -----
+    function isMetaQuestBrowser() {
+      const ua = navigator.userAgent || navigator.vendor || window.opera;
+      // Known Quest Browser identifiers
+      return /OculusBrowser|Quest|Meta Quest/i.test(ua);
+    }
+
+    // ----- Initialization -----
+    function initializeTutorial() {
+        const prefersDark = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)').matches : true;
+        isDarkTheme = prefersDark;
+        if (!isDarkTheme) { body.classList.add("light-theme"); }
+        updateThemeButton(isDarkTheme);
+
+        updateProgressBar();
+
+        if (isMetaQuestBrowser()) {
+          logCommand("Detected Meta Quest Browser — Disabling Voice Mode (speech not supported).");
+          if (betaModeBtn) {
+              betaModeBtn.disabled = true;
+              betaModeBtn.title = "Voice commands not supported on Meta Quest Browser";
+              betaModeBtn.style.opacity = "0.5";
+              betaModeBtn.style.cursor = "not-allowed";
+          }
+          // Optional: also hide it completely instead of disabling
+          betaModeBtn.style.display = "none";
+        }
+
+        // Setup recognition early to check support
+        if (!recognition) { recognition = setupSpeechRecognition(); }
+        updateMicStatusUI(); // Set initial transcript/button state
+
+        logCommand("Tutorial Initialized. Ready.");
+    }
+
+    // Run initialization when the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', initializeTutorial);
+
+  // ----- Text-to-Speech Function -----
+  function speakText(text) {
+      if ('speechSynthesis' in window) {
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.lang = 'en-US';
+          speechSynthesis.speak(utterance);
+          logCommand(`SpeechSynthesis: Spoke "${text}"`);
+      } else {
+          logCommand("SpeechSynthesis not supported in this browser.");
+      }
+  }
+
+  </script>
+  <div style="height: 100px;"></div>
+</body>
+</html>

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Line Insertion Tutorial - Dwell Click</title>
+  <title>MR-Assisted Central Line Workflow</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -100,7 +100,27 @@
     /* ---------- Step Box ---------- */
     .step-card { background-color: var(--dark-surface); border-radius: var(--border-radius-lg); padding: var(--spacing-xl); box-shadow: 0 6px 15px var(--dark-shadow); transition: all var(--transition-normal); border: 1px solid var(--dark-border); }
     .light-theme .step-card { background-color: var(--light-surface); box-shadow: 0 6px 20px var(--light-shadow); border: 1px solid var(--light-border); }
-    #stepBox { font-size: 1.6rem; line-height: 1.6; text-align: center; min-height: 150px; display: flex; align-items: center; justify-content: center; font-weight: 500; }
+    .step-card-shell { display: flex; flex-direction: column; gap: var(--spacing-lg); }
+    .step-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--spacing-md); }
+    .step-stepper { display: flex; flex-direction: column; gap: var(--spacing-xs); }
+    .step-label { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dark-primary); }
+    .light-theme .step-label { color: var(--light-primary); }
+    #stepTitle { font-size: 1.65rem; line-height: 1.2; font-weight: 700; }
+    #stepMeta { font-size: 0.95rem; color: var(--dark-text-secondary); }
+    .light-theme #stepMeta { color: var(--light-text-secondary); }
+    #stepConfidence { align-self: flex-start; padding: 6px 12px; border-radius: 999px; background: var(--dark-surface-2); color: var(--dark-text-secondary); font-size: 0.85rem; font-weight: 600; border: 1px solid var(--dark-border); }
+    .light-theme #stepConfidence { background: var(--light-surface-2); color: var(--light-text-secondary); border-color: var(--light-border); }
+    #stepBox { font-size: 1.35rem; line-height: 1.5; text-align: left; min-height: 90px; display: flex; align-items: flex-start; justify-content: flex-start; font-weight: 600; }
+    .step-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-md); }
+    .step-panel { background: var(--dark-surface-2); border: 1px solid var(--dark-border); border-radius: var(--border-radius-md); padding: var(--spacing-md); }
+    .light-theme .step-panel { background: var(--light-surface-2); border-color: var(--light-border); }
+    .step-panel h3 { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: var(--spacing-sm); color: var(--dark-text-secondary); }
+    .light-theme .step-panel h3 { color: var(--light-text-secondary); }
+    .step-panel p { font-size: 1rem; line-height: 1.45; }
+    .warning-panel { border-color: rgba(248, 113, 113, 0.45); box-shadow: inset 0 0 0 1px rgba(248, 113, 113, 0.1); }
+    .warning-panel h3 { color: var(--dark-error); }
+    .light-theme .warning-panel h3 { color: var(--light-error); }
+    .success-panel { border-color: rgba(74, 222, 128, 0.35); }
     #status { margin-top: var(--spacing-md); font-size: 0.95rem; color: var(--dark-text-secondary); text-align: center; font-weight: 500; transition: color var(--transition-normal); }
     .light-theme #status { color: var(--light-text-secondary); }
 
@@ -197,9 +217,10 @@
 
     /* ---------- Mode Specific Styles ---------- */
     .beta-mode, .alpha-mode, .hololens-mode { & .header, & .control-bar, & #status, & #logContainer { display: none; } & .container { padding: 0; max-width: 100%; gap: 0; } }
-    .beta-mode { & #stepBox { font-size: 2rem; } & .step-card { position: fixed; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 85%; max-width: 750px; } & #progressContainer { position: fixed; left: 50%; transform: translateX(-50%); bottom: 25%; width: 80%; max-width: 700px; } & #micToggleBtn { display: inline-flex !important; } & #alphaNavButtons, & #holoNavButtons, & #exitAlphaBtn, & #exitHoloBtn { display: none !important; } & #exitBetaBtn { display: block !important; } }
-    .alpha-mode { & #stepBox { font-size: 2rem; } & .step-card { position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 85%; max-width: 700px; } & #progressContainer { position: fixed; left: 50%; transform: translateX(-50%); top: 65%; width: 80%; max-width: 700px; } & #alphaNavButtons { display: flex !important; position: fixed; left: 50%; transform: translateX(-50%); bottom: 15%; width: 80%; max-width: 600px; } & #holoNavButtons, & #micToggleBtn, & #exitBetaBtn, & #exitHoloBtn { display: none !important; } & #exitAlphaBtn { display: block !important; } }
-    .hololens-mode { & .step-card { position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 800px; padding: var(--spacing-xl); border: 2px solid var(--dark-primary); } .light-theme.hololens-mode .step-card { border-color: var(--light-primary); } & #stepBox { font-size: 2.5rem; line-height: 1.4; font-weight: 600; } & #progressContainer { position: fixed; left: 50%; transform: translateX(-50%); top: calc(40% + 110px); width: 80%; max-width: 750px; } & #holoNavButtons { display: flex !important; position: fixed; left: 0; right: 0; bottom: 15%; width: 100%; padding: 0 var(--spacing-lg); gap: var(--spacing-lg); } & #exitHoloBtn { display: flex !important; align-items: center; justify-content: center; position: fixed; top: 30px; right: 30px; padding: 10px 18px; width: auto; height: auto; border-radius: var(--border-radius-lg); font-size: 1.3rem; font-weight: 600; white-space: nowrap; background-color: rgba(30, 30, 30, 0.6); backdrop-filter: blur(8px); border: 2px solid var(--dark-text-secondary); color: var(--dark-text); z-index: 1001; cursor: pointer; transition: all var(--transition-normal); box-shadow: 0 2px 10px var(--dark-shadow);} .light-theme.hololens-mode #exitHoloBtn { background-color: rgba(255, 255, 255, 0.5); border-color: var(--light-text-secondary); color: var(--light-text); } & #exitHoloBtn:hover { background-color: rgba(50, 50, 50, 0.8); border-color: var(--dark-text); transform: scale(1.1); } .light-theme.hololens-mode #exitHoloBtn:hover { background-color: rgba(240, 240, 240, 0.7); border-color: var(--light-text); } & #alphaNavButtons, & #micToggleBtn, & #exitBetaBtn, & #exitAlphaBtn { display: none !important; } .gaze-indicator, .gaze-progress { position: absolute; width: 40px; height: 40px; border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); z-index: 1000; display: none; transition: all 0.1s ease; } .gaze-indicator { border: 3px solid var(--dark-primary); } .gaze-progress { border: 3px solid transparent; border-top-color: var(--dark-primary); animation: spin 1.5s linear infinite; z-index: 1001; } .light-theme .gaze-indicator { border-color: var(--light-primary); } .light-theme .gaze-progress { border-color: transparent; border-top-color: var(--light-primary); } @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } } }
+    .beta-mode { & #stepBox { font-size: 1.75rem; } & .step-card { position: fixed; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 85%; max-width: 900px; } & #progressContainer { position: fixed; left: 50%; transform: translateX(-50%); bottom: 22%; width: 80%; max-width: 760px; } & #micToggleBtn { display: inline-flex !important; } & #alphaNavButtons, & #holoNavButtons, & #exitAlphaBtn, & #exitHoloBtn { display: none !important; } & #exitBetaBtn { display: block !important; } }
+    .alpha-mode { & #stepBox { font-size: 1.75rem; } & .step-card { position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 85%; max-width: 860px; } & #progressContainer { position: fixed; left: 50%; transform: translateX(-50%); top: 72%; width: 80%; max-width: 760px; } & #alphaNavButtons { display: flex !important; position: fixed; left: 50%; transform: translateX(-50%); bottom: 12%; width: 80%; max-width: 600px; } & #holoNavButtons, & #micToggleBtn, & #exitBetaBtn, & #exitHoloBtn { display: none !important; } & #exitAlphaBtn { display: block !important; } }
+    .hololens-mode { & .step-card { position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%); width: 90%; max-width: 980px; padding: var(--spacing-xl); border: 2px solid var(--dark-primary); } .light-theme.hololens-mode .step-card { border-color: var(--light-primary); } & #stepBox { font-size: 2.1rem; line-height: 1.35; font-weight: 600; } & .step-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } & #progressContainer { position: fixed; left: 50%; transform: translateX(-50%); top: calc(40% + 210px); width: 80%; max-width: 750px; } & #holoNavButtons { display: flex !important; position: fixed; left: 0; right: 0; bottom: 15%; width: 100%; padding: 0 var(--spacing-lg); gap: var(--spacing-lg); } & #exitHoloBtn { display: flex !important; align-items: center; justify-content: center; position: fixed; top: 30px; right: 30px; padding: 10px 18px; width: auto; height: auto; border-radius: var(--border-radius-lg); font-size: 1.3rem; font-weight: 600; white-space: nowrap; background-color: rgba(30, 30, 30, 0.6); backdrop-filter: blur(8px); border: 2px solid var(--dark-text-secondary); color: var(--dark-text); z-index: 1001; cursor: pointer; transition: all var(--transition-normal); box-shadow: 0 2px 10px var(--dark-shadow);} .light-theme.hololens-mode #exitHoloBtn { background-color: rgba(255, 255, 255, 0.5); border-color: var(--light-text-secondary); color: var(--light-text); } & #exitHoloBtn:hover { background-color: rgba(50, 50, 50, 0.8); border-color: var(--dark-text); transform: scale(1.1); } .light-theme.hololens-mode #exitHoloBtn:hover { background-color: rgba(240, 240, 240, 0.7); border-color: var(--light-text); } & #alphaNavButtons, & #micToggleBtn, & #exitBetaBtn, & #exitAlphaBtn { display: none !important; } .gaze-indicator, .gaze-progress { position: absolute; width: 40px; height: 40px; border-radius: 50%; pointer-events: none; transform: translate(-50%, -50%); z-index: 1000; display: none; transition: all 0.1s ease; } .gaze-indicator { border: 3px solid var(--dark-primary); } .gaze-progress { border: 3px solid transparent; border-top-color: var(--dark-primary); animation: spin 1.5s linear infinite; z-index: 1001; } .light-theme .gaze-indicator { border-color: var(--light-primary); } .light-theme .gaze-progress { border-color: transparent; border-top-color: var(--light-primary); } @keyframes spin { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } } }
+    @media (max-width: 760px) { .step-card-header { flex-direction: column; } .step-grid { grid-template-columns: 1fr; } #stepBox { font-size: 1.15rem; min-height: auto; } #stepTitle { font-size: 1.35rem; } .holo-nav-btn { width: 128px; height: 128px; font-size: 1.4rem; } }
 
     /* ---------- Exit Mode Buttons (Shared Styling) ---------- */
     .exit-btn { position: fixed; top: 20px; right: 20px; padding: var(--spacing-sm) var(--spacing-md); font-size: 0.85rem; font-weight: 600; background-color: var(--dark-surface); color: var(--dark-text-secondary); border: 1px solid var(--dark-border); border-radius: var(--border-radius-md); display: none; cursor: pointer; z-index: 1001; box-shadow: 0 2px 10px var(--dark-shadow); transition: all var(--transition-normal); opacity: 0.8; }
@@ -223,7 +244,7 @@
 
   <div class="container">
     <header class="header">
-      <h1>Line Insertion Tutorial</h1>
+      <h1>MR-Assisted Central Line Workflow</h1>
     </header>
 
     <div class="control-bar">
@@ -245,7 +266,35 @@
 
     <div class="main-content">
       <div class="step-card">
-        <div id="stepBox">Select a navigation mode above to begin the tutorial...</div>
+        <div class="step-card-shell">
+          <div class="step-card-header">
+            <div class="step-stepper">
+              <div class="step-label">Current Task</div>
+              <div id="stepTitle">Central Line Placement Workflow</div>
+              <div id="stepMeta">Select a navigation mode above to begin the guided procedure.</div>
+            </div>
+            <div id="stepConfidence">Awaiting start</div>
+          </div>
+          <div id="stepBox">Select a navigation mode above to begin the tutorial...</div>
+          <div class="step-grid">
+            <div class="step-panel">
+              <h3>Anatomical Cue</h3>
+              <p id="anatomyCue">Ultrasound landmarks and vessel cues will appear here.</p>
+            </div>
+            <div class="step-panel warning-panel">
+              <h3>Safety Warning</h3>
+              <p id="riskWarning">Critical warnings for the current maneuver will appear here.</p>
+            </div>
+            <div class="step-panel success-panel">
+              <h3>Completion Criterion</h3>
+              <p id="successCue">The success cue for the step will appear here.</p>
+            </div>
+            <div class="step-panel">
+              <h3>Next Verification</h3>
+              <p id="verifyCue">Verification checks for the current step will appear here.</p>
+            </div>
+          </div>
+        </div>
         <div id="status">Tutorial ready</div>
       </div>
 
@@ -288,26 +337,30 @@
   <script>
     // Code generated: Wednesday, April 2, 2025 at 6:22 PM EDT (approx)
     // ----- Tutorial Steps -----
-    const steps = [
-        "Step 1.1: Place the introducer needle into the vein.",
-        "Step 1.2: Advance the needle.",
-        "Step 1.3: Hold negative pressure.",
-        "Step 1.4: Stabilize the needle.",
-        "Step 1.5: Disconnect syringe.",
-        "Step 2.1: Thread guidewire.",
-        "Step 2.2: Stabilize wire at 15 cm.",
-        "Step 2.3: Remove needle, hold pressure.",
-        "Step 2.4: Reimage with ultrasound.",
-        "Step 3.1: Preload dilator.",
-        "Step 3.2: Skin Incision.",
-        "Step 3.3: Insert dilator.",
-        "Step 3.4: Remove dilator.",
-        "Step 3.5: Thread catheter.",
-        "Step 3.6: Remove guidewire.",
-        "Step 3.7: Flush and cap line.",
-        "Step 3.8: Clean site.",
-        "Step 3.9: Place sterile dressing."
-    ];
+    const procedure = {
+        id: "ij-central-line",
+        title: "Ultrasound-Guided Internal Jugular Central Line",
+        steps: [
+            { id: "1.1", phase: "Vessel Access", title: "Needle entry", action: "Advance introducer needle slowly under ultrasound toward the internal jugular vein.", anatomy: "Keep the needle tip aligned with the center of the compressible venous lumen and track the carotid position before advancing.", verify: "Needle tip remains visible on ultrasound and the vessel path is free of the carotid.", warning: "Do not advance if the tip is lost or if the carotid overlaps the intended path.", success: "Tip reaches the anterior wall of the target vein.", confidence: "Ultrasound tracking required" },
+            { id: "1.2", phase: "Vessel Access", title: "Venous puncture", action: "Advance in short controlled movements while maintaining negative pressure on the syringe.", anatomy: "Watch the tip tent and then enter the venous lumen rather than passing through the posterior wall.", verify: "The tip is still visualized at puncture and venous entry occurs without arterial pulsatility.", warning: "Stop if you lose tip visualization or if pulsatile bright blood suggests arterial access.", success: "Dark non-pulsatile flashback is obtained in the vessel.", confidence: "Confirm blood return" },
+            { id: "1.3", phase: "Vessel Access", title: "Needle stabilization", action: "Hold the needle completely still once venous access is confirmed.", anatomy: "Keep the bevel seated within the lumen and avoid changing insertion angle.", verify: "Blood return continues and the tip position does not migrate out of the vessel.", warning: "Needle motion at this stage can shear tissue or lose access.", success: "Stable intraluminal position maintained for wire passage.", confidence: "Maintain access" },
+            { id: "1.4", phase: "Vessel Access", title: "Syringe removal", action: "Disconnect the syringe while stabilizing the needle hub with your other hand.", anatomy: "Maintain the same depth and angle at the skin entry site.", verify: "Needle position remains unchanged during disconnection.", warning: "Do not release hub control while disconnecting the syringe.", success: "Needle remains intravascular and ready for guidewire insertion.", confidence: "Hub control critical" },
+            { id: "2.1", phase: "Guidewire Placement", title: "Guidewire entry", action: "Thread the guidewire gently through the needle without resistance.", anatomy: "The wire should follow the vessel course smoothly into the lumen.", verify: "Wire advances easily and does not buckle at the hub.", warning: "Never force the wire against resistance.", success: "Guidewire enters the vessel smoothly.", confidence: "Resistance check" },
+            { id: "2.2", phase: "Guidewire Placement", title: "Guidewire depth", action: "Advance the guidewire to the target depth while keeping a firm hold on the proximal end.", anatomy: "Track expected venous depth and avoid over-advancement.", verify: "Wire remains under control and depth target is reached, typically around 15 cm.", warning: "Do not let go of the proximal wire end at any time.", success: "Wire depth is appropriate and under continuous control.", confidence: "Wire secure" },
+            { id: "2.3", phase: "Guidewire Placement", title: "Needle removal", action: "Withdraw the needle over the guidewire while holding pressure at the skin.", anatomy: "Keep the wire fixed and centered through the skin tract.", verify: "Wire position remains unchanged as the needle is removed.", warning: "Do not pull the wire out with the needle.", success: "Needle is removed and guidewire remains in place.", confidence: "Hold pressure" },
+            { id: "2.4", phase: "Guidewire Placement", title: "Wire confirmation", action: "Reimage with ultrasound to confirm the guidewire remains intravascular before dilation.", anatomy: "Look for the wire within the internal jugular lumen on ultrasound.", verify: "Guidewire is visualized in the vein and not in surrounding tissue.", warning: "Do not dilate unless the wire location is confirmed.", success: "Guidewire course is confirmed within the vessel.", confidence: "Imaging confirmation" },
+            { id: "3.1", phase: "Tract Preparation", title: "Dilator setup", action: "Preload the dilator onto the guidewire and align it with the skin tract.", anatomy: "Center the dilator at the existing wire entry site to avoid creating a false passage.", verify: "Dilator sits on the wire smoothly before advancing.", warning: "Do not advance the dilator off-axis from the established tract.", success: "Dilator is aligned and ready for controlled entry.", confidence: "Track alignment" },
+            { id: "3.2", phase: "Tract Preparation", title: "Skin nick", action: "Make a small skin incision at the wire entry site to facilitate dilation.", anatomy: "Incision should release skin resistance without widening the tract excessively.", verify: "Wire remains secure and the skin nick is sufficient for dilator passage.", warning: "Avoid cutting the guidewire or enlarging the incision unnecessarily.", success: "Skin nick allows controlled dilator advancement.", confidence: "Incision complete" },
+            { id: "3.3", phase: "Tract Preparation", title: "Dilator insertion", action: "Advance the dilator over the guidewire with controlled rotational pressure.", anatomy: "Follow the wire path and limit insertion depth to the tissue tract.", verify: "Dilator tracks over the wire without kinking and meets expected tissue resistance only.", warning: "Do not over-insert the dilator into the vessel.", success: "Soft tissue tract is dilated sufficiently for catheter placement.", confidence: "Controlled dilation" },
+            { id: "3.4", phase: "Tract Preparation", title: "Dilator removal", action: "Remove the dilator while maintaining wire control and skin pressure.", anatomy: "Keep the guidewire fixed through the tract during withdrawal.", verify: "Wire remains at the planned depth after dilator removal.", warning: "Loss of wire control here can abort the entire access.", success: "Dilator is removed and the wire remains stable.", confidence: "Wire retained" },
+            { id: "3.5", phase: "Catheter Placement", title: "Catheter advancement", action: "Thread the catheter over the guidewire and advance to the planned insertion depth.", anatomy: "Follow the dilated tract smoothly into the vessel without forcing.", verify: "Catheter advances over the wire and reaches depth markers as intended.", warning: "Do not advance if the catheter hangs up or the wire is no longer moving freely.", success: "Catheter is seated at target depth.", confidence: "Depth marker check" },
+            { id: "3.6", phase: "Catheter Placement", title: "Guidewire removal", action: "Hold the catheter in place and remove the guidewire completely.", anatomy: "Keep the catheter hub stable while extracting the wire.", verify: "Wire is removed intact and catheter position remains stable.", warning: "Never let the catheter back out while removing the wire.", success: "Guidewire is fully removed with catheter maintained in position.", confidence: "Wire out" },
+            { id: "3.7", phase: "Catheter Placement", title: "Line patency", action: "Aspirate, flush, and cap each lumen according to sterile protocol.", anatomy: "Assess each lumen independently for blood return and flush resistance.", verify: "Each lumen aspirates blood and flushes without resistance.", warning: "Do not use a lumen that lacks blood return or flushes with resistance until evaluated.", success: "All lumens are patent and capped.", confidence: "Patency check" },
+            { id: "3.8", phase: "Securement", title: "Site cleanup", action: "Clean the insertion site and remove blood or prep residue.", anatomy: "Preserve the sterile field around the catheter entry point.", verify: "Site is clean and catheter position remains unchanged during cleanup.", warning: "Avoid contaminating the insertion site while cleaning.", success: "Insertion site is clean and ready for dressing.", confidence: "Sterile field maintained" },
+            { id: "3.9", phase: "Securement", title: "Sterile dressing", action: "Apply sterile securement and dressing over the catheter site.", anatomy: "Cover the insertion site fully while keeping hubs accessible.", verify: "Dressing seals the site and the catheter is secured without kinking.", warning: "Do not leave the site unsecured after line placement.", success: "Line is dressed, secured, and ready for post-placement confirmation.", confidence: "Procedure complete" }
+        ]
+    };
+    const steps = procedure.steps;
     let currentStep = -1;
     let isDarkTheme = true;
     let recognition = null;
@@ -321,6 +374,13 @@
     // ----- DOM Elements -----
     const body = document.body;
     const stepBox = document.getElementById("stepBox");
+    const stepTitle = document.getElementById("stepTitle");
+    const stepMeta = document.getElementById("stepMeta");
+    const stepConfidence = document.getElementById("stepConfidence");
+    const anatomyCue = document.getElementById("anatomyCue");
+    const riskWarning = document.getElementById("riskWarning");
+    const successCue = document.getElementById("successCue");
+    const verifyCue = document.getElementById("verifyCue");
     const statusDisplay = document.getElementById("status");
     const progressBar = document.getElementById("progressBar");
     const progressText = document.getElementById("progressText");
@@ -350,15 +410,34 @@
     const exitAlphaBtn = document.getElementById("exitAlphaBtn");
     const exitHoloBtn = document.getElementById("exitHoloBtn");
 
+    function renderIdleState() {
+        if (stepTitle) stepTitle.innerText = procedure.title;
+        if (stepMeta) stepMeta.innerText = "Select a navigation mode above to begin the guided procedure.";
+        if (stepConfidence) stepConfidence.innerText = "Awaiting start";
+        if (stepBox) stepBox.innerText = "Select a navigation mode above to begin the tutorial...";
+        if (anatomyCue) anatomyCue.innerText = "Ultrasound landmarks and vessel cues will appear here.";
+        if (riskWarning) riskWarning.innerText = "Critical warnings for the current maneuver will appear here.";
+        if (successCue) successCue.innerText = "The success cue for the step will appear here.";
+        if (verifyCue) verifyCue.innerText = "Verification checks for the current step will appear here.";
+    }
+
     // ----- Update Step -----
     function updateStep(newStep) {
         if (newStep < 0 || newStep >= steps.length) return;
         currentStep = newStep;
-        if(stepBox) stepBox.innerText = steps[currentStep];
-        speakText(steps[currentStep]); // Speak the step text
+        const step = steps[currentStep];
+        if (stepTitle) stepTitle.innerText = `${step.phase}: ${step.title}`;
+        if (stepMeta) stepMeta.innerText = `Step ${currentStep + 1} of ${steps.length} • ${step.id}`;
+        if (stepConfidence) stepConfidence.innerText = step.confidence;
+        if (stepBox) stepBox.innerText = step.action;
+        if (anatomyCue) anatomyCue.innerText = step.anatomy;
+        if (riskWarning) riskWarning.innerText = step.warning;
+        if (successCue) successCue.innerText = step.success;
+        if (verifyCue) verifyCue.innerText = step.verify;
+        speakText(`${step.phase}. ${step.action} Verify: ${step.verify}`); // Speak a concise procedural summary
         const isFirstStep = currentStep === 0;
         const isLastStep = currentStep === steps.length - 1;
-        if(statusDisplay) statusDisplay.innerText = isLastStep ? `✅ Final Step (${currentStep + 1}/${steps.length})` : `Step ${currentStep + 1} of ${steps.length}`;
+        if(statusDisplay) statusDisplay.innerText = isLastStep ? `✅ Final step ready for post-procedure confirmation (${currentStep + 1}/${steps.length})` : `${step.phase} • Step ${currentStep + 1} of ${steps.length}`;
 
         // Update button disabled state first
         if (prevBtn) prevBtn.disabled = isFirstStep;
@@ -375,16 +454,16 @@
     // ----- Navigate Steps -----
     function nextStep() { if (currentStep < steps.length - 1) { updateStep(currentStep + 1); logCommand("Navigate: Next"); } else { if(statusDisplay) statusDisplay.innerText = "🚫 Already at the final step."; logCommand("Navigate: Attempted Next on Last Step"); } }
     function prevStep() { if (currentStep > 0) { updateStep(currentStep - 1); logCommand("Navigate: Previous"); } else { if(statusDisplay) statusDisplay.innerText = "🚫 Already at the first step."; logCommand("Navigate: Attempted Previous on First Step"); } }
-    function restartTutorial() { updateStep(0); if(statusDisplay) statusDisplay.innerText = "🔄 Tutorial Restarted."; logCommand("Navigate: Restart"); }
+    function restartTutorial() { updateStep(0); if(statusDisplay) statusDisplay.innerText = "🔄 Workflow restarted."; logCommand("Navigate: Restart"); }
 
     // ----- Update Progress Bar -----
     function updateProgressBar() {
         if (!progressBar || !progressText) return;
-        if (currentStep < 0) { progressBar.style.width = "0%"; progressText.innerText = `${steps.length} Steps Total`; return; }
+        if (currentStep < 0) { progressBar.style.width = "0%"; progressText.innerText = `${steps.length} procedural tasks queued`; return; }
         const fraction = (currentStep + 1) / steps.length;
         progressBar.style.width = `${fraction * 100}%`;
         const stepsRemaining = steps.length - (currentStep + 1);
-        progressText.innerText = stepsRemaining > 0 ? `${stepsRemaining} step${stepsRemaining !== 1 ? "s" : ""} remaining` : "All steps complete!";
+        progressText.innerText = stepsRemaining > 0 ? `${stepsRemaining} task${stepsRemaining !== 1 ? "s" : ""} remaining` : "Workflow complete";
     }
 
     // ----- Log Commands -----
@@ -803,6 +882,7 @@
         if (!isDarkTheme) { body.classList.add("light-theme"); }
         updateThemeButton(isDarkTheme);
 
+        renderIdleState();
         updateProgressBar();
 
         if (isMetaQuestBrowser()) {

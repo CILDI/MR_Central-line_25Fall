@@ -298,6 +298,7 @@
       padding: var(--spacing-xl);
       box-shadow: 0 4px 6px var(--dark-shadow);
       transition: all var(--transition-normal);
+      border: 1px solid transparent;
     }
     
     .light-theme .step-card {
@@ -308,11 +309,202 @@
     #stepBox {
       font-size: 1.5rem;
       line-height: 1.6;
-      text-align: center;
-      min-height: 150px;
+      text-align: left;
+      min-height: 110px;
+    }
+
+    .step-meta {
       display: flex;
+      flex-wrap: wrap;
+      gap: var(--spacing-sm);
       align-items: center;
-      justify-content: center;
+      margin-bottom: var(--spacing-md);
+    }
+
+    .mode-group {
+      display: flex;
+      gap: var(--spacing-sm);
+      align-items: center;
+      padding: 6px;
+      border-radius: 999px;
+      background: var(--dark-surface-2);
+    }
+
+    .light-theme .mode-group {
+      background: var(--light-surface-2);
+    }
+
+    .mode-label {
+      font-size: 0.85rem;
+      color: var(--dark-text-secondary);
+      margin-right: var(--spacing-xs);
+    }
+
+    .light-theme .mode-label {
+      color: var(--light-text-secondary);
+    }
+
+    .mode-toggle {
+      background: transparent;
+      color: var(--dark-text-secondary);
+      border: none;
+      border-radius: 999px;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all var(--transition-fast);
+    }
+
+    .mode-toggle.is-active {
+      background: var(--dark-primary);
+      color: #000000;
+    }
+
+    .light-theme .mode-toggle {
+      color: var(--light-text-secondary);
+    }
+
+    .light-theme .mode-toggle.is-active {
+      background: var(--light-primary);
+      color: #000000;
+    }
+
+    .risk-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 12px;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .risk-routine {
+      background: rgba(74, 222, 128, 0.18);
+      color: #86efac;
+    }
+
+    .risk-caution {
+      background: rgba(251, 191, 36, 0.18);
+      color: #fcd34d;
+    }
+
+    .risk-hard-stop {
+      background: rgba(248, 113, 113, 0.18);
+      color: #fca5a5;
+    }
+
+    .light-theme .risk-routine {
+      background: rgba(16, 185, 129, 0.14);
+      color: #047857;
+    }
+
+    .light-theme .risk-caution {
+      background: rgba(245, 158, 11, 0.16);
+      color: #b45309;
+    }
+
+    .light-theme .risk-hard-stop {
+      background: rgba(239, 68, 68, 0.14);
+      color: #b91c1c;
+    }
+
+    .step-card.routine-step {
+      border-color: rgba(74, 222, 128, 0.25);
+    }
+
+    .step-card.caution-step {
+      border-color: rgba(251, 191, 36, 0.4);
+      box-shadow: 0 8px 24px rgba(251, 191, 36, 0.12);
+    }
+
+    .step-card.hard-stop-step {
+      border-color: rgba(248, 113, 113, 0.55);
+      box-shadow: 0 10px 28px rgba(248, 113, 113, 0.16);
+    }
+
+    .light-theme .step-card.routine-step {
+      border-color: rgba(16, 185, 129, 0.2);
+    }
+
+    .light-theme .step-card.caution-step {
+      border-color: rgba(245, 158, 11, 0.35);
+      box-shadow: 0 8px 20px rgba(245, 158, 11, 0.1);
+    }
+
+    .light-theme .step-card.hard-stop-step {
+      border-color: rgba(239, 68, 68, 0.35);
+      box-shadow: 0 10px 24px rgba(239, 68, 68, 0.1);
+    }
+
+    .step-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--dark-text-secondary);
+      margin-bottom: var(--spacing-sm);
+    }
+
+    .light-theme .step-title {
+      color: var(--light-text-secondary);
+    }
+
+    .step-support {
+      margin-top: var(--spacing-lg);
+      display: grid;
+      gap: var(--spacing-md);
+    }
+
+    .step-note {
+      background: var(--dark-surface-2);
+      border-radius: var(--border-radius-md);
+      padding: var(--spacing-md);
+    }
+
+    .light-theme .step-note {
+      background: var(--light-surface-2);
+    }
+
+    .step-note h3 {
+      font-size: 0.9rem;
+      margin-bottom: var(--spacing-xs);
+    }
+
+    .step-note p {
+      font-size: 0.98rem;
+      line-height: 1.5;
+    }
+
+    .step-note.warning-note {
+      border-left: 4px solid #f59e0b;
+    }
+
+    .step-note.hard-stop-note {
+      border-left: 4px solid #ef4444;
+    }
+
+    .step-note.confirmed {
+      border-left: 4px solid var(--dark-primary);
+    }
+
+    .light-theme .step-note.confirmed {
+      border-left-color: var(--light-primary);
+    }
+
+    #confirmPanel {
+      display: none;
+      gap: var(--spacing-md);
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    #confirmText {
+      flex: 1 1 320px;
+      line-height: 1.5;
     }
     
     #status {
@@ -648,6 +840,11 @@
 <button class="btn" id="themeToggleBtn">
 <span class="btn-icon">☀</span> Light Theme
       </button>
+<div class="mode-group" aria-label="Guidance mode">
+<span class="mode-label">Guidance</span>
+<button class="mode-toggle is-active" id="trainingModeBtn" type="button">Training</button>
+<button class="mode-toggle" id="expertModeBtn" type="button">Expert</button>
+</div>
 <button class="btn btn-primary" id="betaModeBtn">
 <span class="btn-icon">🎤</span> Voice Mode
       </button>
@@ -658,8 +855,26 @@
 <!-- Main Content -->
 <div class="main-content">
 <!-- Step Display -->
-<div class="step-card">
+<div class="step-card routine-step" id="stepCard">
+<div class="step-meta">
+<div class="risk-badge risk-routine" id="riskBadge">Routine Step</div>
+</div>
+<div class="step-title" id="stepTitle">Preparation</div>
 <div id="stepBox">Select a navigation mode to begin the tutorial...</div>
+<div class="step-support">
+<div class="step-note" id="guidanceNote">
+<h3 id="guidanceHeading">Training Guidance</h3>
+<p id="guidanceText">Use Training mode for fuller prompts, then switch to Expert mode for a quieter workflow.</p>
+</div>
+<div class="step-note" id="riskNote">
+<h3 id="riskHeading">Risk Level</h3>
+<p id="riskText">Routine steps show standard prompts. Higher-risk steps escalate visually and may require confirmation.</p>
+</div>
+<div class="step-note hard-stop-note" id="confirmPanel">
+<div id="confirmText">Confirm this high-risk action before proceeding.</div>
+<button class="btn btn-primary" id="confirmBtn" type="button">Confirm and continue</button>
+</div>
+</div>
 <div id="status">Tutorial ready to start</div>
 </div>
 <!-- Progress container with bar and text -->
@@ -688,35 +903,266 @@
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   const steps = [
-    "Step 1.1: Place the introducer needle into the vein.",
-    "Step 1.2: Advance the needle towards the vein.",
-    "Step 1.3: Hold negative pressure on the syringe",
-    "Step 1.4: Stabilize the needle with the dominant hand",
-    "Step 1.5: Disconnect the needle from the syringe",
-    "Step 2.1: Thread the guidewire through the needle",
-    "Step 2.2: Once the wire is at 15 cm (three hash marks), stabilize the wire",
-    "Step 2.3: Remove the needle and hold pressure on the site",
-    "Step 2.4: Reimage the vessel with ultrasound",
-    "Step 3.1: Preload the dilator onto the guidewire",
-    "Step 3.2: Skin Incision",
-    "Step 3.3: Insert the dilator",
-    "Step 3.4: Remove the dilator",
-    "Step 3.5: Thread the central venous catheter",
-    "Step 3.6: Remove the guidewire",
-    "Step 3.7: Flush and cap the line",
-    "Step 3.8: Clean the site",
-    "Step 3.9: Place a sterile dressing"
+    {
+      id: "1.1",
+      title: "Venous Access Setup",
+      trainingText: "Place the introducer needle into the vein under ultrasound guidance with stable visualization.",
+      expertText: "Place introducer needle into vein under ultrasound.",
+      guidance: "Maintain vessel visualization and controlled hand position before advancing.",
+      riskLevel: "routine",
+      riskLabel: "Routine Step",
+      riskText: "Standard procedural step with normal guidance density."
+    },
+    {
+      id: "1.2",
+      title: "Needle Advancement",
+      trainingText: "Advance the needle toward the vein slowly while maintaining negative pressure and ultrasound confirmation.",
+      expertText: "Advance needle with ultrasound confirmation.",
+      guidance: "Use short, deliberate advancement. Avoid losing tip visualization.",
+      riskLevel: "caution",
+      riskLabel: "Caution Step",
+      riskText: "Needle advancement increases the chance of posterior wall or arterial injury if visualization is lost."
+    },
+    {
+      id: "1.3",
+      title: "Aspiration Check",
+      trainingText: "Hold negative pressure on the syringe to identify venous flash as the needle enters the vessel.",
+      expertText: "Maintain negative pressure for flash.",
+      guidance: "Continue ultrasound awareness while watching for non-pulsatile venous return.",
+      riskLevel: "caution",
+      riskLabel: "Caution Step",
+      riskText: "This is part of confirming venous access and should not be treated as a routine prompt."
+    },
+    {
+      id: "1.4",
+      title: "Needle Stabilization",
+      trainingText: "Stabilize the needle with the dominant hand to preserve access and avoid unintended advancement.",
+      expertText: "Stabilize needle.",
+      guidance: "Lock hand position before disconnecting any equipment.",
+      riskLevel: "routine",
+      riskLabel: "Routine Step",
+      riskText: "Access preservation step with normal risk."
+    },
+    {
+      id: "1.5",
+      title: "Venous Access Confirmation",
+      trainingText: "Disconnect the needle from the syringe only after venous access is clearly confirmed and the needle is stable.",
+      expertText: "Disconnect syringe after venous access confirmed.",
+      guidance: "Pause here to ensure venous placement is certain before committing to guidewire passage.",
+      riskLevel: "hard-stop",
+      riskLabel: "Must Confirm",
+      riskText: "This is a commitment point. Incorrect access confirmation propagates error into the rest of the procedure.",
+      confirmText: "Confirm venous access is visualized and appropriate to proceed with guidewire advancement."
+    },
+    {
+      id: "2.1",
+      title: "Guidewire Advancement",
+      trainingText: "Thread the guidewire through the needle gently without resistance and stop if passage is not smooth.",
+      expertText: "Advance guidewire only if passage is smooth.",
+      guidance: "Never force the wire. Reassess position immediately if resistance occurs.",
+      riskLevel: "hard-stop",
+      riskLabel: "Must Confirm",
+      riskText: "Guidewire advancement is a high-risk step that requires explicit verification before continuing.",
+      confirmText: "Confirm wire passage is smooth, expected, and resistance-free before proceeding."
+    },
+    {
+      id: "2.2",
+      title: "Wire Depth Control",
+      trainingText: "Once the wire is at 15 cm, stabilize it carefully and maintain control of the external end at all times.",
+      expertText: "Stabilize wire at 15 cm.",
+      guidance: "Maintain constant control of the wire; depth drift here creates downstream risk.",
+      riskLevel: "caution",
+      riskLabel: "Caution Step",
+      riskText: "Loss of wire control is uncommon but consequential."
+    },
+    {
+      id: "2.3",
+      title: "Needle Removal",
+      trainingText: "Remove the needle while holding wire position and apply pressure to the site as needed.",
+      expertText: "Remove needle, maintain wire control.",
+      guidance: "Wire control remains the priority during needle removal.",
+      riskLevel: "routine",
+      riskLabel: "Routine Step",
+      riskText: "Standard transition step with routine guidance."
+    },
+    {
+      id: "2.4",
+      title: "Ultrasound Recheck",
+      trainingText: "Reimage the vessel with ultrasound to verify anatomy and access before dilation.",
+      expertText: "Reimage vessel before dilation.",
+      guidance: "Use this pause to catch trajectory or anatomy concerns before the next high-risk maneuver.",
+      riskLevel: "caution",
+      riskLabel: "Caution Step",
+      riskText: "Recommended reassessment before escalating to dilation."
+    },
+    {
+      id: "3.1",
+      title: "Dilator Preparation",
+      trainingText: "Preload the dilator onto the guidewire while preserving sterile control and wire stability.",
+      expertText: "Preload dilator onto guidewire.",
+      guidance: "Align equipment before insertion to avoid unnecessary motion at the site.",
+      riskLevel: "caution",
+      riskLabel: "Caution Step",
+      riskText: "This prepares for a high-risk dilation step and deserves increased attention."
+    },
+    {
+      id: "3.2",
+      title: "Skin Incision",
+      trainingText: "Make a skin incision of appropriate size to facilitate controlled dilation and catheter passage.",
+      expertText: "Perform skin incision.",
+      guidance: "Adequate incision reduces force required during dilation.",
+      riskLevel: "routine",
+      riskLabel: "Routine Step",
+      riskText: "Preparation step with standard guidance."
+    },
+    {
+      id: "3.3",
+      title: "Dilation",
+      trainingText: "Insert the dilator over the guidewire using controlled force and stop immediately if trajectory or resistance is abnormal.",
+      expertText: "Dilate with controlled force only.",
+      guidance: "This is a high-risk maneuver. Advance only as intended and never with uncontrolled pressure.",
+      riskLevel: "hard-stop",
+      riskLabel: "Must Confirm",
+      riskText: "Dilation carries disproportionate procedural risk and should stand out clearly in the interface.",
+      confirmText: "Confirm the guidewire is controlled, the tract is aligned, and dilation is appropriate before proceeding."
+    },
+    {
+      id: "3.4",
+      title: "Dilator Removal",
+      trainingText: "Remove the dilator while maintaining guidewire position and sterile field control.",
+      expertText: "Remove dilator, hold wire position.",
+      guidance: "Wire control remains critical during removal.",
+      riskLevel: "caution",
+      riskLabel: "Caution Step",
+      riskText: "Transition step with elevated attention due to recent dilation."
+    },
+    {
+      id: "3.5",
+      title: "Catheter Threading",
+      trainingText: "Thread the central venous catheter over the guidewire with stable control and expected resistance profile.",
+      expertText: "Thread catheter over guidewire.",
+      guidance: "Pause for alignment before advancing. Do not force catheter passage.",
+      riskLevel: "hard-stop",
+      riskLabel: "Must Confirm",
+      riskText: "Catheter threading is another commitment point that warrants explicit confirmation.",
+      confirmText: "Confirm catheter path is aligned and threading is proceeding as expected before continuing."
+    },
+    {
+      id: "3.6",
+      title: "Guidewire Removal",
+      trainingText: "Remove the guidewire while maintaining catheter position and confirming the wire exits completely.",
+      expertText: "Remove guidewire, maintain catheter position.",
+      guidance: "Account for the wire completely before moving on.",
+      riskLevel: "caution",
+      riskLabel: "Caution Step",
+      riskText: "Requires deliberate completion check before line use."
+    },
+    {
+      id: "3.7",
+      title: "Line Flush",
+      trainingText: "Flush and cap the line according to protocol while maintaining sterile handling.",
+      expertText: "Flush and cap line.",
+      guidance: "Transition from placement to line readiness checks.",
+      riskLevel: "routine",
+      riskLabel: "Routine Step",
+      riskText: "Routine post-placement action."
+    },
+    {
+      id: "3.8",
+      title: "Site Clean",
+      trainingText: "Clean the site thoroughly before final dressing placement.",
+      expertText: "Clean insertion site.",
+      guidance: "Prepare for secure final dressing.",
+      riskLevel: "routine",
+      riskLabel: "Routine Step",
+      riskText: "Routine finishing step."
+    },
+    {
+      id: "3.9",
+      title: "Sterile Dressing",
+      trainingText: "Place a sterile dressing and verify the line is secured according to protocol.",
+      expertText: "Apply sterile dressing and secure line.",
+      guidance: "Final securement step before workflow completion.",
+      riskLevel: "routine",
+      riskLabel: "Routine Step",
+      riskText: "Final routine completion step."
+    }
   ];
+
   let currentStep = 0;
+  let guidanceMode = "training";
+  const confirmationState = {};
+
+  const stepCard = document.getElementById("stepCard");
+  const stepTitle = document.getElementById("stepTitle");
+  const stepBox = document.getElementById("stepBox");
+  const status = document.getElementById("status");
+  const riskBadge = document.getElementById("riskBadge");
+  const guidanceHeading = document.getElementById("guidanceHeading");
+  const guidanceText = document.getElementById("guidanceText");
+  const riskHeading = document.getElementById("riskHeading");
+  const riskText = document.getElementById("riskText");
+  const confirmPanel = document.getElementById("confirmPanel");
+  const confirmText = document.getElementById("confirmText");
+  const confirmBtn = document.getElementById("confirmBtn");
+  const nextBtn = document.getElementById("nextBtn");
+  const prevBtn = document.getElementById("prevBtn");
+  const trainingModeBtn = document.getElementById("trainingModeBtn");
+  const expertModeBtn = document.getElementById("expertModeBtn");
+
+  function getStepState(step) {
+    const needsConfirm = step.riskLevel === "hard-stop";
+    const isConfirmed = Boolean(confirmationState[step.id]);
+    return { needsConfirm, isConfirmed };
+  }
+
+  function setGuidanceMode(mode) {
+    guidanceMode = mode;
+    trainingModeBtn.classList.toggle("is-active", mode === "training");
+    expertModeBtn.classList.toggle("is-active", mode === "expert");
+    logCommand("Guidance mode: " + (mode === "training" ? "Training" : "Expert"));
+    updateStep();
+  }
 
   function updateStep() {
-    document.getElementById("stepBox").innerText = steps[currentStep];
-    document.getElementById("status").innerText =
+    const step = steps[currentStep];
+    const { needsConfirm, isConfirmed } = getStepState(step);
+
+    stepCard.classList.remove("routine-step", "caution-step", "hard-stop-step");
+    stepCard.classList.add(step.riskLevel + "-step");
+
+    stepTitle.innerText = "Step " + step.id + "  " + step.title;
+    stepBox.innerText = guidanceMode === "training" ? step.trainingText : step.expertText;
+    guidanceHeading.innerText =
+      guidanceMode === "training" ? "Training Guidance" : "Expert Guidance";
+    guidanceText.innerText =
+      guidanceMode === "training"
+        ? step.guidance
+        : needsConfirm
+          ? "Minimal prompts active. Review the warning and confirm before proceeding."
+          : "Minimal prompts active. Only the essential next action is shown.";
+    riskHeading.innerText = step.riskLabel;
+    riskText.innerText = step.riskText;
+    riskBadge.innerText = step.riskLabel;
+    riskBadge.className = "risk-badge risk-" + step.riskLevel;
+
+    confirmPanel.style.display = needsConfirm ? "flex" : "none";
+    confirmPanel.classList.toggle("confirmed", isConfirmed);
+    confirmText.innerText = isConfirmed
+      ? "Confirmed: " + step.confirmText
+      : step.confirmText || "";
+    confirmBtn.innerText = isConfirmed ? "Confirmed" : "Confirm and continue";
+    confirmBtn.disabled = isConfirmed;
+
+    status.innerText =
       currentStep === steps.length - 1
         ? "✅ You are on the final step!"
-        : "Step " + (currentStep + 1) + " of " + steps.length;
-    document.getElementById("nextBtn").disabled = currentStep === steps.length - 1;
-    document.getElementById("prevBtn").disabled = currentStep === 0;
+        : needsConfirm && !isConfirmed
+          ? "Confirmation required before proceeding"
+          : "Step " + (currentStep + 1) + " of " + steps.length;
+
+    nextBtn.disabled = currentStep === steps.length - 1 || (needsConfirm && !isConfirmed);
+    prevBtn.disabled = currentStep === 0;
     document.getElementById("progressBar").style.width =
       ((currentStep + 1) / steps.length) * 100 + "%";
     document.getElementById("progressText").innerText =
@@ -725,7 +1171,7 @@ document.addEventListener("DOMContentLoaded", function () {
         : "All steps complete!";
   }
 
-  document.getElementById("nextBtn").addEventListener("click", function () {
+  nextBtn.addEventListener("click", function () {
     if (currentStep < steps.length - 1) {
       currentStep++;
       updateStep();
@@ -733,7 +1179,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  document.getElementById("prevBtn").addEventListener("click", function () {
+  prevBtn.addEventListener("click", function () {
     if (currentStep > 0) {
       currentStep--;
       updateStep();
@@ -745,6 +1191,25 @@ document.addEventListener("DOMContentLoaded", function () {
     currentStep = 0;
     updateStep();
     logCommand("Button: Restart");
+  });
+
+  confirmBtn.addEventListener("click", function () {
+    const step = steps[currentStep];
+    confirmationState[step.id] = true;
+    logCommand("Hard stop confirmed: Step " + step.id);
+    updateStep();
+  });
+
+  trainingModeBtn.addEventListener("click", function () {
+    if (guidanceMode !== "training") {
+      setGuidanceMode("training");
+    }
+  });
+
+  expertModeBtn.addEventListener("click", function () {
+    if (guidanceMode !== "expert") {
+      setGuidanceMode("expert");
+    }
   });
 
   function logCommand(text) {

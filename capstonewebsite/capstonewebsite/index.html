@@ -421,6 +421,18 @@
         if (verifyCue) verifyCue.innerText = "Verification checks for the current step will appear here.";
     }
 
+    function buildSpokenStepText(step, stepNumber) {
+        return [
+            `Step ${stepNumber} of ${steps.length}. ${step.phase}. ${step.title}.`,
+            `Action: ${step.action}`,
+            `Anatomical cue: ${step.anatomy}`,
+            `Safety warning: ${step.warning}`,
+            `Completion criterion: ${step.success}`,
+            `Next verification: ${step.verify}`,
+            `Status: ${step.confidence}`
+        ].join(" ");
+    }
+
     // ----- Update Step -----
     function updateStep(newStep) {
         if (newStep < 0 || newStep >= steps.length) return;
@@ -434,7 +446,7 @@
         if (riskWarning) riskWarning.innerText = step.warning;
         if (successCue) successCue.innerText = step.success;
         if (verifyCue) verifyCue.innerText = step.verify;
-        speakText(`${step.phase}. ${step.action} Verify: ${step.verify}`); // Speak a concise procedural summary
+        speakText(buildSpokenStepText(step, currentStep + 1));
         const isFirstStep = currentStep === 0;
         const isLastStep = currentStep === steps.length - 1;
         if(statusDisplay) statusDisplay.innerText = isLastStep ? `✅ Final step ready for post-procedure confirmation (${currentStep + 1}/${steps.length})` : `${step.phase} • Step ${currentStep + 1} of ${steps.length}`;
@@ -910,8 +922,11 @@
   // ----- Text-to-Speech Function -----
   function speakText(text) {
       if ('speechSynthesis' in window) {
+          speechSynthesis.cancel();
           const utterance = new SpeechSynthesisUtterance(text);
           utterance.lang = 'en-US';
+          utterance.rate = 1;
+          utterance.pitch = 1;
           speechSynthesis.speak(utterance);
           logCommand(`SpeechSynthesis: Spoke "${text}"`);
       } else {

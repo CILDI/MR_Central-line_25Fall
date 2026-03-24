@@ -232,15 +232,16 @@
     .mr-region-label { display: block; margin-bottom: var(--spacing-xs); font-size: 0.74rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dark-primary); }
     .light-theme .mr-region-label { color: var(--light-primary); }
     #mrStepTag { top: 26px; left: 26px; padding: 12px 16px; border-radius: 999px; font-size: 0.95rem; font-weight: 700; }
-    #mrAnatomyLabel { top: 84px; left: 26px; min-width: 240px; max-width: 340px; padding: 16px 18px; border-radius: var(--border-radius-lg); }
-    #mrAnatomyText { font-size: 1.2rem; font-weight: 700; line-height: 1.3; }
-    #mrAnatomyHint { margin-top: 6px; color: var(--dark-text-secondary); font-size: 0.92rem; line-height: 1.4; }
-    .light-theme #mrAnatomyHint { color: var(--light-text-secondary); }
+    #mrAnatomyLabel { top: 86px; left: 26px; min-width: 210px; max-width: 280px; padding: 12px 14px; border-radius: 18px; }
+    #mrAnatomyText { font-size: 1rem; font-weight: 700; line-height: 1.25; }
+    #mrAnatomyHint { display: none; }
     #mrStatusChip { top: 26px; right: 110px; padding: 12px 18px; border-radius: 999px; font-size: 0.95rem; font-weight: 700; }
     #mrStatusChip.status-caution { border-color: rgba(248, 113, 113, 0.45); color: #fecaca; }
     .light-theme #mrStatusChip.status-caution { color: #b91c1c; }
     #mrStatusChip.status-ready { border-color: rgba(74, 222, 128, 0.45); color: #bbf7d0; }
     .light-theme #mrStatusChip.status-ready { color: #047857; }
+    #mrCautionChip { top: 78px; right: 110px; padding: 10px 14px; border-radius: 999px; font-size: 0.85rem; font-weight: 700; max-width: min(28vw, 320px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-color: rgba(248, 113, 113, 0.42); color: #fecaca; }
+    .light-theme #mrCautionChip { color: #b91c1c; }
     #mrUltrasoundAnchor { top: 24%; left: 26px; width: min(29vw, 360px); padding: 18px; border-radius: 24px; }
     #mrUltrasoundFrame { position: relative; aspect-ratio: 4 / 3; border-radius: 20px; border: 1px solid rgba(74, 222, 128, 0.32); background:
       linear-gradient(180deg, rgba(74, 222, 128, 0.12), rgba(74, 222, 128, 0.02)),
@@ -271,8 +272,18 @@
     .light-theme #mrTrajectoryStart, .light-theme #mrTrajectoryTarget { border-color: rgba(15, 23, 42, 0.16); background: rgba(16, 185, 129, 0.88); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0.08); }
     #mrTrajectoryStart { left: 10%; bottom: 30%; }
     #mrTrajectoryTarget { right: 17%; top: 24%; }
-    #mrTrajectoryText { max-width: 360px; padding: 16px 18px; border-radius: var(--border-radius-lg); text-align: center; font-size: 1rem; line-height: 1.45; }
-    #mrBottomPrompt { left: 50%; bottom: 34px; transform: translateX(-50%); width: min(62vw, 760px); padding: 16px 22px; border-radius: 999px; text-align: center; font-size: 1.05rem; font-weight: 600; }
+    #mrTrajectoryText { max-width: 320px; padding: 14px 16px; border-radius: var(--border-radius-lg); text-align: center; font-size: 0.92rem; line-height: 1.4; }
+    #mrActionCard { top: 17%; left: 50%; transform: translateX(-50%); width: min(38vw, 560px); padding: 18px 20px; border-radius: 24px; }
+    #mrActionText { font-size: 1.55rem; line-height: 1.2; font-weight: 700; }
+    #mrBottomPrompt { left: 50%; bottom: 34px; transform: translateX(-50%); width: min(52vw, 640px); padding: 12px 18px; border-radius: 999px; text-align: center; font-size: 0.94rem; font-weight: 600; color: var(--dark-text-secondary); }
+    .light-theme #mrBottomPrompt { color: var(--light-text-secondary); }
+    #mrDetailToggle { position: fixed; right: 26px; bottom: 34px; padding: 10px 14px; border-radius: 999px; border: 1px solid rgba(74, 222, 128, 0.28); background: rgba(10, 18, 17, 0.62); color: var(--dark-text); backdrop-filter: blur(14px); z-index: 952; pointer-events: auto; cursor: pointer; font-size: 0.9rem; font-weight: 700; }
+    .light-theme #mrDetailToggle { background: rgba(255, 255, 255, 0.74); color: var(--light-text); border-color: rgba(16, 185, 129, 0.28); }
+    #mrDetailPanel { position: fixed; right: 26px; bottom: 92px; width: min(27vw, 360px); padding: 16px 18px; border-radius: 22px; display: none; pointer-events: auto; }
+    #mrOverlayLayer.show-details #mrDetailPanel { display: block; }
+    #mrDetailPanel .detail-item + .detail-item { margin-top: 12px; }
+    #mrDetailPanel .detail-copy { color: var(--dark-text-secondary); font-size: 0.92rem; line-height: 1.45; }
+    .light-theme #mrDetailPanel .detail-copy { color: var(--light-text-secondary); }
 
     /* ---------- Mode Specific Styles ---------- */
     .beta-mode, .alpha-mode, .hololens-mode { & .header, & .control-bar, & #status, & #logContainer { display: none; } & .container { padding: 0; max-width: 100%; gap: 0; } }
@@ -285,8 +296,10 @@
       z-index: 900; pointer-events: none; }
       & .step-card { display: none; }
       & #mrOverlayLayer { display: block; }
-      & #progressContainer { position: fixed; left: 50%; transform: translateX(-50%); bottom: 128px; width: min(42vw, 520px); z-index: 951; }
-      & #holoNavButtons { display: flex !important; position: fixed; left: 50%; transform: translateX(-50%); bottom: 220px; width: min(56vw, 680px); padding: 0; gap: var(--spacing-lg); z-index: 951; }
+      & #progressContainer { position: fixed; left: 50%; transform: translateX(-50%); bottom: 112px; width: min(24vw, 280px); z-index: 951; opacity: 0.8; }
+      & #progressBarBackground { height: 6px; }
+      & #progressText { font-size: 0.78rem; }
+      & #holoNavButtons { display: flex !important; position: fixed; left: 50%; transform: translateX(-50%); bottom: 176px; width: min(42vw, 520px); padding: 0; gap: var(--spacing-md); z-index: 951; }
       & #exitHoloBtn { display: flex !important; align-items: center; justify-content: center; position: fixed; top: 26px; right: 26px; padding: 10px 18px; width: auto; height: auto; border-radius: var(--border-radius-lg); font-size: 1rem; font-weight: 600; white-space: nowrap; background-color: rgba(30, 30, 30, 0.6); backdrop-filter: blur(8px); border: 2px solid var(--dark-text-secondary); color: var(--dark-text); z-index: 1001; cursor: pointer; transition: all var(--transition-normal); box-shadow: 0 2px 10px var(--dark-shadow);}
       .light-theme.hololens-mode #exitHoloBtn { background-color: rgba(255, 255, 255, 0.5); border-color: var(--light-text-secondary); color: var(--light-text); }
       & #exitHoloBtn:hover { background-color: rgba(50, 50, 50, 0.8); border-color: var(--dark-text); transform: scale(1.04); }
@@ -304,14 +317,18 @@
       #stepBox { font-size: 1.15rem; min-height: auto; }
       #stepTitle { font-size: 1.35rem; }
       .holo-nav-btn { width: 128px; height: 128px; font-size: 1.4rem; }
-      .hololens-mode #mrUltrasoundAnchor { top: 126px; width: min(38vw, 320px); }
-      .hololens-mode #mrTrajectoryOverlay { right: 4%; width: min(38vw, 360px); }
-      .hololens-mode #mrBottomPrompt { width: min(74vw, 700px); }
+      .hololens-mode #mrActionCard { width: min(46vw, 520px); }
+      .hololens-mode #mrUltrasoundAnchor { top: 146px; width: min(38vw, 320px); }
+      .hololens-mode #mrTrajectoryOverlay { right: 4%; width: min(34vw, 320px); }
+      .hololens-mode #mrBottomPrompt { width: min(62vw, 620px); }
+      .hololens-mode #mrDetailPanel { width: min(32vw, 340px); }
     }
     @media (max-width: 760px) {
       .hololens-mode #mrStepTag,
       .hololens-mode #mrStatusChip,
+      .hololens-mode #mrCautionChip,
       .hololens-mode #mrAnatomyLabel,
+      .hololens-mode #mrActionCard,
       .hololens-mode #mrUltrasoundAnchor,
       .hololens-mode #mrTrajectoryOverlay,
       .hololens-mode #mrBottomPrompt,
@@ -325,13 +342,19 @@
       }
       .hololens-mode #mrStepTag { top: 18px; }
       .hololens-mode #mrStatusChip { top: 66px; right: 16px; }
-      .hololens-mode #mrAnatomyLabel { top: 118px; max-width: none; min-width: 0; }
-      .hololens-mode #mrUltrasoundAnchor { top: 214px; }
-      .hololens-mode #mrTrajectoryOverlay { top: auto; bottom: 356px; }
-      .hololens-mode #mrTrajectoryArrow { height: 120px; }
-      .hololens-mode #mrBottomPrompt { bottom: 18px; font-size: 0.96rem; }
-      .hololens-mode #progressContainer { bottom: 96px; }
-      .hololens-mode #holoNavButtons { bottom: 154px; justify-content: space-between; }
+      .hololens-mode #mrCautionChip { top: 108px; max-width: none; }
+      .hololens-mode #mrAnatomyLabel { top: 150px; max-width: none; min-width: 0; }
+      .hololens-mode #mrActionCard { top: 210px; }
+      .hololens-mode #mrActionText { font-size: 1.15rem; }
+      .hololens-mode #mrUltrasoundAnchor { top: 304px; }
+      .hololens-mode #mrTrajectoryOverlay { top: auto; bottom: 334px; }
+      .hololens-mode #mrTrajectoryArrow { height: 92px; }
+      .hololens-mode #mrTrajectoryText { display: none; }
+      .hololens-mode #mrBottomPrompt { bottom: 18px; font-size: 0.9rem; }
+      .hololens-mode #progressContainer { bottom: 88px; }
+      .hololens-mode #holoNavButtons { bottom: 138px; justify-content: space-between; }
+      .hololens-mode #mrDetailToggle { right: 16px; bottom: 56px; }
+      .hololens-mode #mrDetailPanel { left: 16px; right: 16px; width: auto; bottom: 108px; }
       .hololens-mode .holo-nav-btn { width: 104px; height: 104px; font-size: 1rem; }
       .hololens-mode .holo-nav-btn .btn-icon { font-size: 2.2rem; }
       .hololens-mode #exitHoloBtn { top: 18px; right: 16px; padding: 8px 12px; font-size: 0.9rem; }
@@ -401,6 +424,11 @@
           <div id="mrAnatomyHint">Anatomy-specific MR labels will populate when the workflow starts.</div>
         </div>
         <div id="mrStatusChip" class="mr-region status-ready">Status: awaiting vessel view</div>
+        <div id="mrCautionChip" class="mr-region">Caution: verify path</div>
+        <div id="mrActionCard" class="mr-region">
+          <span class="mr-region-label">Next Action</span>
+          <div id="mrActionText">Align the ultrasound view and prepare for the next maneuver.</div>
+        </div>
         <div id="mrUltrasoundAnchor" class="mr-region">
           <span class="mr-region-label">Ultrasound Panel Anchor</span>
           <div id="mrUltrasoundFrame">
@@ -419,6 +447,21 @@
           </div>
         </div>
         <div id="mrBottomPrompt" class="mr-region">Bottom prompt: align the ultrasound view, then confirm the next action.</div>
+        <button id="mrDetailToggle" type="button" aria-expanded="false">Show Details</button>
+        <div id="mrDetailPanel" class="mr-region">
+          <div class="detail-item">
+            <span class="mr-region-label">Verification</span>
+            <div id="mrDetailVerify" class="detail-copy">Verification details will appear here.</div>
+          </div>
+          <div class="detail-item">
+            <span class="mr-region-label">Why It Matters</span>
+            <div id="mrDetailSuccess" class="detail-copy">Success criteria will appear here.</div>
+          </div>
+          <div class="detail-item">
+            <span class="mr-region-label">Anatomy Notes</span>
+            <div id="mrDetailAnatomy" class="detail-copy">Anatomy details will appear here.</div>
+          </div>
+        </div>
       </div>
 
       <div class="step-card">
@@ -550,13 +593,21 @@
     const progressText = document.getElementById("progressText");
     const logDiv = document.getElementById("log");
     const liveTranscript = document.getElementById("liveTranscript");
+    const mrOverlayLayer = document.getElementById("mrOverlayLayer");
     const mrStepTag = document.getElementById("mrStepTag");
     const mrAnatomyText = document.getElementById("mrAnatomyText");
     const mrAnatomyHint = document.getElementById("mrAnatomyHint");
     const mrStatusChip = document.getElementById("mrStatusChip");
+    const mrCautionChip = document.getElementById("mrCautionChip");
+    const mrActionText = document.getElementById("mrActionText");
     const mrUltrasoundHint = document.getElementById("mrUltrasoundHint");
     const mrTrajectoryHint = document.getElementById("mrTrajectoryHint");
     const mrBottomPrompt = document.getElementById("mrBottomPrompt");
+    const mrDetailToggle = document.getElementById("mrDetailToggle");
+    const mrDetailPanel = document.getElementById("mrDetailPanel");
+    const mrDetailVerify = document.getElementById("mrDetailVerify");
+    const mrDetailSuccess = document.getElementById("mrDetailSuccess");
+    const mrDetailAnatomy = document.getElementById("mrDetailAnatomy");
 
     // Navigation Buttons
     const prevBtn = document.getElementById("prevBtn");
@@ -582,6 +633,7 @@
     const exitBetaBtn = document.getElementById("exitBetaBtn");
     const exitAlphaBtn = document.getElementById("exitAlphaBtn");
     const exitHoloBtn = document.getElementById("exitHoloBtn");
+    let mrDetailsVisible = false;
 
     function setMRStatusChip(text, tone = "status-ready") {
         if (!mrStatusChip) return;
@@ -595,6 +647,20 @@
         if (normalized === "high") return "High Risk";
         if (normalized === "low") return "Low Risk";
         return "Medium Risk";
+    }
+
+    function shortenOverlayText(text, fallback, maxLength = 54) {
+        if (!text) return fallback;
+        return text.length > maxLength ? `${text.slice(0, maxLength - 3)}...` : text;
+    }
+
+    function setMRDetailVisibility(visible) {
+        mrDetailsVisible = visible;
+        if (mrOverlayLayer) mrOverlayLayer.classList.toggle("show-details", visible);
+        if (mrDetailToggle) {
+            mrDetailToggle.innerText = visible ? "Hide Details" : "Show Details";
+            mrDetailToggle.setAttribute("aria-expanded", visible ? "true" : "false");
+        }
     }
 
     function renderWarningSeverity(step) {
@@ -631,21 +697,26 @@
         if (!step) {
             return {
                 stepTag: "MR procedural overlay",
-                anatomyText: "Internal jugular target pending",
+                anatomyText: "Target anatomy pending",
                 anatomyHint: "Anatomy-specific MR labels will populate when the workflow starts.",
                 ultrasoundHint: "Reserved region for live probe feed, vessel centering, and future tool-tip tracking.",
                 trajectoryHint: "Trajectory guidance will align to the target vessel and skin entry path.",
-                bottomPrompt: "Bottom prompt: align the ultrasound view, then confirm the next action.",
+                actionText: "Align the ultrasound view.",
+                cautionText: "Caution: verify path",
+                bottomPrompt: "Say or tap for details only if you need them.",
+                detailVerify: "Verification details will appear here.",
+                detailSuccess: "Success criteria will appear here.",
+                detailAnatomy: "Anatomy details will appear here.",
                 statusTone: "status-ready",
                 statusText: "Status: awaiting vessel view"
             };
         }
 
         const anatomyText = step.phase === "Vessel Access"
-            ? "Target anatomy: internal jugular vein"
+            ? "Internal jugular vein"
             : step.phase === "Guidewire Placement"
-                ? "Target anatomy: guidewire within venous lumen"
-                : "Target anatomy: tract and catheter path";
+                ? "Guidewire in venous lumen"
+                : "Tract and catheter path";
         const ultrasoundHint = step.phase === "Vessel Access"
             ? "Anchor ultrasound panel near the probe view. Prioritize vessel centering and continuous tip visibility."
             : step.phase === "Guidewire Placement"
@@ -656,7 +727,9 @@
             : step.phase === "Guidewire Placement"
                 ? "Projected safe trajectory: maintain the wire within the venous lumen without resistance or buckling."
                 : "Projected safe trajectory: follow the established tract and stop if alignment is lost.";
-        const bottomPrompt = step.action.length > 110 ? `${step.action.slice(0, 107)}...` : step.action;
+        const actionText = shortenOverlayText(step.action, "Advance to the next maneuver.");
+        const cautionText = shortenOverlayText(step.warning.replace(/^Do not\s+/i, "").replace(/^Avoid\s+/i, ""), "verify path", 42);
+        const bottomPrompt = step.verify.length > 82 ? `${step.verify.slice(0, 79)}...` : step.verify;
         const status = deriveMRStatusText(step);
 
         return {
@@ -665,7 +738,12 @@
             anatomyHint: step.anatomy,
             ultrasoundHint,
             trajectoryHint,
+            actionText,
+            cautionText: `Caution: ${cautionText}`,
             bottomPrompt,
+            detailVerify: step.verify,
+            detailSuccess: step.success,
+            detailAnatomy: step.anatomy,
             statusTone: status.tone,
             statusText: status.text
         };
@@ -676,9 +754,14 @@
         if (mrStepTag) mrStepTag.innerText = overlay.stepTag;
         if (mrAnatomyText) mrAnatomyText.innerText = overlay.anatomyText;
         if (mrAnatomyHint) mrAnatomyHint.innerText = overlay.anatomyHint;
+        if (mrActionText) mrActionText.innerText = overlay.actionText;
+        if (mrCautionChip) mrCautionChip.innerText = overlay.cautionText;
         if (mrUltrasoundHint) mrUltrasoundHint.innerText = overlay.ultrasoundHint;
         if (mrTrajectoryHint) mrTrajectoryHint.innerText = overlay.trajectoryHint;
         if (mrBottomPrompt) mrBottomPrompt.innerText = overlay.bottomPrompt;
+        if (mrDetailVerify) mrDetailVerify.innerText = overlay.detailVerify;
+        if (mrDetailSuccess) mrDetailSuccess.innerText = overlay.detailSuccess;
+        if (mrDetailAnatomy) mrDetailAnatomy.innerText = overlay.detailAnatomy;
         setMRStatusChip(overlay.statusText, overlay.statusTone);
     }
 
@@ -1241,6 +1324,7 @@
         if (wasBeta) { stopListening(); }
         if (micToggleBtn) micToggleBtn.style.display = 'none'; // Always hide mic toggle initially
         if (mode !== "holo" && xrSession) { endXRSession(); }
+        if (mode !== "holo") { setMRDetailVisibility(false); }
 
         // Set New Mode
         body.classList.remove("alpha-mode", "beta-mode", "hololens-mode");
@@ -1262,6 +1346,7 @@
     if (betaModeBtn) betaModeBtn.addEventListener("click", () => setMode("beta"));
     if (holoModeBtn) holoModeBtn.addEventListener("click", () => setMode("holo"));
     if (xrSessionBtn) xrSessionBtn.addEventListener("click", toggleXRSession);
+    if (mrDetailToggle) mrDetailToggle.addEventListener("click", () => setMRDetailVisibility(!mrDetailsVisible));
     if (exitAlphaBtn) exitAlphaBtn.addEventListener("click", () => setMode("none"));
     if (exitBetaBtn) exitBetaBtn.addEventListener("click", () => setMode("none"));
     if (exitHoloBtn) exitHoloBtn.addEventListener("click", () => setMode("none"));
@@ -1281,6 +1366,7 @@
         updateThemeButton(isDarkTheme);
 
         renderIdleState();
+        setMRDetailVisibility(false);
         updateProgressBar();
         updateXRButtonState();
 

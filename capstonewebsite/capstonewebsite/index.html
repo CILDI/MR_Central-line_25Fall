@@ -243,6 +243,12 @@
     #mrCautionChip { top: 78px; right: 180px; padding: 10px 14px; border-radius: 18px; font-size: 0.85rem; font-weight: 700; max-width: min(34vw, 440px); white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.35; border-color: rgba(248, 113, 113, 0.42); color: #fecaca; }
     .light-theme #mrCautionChip { color: #b91c1c; }
     #mrUltrasoundAnchor { top: 24%; left: 26px; width: min(29vw, 360px); padding: 18px; border-radius: 24px; }
+    #mrUltrasoundAnchorHeader { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
+    #mrUltrasoundAnchorHeader .mr-region-label { margin-bottom: 0; }
+    #mrUltrasoundToggle { pointer-events: auto; cursor: pointer; border: 1px solid rgba(74, 222, 128, 0.28); background: rgba(10, 18, 17, 0.68); color: var(--dark-text); border-radius: 999px; padding: 8px 12px; font-size: 0.8rem; font-weight: 700; }
+    .light-theme #mrUltrasoundToggle { background: rgba(255, 255, 255, 0.78); color: var(--light-text); border-color: rgba(16, 185, 129, 0.28); }
+    #mrUltrasoundToggle:hover { background: rgba(74, 222, 128, 0.12); }
+    .light-theme #mrUltrasoundToggle:hover { background: rgba(16, 185, 129, 0.12); }
     #mrUltrasoundFrame { position: relative; aspect-ratio: 4 / 3; border-radius: 20px; border: 1px solid rgba(74, 222, 128, 0.32); background:
       linear-gradient(180deg, rgba(74, 222, 128, 0.12), rgba(74, 222, 128, 0.02)),
       radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.02) 55%, transparent 70%),
@@ -281,6 +287,19 @@
     .light-theme #mrDetailToggle { background: rgba(255, 255, 255, 0.74); color: var(--light-text); border-color: rgba(16, 185, 129, 0.28); }
     #mrDetailPanel { position: fixed; right: 26px; bottom: 92px; width: min(27vw, 360px); padding: 16px 18px; border-radius: 22px; display: none; pointer-events: auto; }
     #mrOverlayLayer.show-details #mrDetailPanel { display: block; }
+    #mrOverlayLayer.ultrasound-expanded::before { content: ""; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(6px); z-index: 953; pointer-events: none; }
+    #mrOverlayLayer.ultrasound-expanded #mrUltrasoundAnchor { top: 50%; left: 50%; width: min(86vw, 1200px); max-width: none; transform: translate(-50%, -50%); z-index: 954; padding: 22px; }
+    #mrOverlayLayer.ultrasound-expanded #mrUltrasoundFrame { aspect-ratio: auto; min-height: min(70vh, 760px); }
+    #mrOverlayLayer.ultrasound-expanded #mrUltrasoundHint { font-size: 1rem; margin-top: 16px; }
+    #mrOverlayLayer.ultrasound-expanded #mrTrajectoryOverlay,
+    #mrOverlayLayer.ultrasound-expanded #mrActionCard,
+    #mrOverlayLayer.ultrasound-expanded #mrAnatomyLabel,
+    #mrOverlayLayer.ultrasound-expanded #mrStatusChip,
+    #mrOverlayLayer.ultrasound-expanded #mrCautionChip,
+    #mrOverlayLayer.ultrasound-expanded #mrBottomPrompt,
+    #mrOverlayLayer.ultrasound-expanded #mrStepTag,
+    #mrOverlayLayer.ultrasound-expanded #mrDetailToggle,
+    #mrOverlayLayer.ultrasound-expanded #mrDetailPanel { opacity: 0.18; transition: opacity var(--transition-normal); pointer-events: none; }
     #mrDetailPanel .detail-item + .detail-item { margin-top: 12px; }
     #mrDetailPanel .detail-copy { color: var(--dark-text-secondary); font-size: 0.92rem; line-height: 1.45; }
     .light-theme #mrDetailPanel .detail-copy { color: var(--light-text-secondary); }
@@ -296,10 +315,10 @@
       z-index: 900; pointer-events: none; }
       & .step-card { display: none; }
       & #mrOverlayLayer { display: block; }
-      & #progressContainer { position: fixed; left: 50%; transform: translateX(-50%); bottom: 112px; width: min(24vw, 280px); z-index: 951; opacity: 0.8; }
+      & #progressContainer { position: fixed; right: 26px; bottom: 26px; width: min(18vw, 220px); z-index: 951; opacity: 0.8; }
       & #progressBarBackground { height: 6px; }
       & #progressText { font-size: 0.78rem; }
-      & #holoNavButtons { display: flex !important; position: fixed; left: 50%; transform: translateX(-50%); bottom: 176px; width: min(42vw, 520px); padding: 0; gap: var(--spacing-md); z-index: 951; }
+      & #holoNavButtons { display: flex !important; position: fixed; right: 26px; bottom: 86px; width: auto; padding: 0; gap: 10px; z-index: 951; justify-content: flex-end; }
       & #exitHoloBtn { display: flex !important; align-items: center; justify-content: center; position: fixed; top: 150px; right: 26px; padding: 10px 18px; width: auto; height: auto; border-radius: var(--border-radius-lg); font-size: 1rem; font-weight: 600; white-space: nowrap; background-color: rgba(30, 30, 30, 0.6); backdrop-filter: blur(8px); border: 2px solid var(--dark-text-secondary); color: var(--dark-text); z-index: 1001; cursor: pointer; transition: all var(--transition-normal); box-shadow: 0 2px 10px var(--dark-shadow);}
       .light-theme.hololens-mode #exitHoloBtn { background-color: rgba(255, 255, 255, 0.5); border-color: var(--light-text-secondary); color: var(--light-text); }
       & #exitHoloBtn:hover { background-color: rgba(50, 50, 50, 0.8); border-color: var(--dark-text); transform: scale(1.04); }
@@ -316,12 +335,14 @@
       .step-grid { grid-template-columns: 1fr; }
       #stepBox { font-size: 1.15rem; min-height: auto; }
       #stepTitle { font-size: 1.35rem; }
-      .holo-nav-btn { width: 128px; height: 128px; font-size: 1.4rem; }
+      .holo-nav-btn { width: 92px; height: 92px; font-size: 0.95rem; }
+      .holo-nav-btn .btn-icon { font-size: 1.8rem; margin-bottom: 4px; }
       .hololens-mode #mrActionCard { width: min(54vw, 640px); }
       .hololens-mode #mrUltrasoundAnchor { top: 146px; width: min(38vw, 320px); }
       .hololens-mode #mrTrajectoryOverlay { right: 4%; width: min(34vw, 320px); }
       .hololens-mode #mrBottomPrompt { width: min(62vw, 620px); }
       .hololens-mode #mrDetailPanel { width: min(32vw, 340px); }
+      .hololens-mode #mrOverlayLayer.ultrasound-expanded #mrUltrasoundAnchor { width: min(92vw, 920px); }
     }
     @media (max-width: 760px) {
       .hololens-mode #mrStepTag,
@@ -351,12 +372,14 @@
       .hololens-mode #mrTrajectoryArrow { height: 92px; }
       .hololens-mode #mrTrajectoryText { display: none; }
       .hololens-mode #mrBottomPrompt { bottom: 18px; font-size: 0.9rem; }
-      .hololens-mode #progressContainer { bottom: 88px; }
-      .hololens-mode #holoNavButtons { bottom: 138px; justify-content: space-between; }
+      .hololens-mode #progressContainer { left: 16px; right: 16px; bottom: 18px; width: auto; }
+      .hololens-mode #holoNavButtons { left: auto; right: 16px; bottom: 64px; width: auto; justify-content: flex-end; }
       .hololens-mode #mrDetailToggle { right: 16px; bottom: 56px; }
       .hololens-mode #mrDetailPanel { left: 16px; right: 16px; width: auto; bottom: 108px; }
-      .hololens-mode .holo-nav-btn { width: 104px; height: 104px; font-size: 1rem; }
-      .hololens-mode .holo-nav-btn .btn-icon { font-size: 2.2rem; }
+      .hololens-mode #mrOverlayLayer.ultrasound-expanded #mrUltrasoundAnchor { top: 50%; bottom: auto; left: 16px; right: 16px; width: auto; transform: translateY(-50%); }
+      .hololens-mode #mrOverlayLayer.ultrasound-expanded #mrUltrasoundFrame { min-height: min(52vh, 480px); }
+      .hololens-mode .holo-nav-btn { width: 76px; height: 76px; font-size: 0.78rem; }
+      .hololens-mode .holo-nav-btn .btn-icon { font-size: 1.4rem; }
       .hololens-mode #exitHoloBtn { top: 18px; right: 16px; padding: 8px 12px; font-size: 0.9rem; }
     }
 
@@ -413,6 +436,9 @@
       <button id="xrSessionBtn" class="btn btn-secondary-accent" style="display:none;">
         <span class="btn-icon">🥽</span> <span class="btn-text">Start AR</span>
       </button>
+      <button id="readAloudBtn" class="btn">
+        <span class="btn-icon">🔊</span> <span class="btn-text">Read Aloud</span>
+      </button>
     </div>
 
     <div class="main-content">
@@ -430,7 +456,10 @@
           <div id="mrActionText">Align the ultrasound view and prepare for the next maneuver.</div>
         </div>
         <div id="mrUltrasoundAnchor" class="mr-region">
-          <span class="mr-region-label">Ultrasound Panel Anchor</span>
+          <div id="mrUltrasoundAnchorHeader">
+            <span class="mr-region-label">Ultrasound Panel Anchor</span>
+            <button id="mrUltrasoundToggle" type="button" aria-expanded="false">Full Screen</button>
+          </div>
           <div id="mrUltrasoundFrame">
             <div id="mrUltrasoundCrosshair"></div>
           </div>
@@ -560,11 +589,14 @@
         ]
     };
     const steps = procedure.steps;
-    let currentStep = -1;
-    let isDarkTheme = true;
+    const tutorialState = {
+        currentStep: -1,
+        isDarkTheme: true,
+        mode: "none",
+        mrDetailsVisible: false,
+        ultrasoundExpanded: false
+    };
     let recognition = null;
-    let isListening = false; // Tracks if recognition *should* be active
-    let speechSupported = true; // Assume supported initially
     let xrSession = null;
     let xrRefSpace = null;
     let xrSupported = false;
@@ -573,7 +605,6 @@
     let xrGl = null;
 
     // --- Dwell-to-click timer variable ---
-    let dwellTimer = null;
     const DWELL_TIME_MS = 500; // 2 seconds
 
     // ----- DOM Elements -----
@@ -601,6 +632,7 @@
     const mrCautionChip = document.getElementById("mrCautionChip");
     const mrActionText = document.getElementById("mrActionText");
     const mrUltrasoundHint = document.getElementById("mrUltrasoundHint");
+    const mrUltrasoundToggle = document.getElementById("mrUltrasoundToggle");
     const mrTrajectoryHint = document.getElementById("mrTrajectoryHint");
     const mrBottomPrompt = document.getElementById("mrBottomPrompt");
     const mrDetailToggle = document.getElementById("mrDetailToggle");
@@ -624,6 +656,7 @@
     const alphaModeBtn = document.getElementById("alphaModeBtn");
     const holoModeBtn = document.getElementById("holoModeBtn");
     const xrSessionBtn = document.getElementById("xrSessionBtn");
+    const readAloudBtn = document.getElementById("readAloudBtn");
     const xrCanvas = document.getElementById("xrCanvas");
 
     // Mic Toggle Button
@@ -633,7 +666,87 @@
     const exitBetaBtn = document.getElementById("exitBetaBtn");
     const exitAlphaBtn = document.getElementById("exitAlphaBtn");
     const exitHoloBtn = document.getElementById("exitHoloBtn");
-    let mrDetailsVisible = false;
+    const logController = {
+        log(text) {
+            if (!logDiv) return;
+            const entry = document.createElement("div");
+            entry.className = "log-entry";
+            const timeString = new Intl.DateTimeFormat(
+              'en-US',
+              {
+                hour: 'numeric',
+                minute: 'numeric',
+                second: 'numeric',
+                hour12: true
+              }
+            ).format(new Date());
+            entry.textContent = `${timeString}: ${text}`;
+            logDiv.insertBefore(entry, logDiv.firstChild);
+            const maxLogEntries = 50;
+            while (logDiv.children.length > maxLogEntries) {
+                logDiv.removeChild(logDiv.lastChild);
+            }
+        }
+    };
+
+    const speechController = {
+        supported: true,
+        isListening: false,
+        autoSpeak: false,
+        speak(text) {
+            if (!('speechSynthesis' in window)) {
+                logController.log("SpeechSynthesis not supported in this browser.");
+                return;
+            }
+            speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 1;
+            utterance.pitch = 1;
+            speechSynthesis.speak(utterance);
+            logController.log(`SpeechSynthesis: Spoke "${text}"`);
+        },
+        speakCurrentStep() {
+            if (tutorialState.currentStep < 0 || tutorialState.currentStep >= steps.length) {
+                logController.log("SpeechSynthesis: No active step to read aloud.");
+                return;
+            }
+            this.speak(buildSpokenStepText(steps[tutorialState.currentStep], tutorialState.currentStep + 1));
+        }
+    };
+
+    const dwellController = {
+        timer: null,
+        start(buttonElement, actionFunction) {
+            if (!buttonElement || buttonElement.disabled) return;
+            this.cancel();
+            buttonElement.classList.add('dwelling');
+            logController.log(`Dwell: Started on ${buttonElement.id || 'button'}`);
+            this.timer = setTimeout(() => {
+                const stillDwellingButton = document.querySelector(`#${buttonElement.id}.dwelling`);
+                if (stillDwellingButton && !stillDwellingButton.disabled) {
+                    logController.log(`Dwell: Fired for ${buttonElement.id || 'button'}`);
+                    actionFunction();
+                } else {
+                    logController.log(`Dwell: Timer fired but button ${buttonElement.id || 'button'} no longer valid.`);
+                }
+                if (stillDwellingButton) stillDwellingButton.classList.remove('dwelling');
+                this.timer = null;
+            }, DWELL_TIME_MS);
+        },
+        cancel(buttonElement) {
+            if (this.timer) {
+                clearTimeout(this.timer);
+                this.timer = null;
+                logController.log(`Dwell: Cancelled${buttonElement ? ` on ${buttonElement.id || 'button'}` : ''}`);
+            }
+            if (buttonElement) {
+                buttonElement.classList.remove('dwelling');
+                return;
+            }
+            document.querySelectorAll('.dwelling').forEach(el => el.classList.remove('dwelling'));
+        }
+    };
 
     function setMRStatusChip(text, tone = "status-ready") {
         if (!mrStatusChip) return;
@@ -654,12 +767,26 @@
     }
 
     function setMRDetailVisibility(visible) {
-        mrDetailsVisible = visible;
+        tutorialState.mrDetailsVisible = visible;
         if (mrOverlayLayer) mrOverlayLayer.classList.toggle("show-details", visible);
         if (mrDetailToggle) {
             mrDetailToggle.innerText = visible ? "Hide Details" : "Show Details";
             mrDetailToggle.setAttribute("aria-expanded", visible ? "true" : "false");
         }
+    }
+
+    function setUltrasoundPanelExpanded(expanded) {
+        tutorialState.ultrasoundExpanded = expanded;
+        if (mrOverlayLayer) mrOverlayLayer.classList.toggle("ultrasound-expanded", expanded);
+        if (mrUltrasoundToggle) {
+            mrUltrasoundToggle.innerText = expanded ? "Minimize" : "Full Screen";
+            mrUltrasoundToggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+        }
+    }
+
+    function toggleUltrasoundPanelSize() {
+        setUltrasoundPanelExpanded(!tutorialState.ultrasoundExpanded);
+        logCommand(`MR Overlay: Ultrasound panel ${tutorialState.ultrasoundExpanded ? "expanded" : "minimized"}.`);
     }
 
     function renderWarningSeverity(step) {
@@ -681,6 +808,55 @@
         if (successCue) successCue.innerText = "The success cue for the step will appear here.";
         if (verifyCue) verifyCue.innerText = "Verification checks for the current step will appear here.";
         renderMROverlay(null);
+    }
+
+    function renderStep(step) {
+        if (!step) {
+            renderIdleState();
+            if (statusDisplay) statusDisplay.innerText = "Tutorial ready";
+            updateNavButtonState();
+            return;
+        }
+        const isLastStep = tutorialState.currentStep === steps.length - 1;
+        if (stepTitle) stepTitle.innerText = `${step.phase}: ${step.title}`;
+        if (stepMeta) stepMeta.innerText = `Step ${tutorialState.currentStep + 1} of ${steps.length} • ${step.id}`;
+        if (stepConfidence) stepConfidence.innerText = step.confidence;
+        if (stepBox) stepBox.innerText = step.action;
+        if (anatomyCue) anatomyCue.innerText = step.anatomy;
+        if (riskWarning) riskWarning.innerText = step.warning;
+        renderWarningSeverity(step);
+        if (successCue) successCue.innerText = step.success;
+        if (verifyCue) verifyCue.innerText = step.verify;
+        renderMROverlay(step);
+        if (statusDisplay) {
+            statusDisplay.innerText = isLastStep
+                ? `✅ Final step ready for post-procedure confirmation (${tutorialState.currentStep + 1}/${steps.length})`
+                : `${step.phase} • Step ${tutorialState.currentStep + 1} of ${steps.length}`;
+        }
+        updateNavButtonState();
+    }
+
+    function renderProgress() {
+        if (!progressBar || !progressText) return;
+        if (tutorialState.currentStep < 0) {
+            progressBar.style.width = "0%";
+            progressText.innerText = `${steps.length} procedural tasks queued`;
+            return;
+        }
+        const fraction = (tutorialState.currentStep + 1) / steps.length;
+        progressBar.style.width = `${fraction * 100}%`;
+        const stepsRemaining = steps.length - (tutorialState.currentStep + 1);
+        progressText.innerText = stepsRemaining > 0 ? `${stepsRemaining} task${stepsRemaining !== 1 ? "s" : ""} remaining` : "Workflow complete";
+    }
+
+    function updateNavButtonState() {
+        const isFirstStep = tutorialState.currentStep <= 0;
+        const isLastStep = tutorialState.currentStep === steps.length - 1;
+        if (prevBtn) prevBtn.disabled = tutorialState.currentStep < 0 || isFirstStep;
+        if (nextBtn) nextBtn.disabled = tutorialState.currentStep < 0 || isLastStep;
+        if (holoPrevBtn) holoPrevBtn.disabled = tutorialState.currentStep < 0 || isFirstStep;
+        if (holoNextBtn) holoNextBtn.disabled = tutorialState.currentStep < 0 || isLastStep;
+        if (readAloudBtn) readAloudBtn.disabled = tutorialState.currentStep < 0;
     }
 
     function deriveMRStatusText(step) {
@@ -749,7 +925,7 @@
     }
 
     function renderMROverlay(step) {
-        const overlay = buildMROverlayData(step, currentStep + 1);
+        const overlay = buildMROverlayData(step, tutorialState.currentStep + 1);
         if (mrStepTag) mrStepTag.innerText = overlay.stepTag;
         if (mrAnatomyText) mrAnatomyText.innerText = overlay.anatomyText;
         if (mrAnatomyHint) mrAnatomyHint.innerText = overlay.anatomyHint;
@@ -871,7 +1047,7 @@
         xrAnimationFrameId = null;
         updateXRButtonState();
         if (body.classList.contains("hololens-mode")) {
-            renderMROverlay(currentStep >= 0 ? steps[currentStep] : null);
+            renderMROverlay(tutorialState.currentStep >= 0 ? steps[tutorialState.currentStep] : null);
         }
         logCommand("XR: immersive AR session ended.");
     }
@@ -896,111 +1072,30 @@
         ].join(" ");
     }
 
-    // ----- Update Step -----
     function updateStep(newStep) {
         if (newStep < 0 || newStep >= steps.length) return;
-        currentStep = newStep;
-        const step = steps[currentStep];
-        if (stepTitle) stepTitle.innerText = `${step.phase}: ${step.title}`;
-        if (stepMeta) stepMeta.innerText = `Step ${currentStep + 1} of ${steps.length} • ${step.id}`;
-        if (stepConfidence) stepConfidence.innerText = step.confidence;
-        if (stepBox) stepBox.innerText = step.action;
-        if (anatomyCue) anatomyCue.innerText = step.anatomy;
-        if (riskWarning) riskWarning.innerText = step.warning;
-        renderWarningSeverity(step);
-        if (successCue) successCue.innerText = step.success;
-        if (verifyCue) verifyCue.innerText = step.verify;
-        renderMROverlay(step);
-        speakText(buildSpokenStepText(step, currentStep + 1));
-        const isFirstStep = currentStep === 0;
-        const isLastStep = currentStep === steps.length - 1;
-        if(statusDisplay) statusDisplay.innerText = isLastStep ? `✅ Final step ready for post-procedure confirmation (${currentStep + 1}/${steps.length})` : `${step.phase} • Step ${currentStep + 1} of ${steps.length}`;
-
-        // Update button disabled state first
-        if (prevBtn) prevBtn.disabled = isFirstStep;
-        if (nextBtn) nextBtn.disabled = isLastStep;
-        if (holoPrevBtn) holoPrevBtn.disabled = isFirstStep;
-        if (holoNextBtn) holoNextBtn.disabled = isLastStep;
-
-        // Cancel any dwell timer if the associated button just became disabled
-        cancelDwell(); // General cancel check is sufficient here
-
-        updateProgressBar();
+        tutorialState.currentStep = newStep;
+        renderStep(steps[tutorialState.currentStep]);
+        renderProgress();
+        dwellController.cancel();
+        if (speechController.autoSpeak) {
+            speechController.speakCurrentStep();
+        }
     }
 
     // ----- Navigate Steps -----
-    function nextStep() { if (currentStep < steps.length - 1) { updateStep(currentStep + 1); logCommand("Navigate: Next"); } else { if(statusDisplay) statusDisplay.innerText = "🚫 Already at the final step."; logCommand("Navigate: Attempted Next on Last Step"); } }
-    function prevStep() { if (currentStep > 0) { updateStep(currentStep - 1); logCommand("Navigate: Previous"); } else { if(statusDisplay) statusDisplay.innerText = "🚫 Already at the first step."; logCommand("Navigate: Attempted Previous on First Step"); } }
+    function nextStep() { if (tutorialState.currentStep < steps.length - 1) { updateStep(tutorialState.currentStep + 1); logCommand("Navigate: Next"); } else { if(statusDisplay) statusDisplay.innerText = "🚫 Already at the final step."; logCommand("Navigate: Attempted Next on Last Step"); } }
+    function prevStep() { if (tutorialState.currentStep > 0) { updateStep(tutorialState.currentStep - 1); logCommand("Navigate: Previous"); } else { if(statusDisplay) statusDisplay.innerText = "🚫 Already at the first step."; logCommand("Navigate: Attempted Previous on First Step"); } }
     function restartTutorial() { updateStep(0); if(statusDisplay) statusDisplay.innerText = "🔄 Workflow restarted."; logCommand("Navigate: Restart"); }
 
-    // ----- Update Progress Bar -----
-    function updateProgressBar() {
-        if (!progressBar || !progressText) return;
-        if (currentStep < 0) { progressBar.style.width = "0%"; progressText.innerText = `${steps.length} procedural tasks queued`; return; }
-        const fraction = (currentStep + 1) / steps.length;
-        progressBar.style.width = `${fraction * 100}%`;
-        const stepsRemaining = steps.length - (currentStep + 1);
-        progressText.innerText = stepsRemaining > 0 ? `${stepsRemaining} task${stepsRemaining !== 1 ? "s" : ""} remaining` : "Workflow complete";
-    }
+    function updateProgressBar() { renderProgress(); }
 
     // ----- Log Commands -----
-    function logCommand(text) {
-        if (!logDiv) return;
-        const entry = document.createElement("div");
-        entry.className = "log-entry";
-        const timeString = new Intl.DateTimeFormat(
-          'en-US', 
-          { 
-            hour: 'numeric',
-            minute: 'numeric', 
-            second: 'numeric', 
-            hour12: true 
-          }
-        ).format(new Date());
-        entry.textContent = `${timeString}: ${text}`;
-        logDiv.insertBefore(entry, logDiv.firstChild);
-        const maxLogEntries = 50;
-        while (logDiv.children.length > maxLogEntries) { logDiv.removeChild(logDiv.lastChild); 
-        }
-    }
+    function logCommand(text) { logController.log(text); }
 
     // ----- Dwell-to-Click Functions -----
-    function startDwell(buttonElement, actionFunction) {
-        if (!buttonElement || buttonElement.disabled) { return; } // Ignore if disabled
-        cancelDwell(); // Clear any previous timer
-
-        buttonElement.classList.add('dwelling'); // Add visual cue class
-        logCommand(`Dwell: Started on ${buttonElement.id || 'button'}`);
-
-        dwellTimer = setTimeout(() => {
-            // Timer finished - check button state again before acting
-            const stillDwellingButton = document.querySelector(`#${buttonElement.id}.dwelling`); // Check if class still present
-            if (stillDwellingButton && !stillDwellingButton.disabled) {
-                logCommand(`Dwell: Fired for ${buttonElement.id || 'button'}`);
-                actionFunction(); // Perform the action
-            } else {
-                 logCommand(`Dwell: Timer fired but button ${buttonElement.id || 'button'} no longer valid.`);
-            }
-            // Clean up after firing or if invalid
-            if (stillDwellingButton) stillDwellingButton.classList.remove('dwelling');
-            dwellTimer = null;
-        }, DWELL_TIME_MS);
-    }
-
-    function cancelDwell(buttonElement) {
-        if (dwellTimer) {
-            clearTimeout(dwellTimer);
-            dwellTimer = null;
-            logCommand(`Dwell: Cancelled${buttonElement ? ` on ${buttonElement.id || 'button'}` : ''}`);
-        }
-        // Remove visual cue class if element provided
-        if (buttonElement) {
-             buttonElement.classList.remove('dwelling');
-        } else {
-            // Clear from all potentially dwelling buttons if no specific one given
-            document.querySelectorAll('.dwelling').forEach(el => el.classList.remove('dwelling'));
-        }
-    }
+    function startDwell(buttonElement, actionFunction) { dwellController.start(buttonElement, actionFunction); }
+    function cancelDwell(buttonElement) { dwellController.cancel(buttonElement); }
 
     // ----- Button Event Listeners (including dwell) -----
     if (nextBtn) {
@@ -1041,6 +1136,7 @@
     if (holoRestartBtn) holoRestartBtn.addEventListener("click", restartTutorial);
 
     if (micToggleBtn) micToggleBtn.addEventListener("click", toggleMicListening);
+    if (readAloudBtn) readAloudBtn.addEventListener("click", () => speechController.speakCurrentStep());
 
 
     // ----- Update Live Transcript & Mic Button UI -----
@@ -1050,7 +1146,7 @@
 
         liveTranscript.classList.remove('mic-active', 'mic-error');
 
-        if (!speechSupported) {
+        if (!speechController.supported) {
             liveTranscript.innerText = "🚫 Speech Recognition Not Supported.";
             micToggleBtn.disabled = true;
             micToggleBtn.classList.remove('mic-active');
@@ -1064,7 +1160,7 @@
             micToggleBtn.disabled = false;
             micToggleBtn.style.display = 'inline-flex'; // Ensure visible
 
-            if (isListening) {
+            if (speechController.isListening) {
                  // Update transcript text cautiously - don't overwrite results/errors
                  if (!liveTranscript.innerText.includes('Heard:') && !liveTranscript.innerText.includes('Command not recognized') && !liveTranscript.innerText.includes('Error:')) {
                      liveTranscript.innerText = "🎤 Listening...";
@@ -1101,14 +1197,14 @@
     function setupSpeechRecognition() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
-            speechSupported = false;
+            speechController.supported = false;
             if (betaModeBtn) { betaModeBtn.disabled = true; betaModeBtn.title = "Speech recognition not supported"; }
             logCommand("Error: Speech recognition not supported.");
             updateMicStatusUI();
             return null;
         }
 
-        speechSupported = true;
+        speechController.supported = true;
         recognition = new SpeechRecognition();
         recognition.continuous = true;
         recognition.interimResults = false;
@@ -1117,7 +1213,7 @@
         recognition.onresult = (event) => {
             const raw = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
             const cleaned = raw.replace(/[.,!?;:]/g, "").trim();
-            if (!isListening || !body.classList.contains('beta-mode')) { logCommand(`Voice: Heard "${raw}" but ignored (not listening or not in beta mode).`); return; }
+            if (!speechController.isListening || !body.classList.contains('beta-mode')) { logCommand(`Voice: Heard "${raw}" but ignored (not listening or not in beta mode).`); return; }
 
             updateTranscriptWithMessage(`🎤 Heard: "${raw}"`);
             logCommand(`Voice: "${raw}" (Cleaned: "${cleaned}")`);
@@ -1134,68 +1230,22 @@
              let shouldStopListening = true;
             if (event.error === 'no-speech') { errorMsg = "🎤 Didn't hear anything. Still listening..."; shouldStopListening = false; }
             else if (event.error === 'audio-capture') { errorMsg = "🎤 Mic Error. Check connection/permission."; }
-            else if (event.error === 'not-allowed') { errorMsg = "🎤 Mic access denied. Enable in browser."; speechSupported = false; }
+            else if (event.error === 'not-allowed') { errorMsg = "🎤 Mic access denied. Enable in browser."; speechController.supported = false; }
             else { errorMsg = `🎤 Error: ${event.error}.`; }
 
             if (statusDisplay) statusDisplay.innerText = `⚠ ${errorMsg.substring(2)}`;
             updateTranscriptWithMessage(`⚠ ${errorMsg}`, true);
             logCommand(`ERROR: ${errorMsg}`);
 
-            if (shouldStopListening) { isListening = false; }
+            if (shouldStopListening) { speechController.isListening = false; }
             updateMicStatusUI(); // Update UI based on outcome
         };
 
         recognition.onend = () => {
-          /*if (body.classList.contains('beta-mode')) {
-            logCommand("Speech: recognition ended, preparing to restart...");
-
-            // Optional visual blink to indicate restart
-            liveTranscript.classList.add("blinking");
-            setTimeout(() => liveTranscript.classList.remove("blinking"), 500);
-
-            // Give Chrome time to release the audio stream
-            setTimeout(() => {
-              try {
-                recognition.abort(); // clear lingering session
-
-                // Restart after short delay for safety
-                setTimeout(() => {
-                  recognition.start();
-                  isListening = true;
-                  updateMicStatusUI();
-
-                  // Show message on transcript bar
-                  updateTranscriptWithMessage("🎤 Listening restarted...");
-                  liveTranscript.classList.add("mic-active");
-
-                  // Fade back to normal listening prompt
-                  setTimeout(() => {
-                    if (body.classList.contains('beta-mode') && isListening) {
-                      liveTranscript.innerText = "🎤 Listening...";
-                    }
-                  }, 2000);
-
-                  logCommand("Speech: listening restarted successfully.");
-                }, 300);
-
-              } catch (err) {
-                logCommand("Speech restart failed: " + err.message);
-                isListening = false;
-                updateMicStatusUI();
-              }
-            }, 700);
-
-          } else {
-            // If not in voice mode, stop everything
-            isListening = false;
-            updateMicStatusUI();
-            logCommand("Speech: listening ended (not in beta mode).");
-          }
-        };*/
-            if (body.classList.contains('beta-mode') && isListening) {
-                 setTimeout(() => { if (body.classList.contains('beta-mode') && isListening) { startListening(); } }, 100);
+            if (body.classList.contains('beta-mode') && speechController.isListening) {
+                 setTimeout(() => { if (body.classList.contains('beta-mode') && speechController.isListening) { startListening(); } }, 100);
             } else {
-                 isListening = false;
+                 speechController.isListening = false;
                  if (body.classList.contains('beta-mode')) { updateMicStatusUI(); }
                  logCommand("Speech: Listening ended.");
             }
@@ -1205,23 +1255,23 @@
     }
 
     function startListening() {
-        if (!speechSupported || !recognition) { logCommand("Speech: Cannot start - Not supported or setup failed."); updateMicStatusUI(); return; }
+        if (!speechController.supported || !recognition) { logCommand("Speech: Cannot start - Not supported or setup failed."); updateMicStatusUI(); return; }
         if (recognition && typeof recognition.start !== 'function') { logCommand("Speech: Recognition object invalid."); return; }
-        if (isListening) { logCommand("Speech: Start called but already listening."); return; }
+        if (speechController.isListening) { logCommand("Speech: Start called but already listening."); return; }
 
         try {
             recognition.start();
-            isListening = true;
+            speechController.isListening = true;
             logCommand("Speech: Listening started via startListening().");
         } catch (e) {
-            console.error("Error starting recognition:", e); logCommand(`Error starting speech: ${e.message}`); isListening = false;
+            console.error("Error starting recognition:", e); logCommand(`Error starting speech: ${e.message}`); speechController.isListening = false;
         }
         updateMicStatusUI();
     }
 
     function stopListening() {
-        const wasListening = isListening;
-        isListening = false; // Set desired state OFF immediately
+        const wasListening = speechController.isListening;
+        speechController.isListening = false; // Set desired state OFF immediately
 
         if (recognition && wasListening) { // Only abort if we thought we were listening
             try { recognition.abort(); logCommand("Speech: Stop/Abort requested."); }
@@ -1231,8 +1281,8 @@
     }
 
     function toggleMicListening() {
-        if (!body.classList.contains('beta-mode') || !speechSupported) { return; } // Guard clauses
-        if (isListening) { logCommand("Mic Toggle: Turning OFF."); stopListening(); }
+        if (!body.classList.contains('beta-mode') || !speechController.supported) { return; } // Guard clauses
+        if (speechController.isListening) { logCommand("Mic Toggle: Turning OFF."); stopListening(); }
         else { logCommand("Mic Toggle: Turning ON."); startListening(); }
     }
 
@@ -1287,9 +1337,9 @@
     // ----- Theme Toggle -----
     function toggleTheme() { 
       /* ... (Code as before) ... */ 
-      isDarkTheme = !isDarkTheme; // flip state
-      body.classList.toggle("light-theme", !isDarkTheme);
-      updateThemeButton(isDarkTheme);
+      tutorialState.isDarkTheme = !tutorialState.isDarkTheme; // flip state
+      body.classList.toggle("light-theme", !tutorialState.isDarkTheme);
+      updateThemeButton(tutorialState.isDarkTheme);
     }
     
     function updateThemeButton(isCurrentlyDark) { /* ... (Code as before) ... */
@@ -1309,7 +1359,7 @@
 
     // ----- Mode Switching -----
     function setMode(mode) {
-        cancelDwell(); // Cancel dwell timer on any mode change
+        dwellController.cancel(); // Cancel dwell timer on any mode change
 
         const currentModeClass = body.className.match(/(alpha|beta|hololens)-mode/)?.[0];
         const targetModeClass = mode !== 'none' ? `${mode}-mode` : null;
@@ -1322,19 +1372,23 @@
         if (wasBeta) { stopListening(); }
         if (micToggleBtn) micToggleBtn.style.display = 'none'; // Always hide mic toggle initially
         if (mode !== "holo" && xrSession) { endXRSession(); }
-        if (mode !== "holo") { setMRDetailVisibility(false); }
+        if (mode !== "holo") {
+            setMRDetailVisibility(false);
+            setUltrasoundPanelExpanded(false);
+        }
 
         // Set New Mode
         body.classList.remove("alpha-mode", "beta-mode", "hololens-mode");
+        tutorialState.mode = mode;
 
         switch (mode) {
             case "alpha":
-                body.classList.add("alpha-mode"); logCommand("Mode: Entered Touch Mode (Alpha)"); if (currentStep < 0) restartTutorial(); break;
+                body.classList.add("alpha-mode"); logCommand("Mode: Entered Touch Mode (Alpha)"); if (tutorialState.currentStep < 0) restartTutorial(); else { renderStep(steps[tutorialState.currentStep]); } break;
             case "beta":
-                body.classList.add("beta-mode"); logCommand("Mode: Entered Voice Mode (Beta)"); if (!recognition) { recognition = setupSpeechRecognition(); } if (speechSupported) { startListening(); } else { logCommand("Voice Mode active, but speech not supported."); } if (currentStep < 0) restartTutorial(); break;
+                body.classList.add("beta-mode"); logCommand("Mode: Entered Voice Mode (Beta)"); if (!recognition) { recognition = setupSpeechRecognition(); } if (speechController.supported) { startListening(); } else { logCommand("Voice Mode active, but speech not supported."); } if (tutorialState.currentStep < 0) restartTutorial(); else { renderStep(steps[tutorialState.currentStep]); } break;
             case "holo":
-                body.classList.add("hololens-mode"); logCommand("Mode: Entered MR Overlay Mode"); if (currentStep < 0) restartTutorial(); else { renderMROverlay(steps[currentStep]); } break;
-            case "none": default: logCommand("Mode: Returned to Standard View"); updateProgressBar(); break;
+                body.classList.add("hololens-mode"); logCommand("Mode: Entered MR Overlay Mode"); if (tutorialState.currentStep < 0) restartTutorial(); else { renderStep(steps[tutorialState.currentStep]); } break;
+            case "none": default: logCommand("Mode: Returned to Standard View"); renderProgress(); break;
         }
         updateMicStatusUI(); // Update global UI state after mode change
     }
@@ -1344,7 +1398,8 @@
     if (betaModeBtn) betaModeBtn.addEventListener("click", () => setMode("beta"));
     if (holoModeBtn) holoModeBtn.addEventListener("click", () => setMode("holo"));
     if (xrSessionBtn) xrSessionBtn.addEventListener("click", toggleXRSession);
-    if (mrDetailToggle) mrDetailToggle.addEventListener("click", () => setMRDetailVisibility(!mrDetailsVisible));
+    if (mrDetailToggle) mrDetailToggle.addEventListener("click", () => setMRDetailVisibility(!tutorialState.mrDetailsVisible));
+    if (mrUltrasoundToggle) mrUltrasoundToggle.addEventListener("click", toggleUltrasoundPanelSize);
     if (exitAlphaBtn) exitAlphaBtn.addEventListener("click", () => setMode("none"));
     if (exitBetaBtn) exitBetaBtn.addEventListener("click", () => setMode("none"));
     if (exitHoloBtn) exitHoloBtn.addEventListener("click", () => setMode("none"));
@@ -1359,13 +1414,15 @@
     // ----- Initialization -----
     function initializeTutorial() {
         const prefersDark = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)').matches : true;
-        isDarkTheme = prefersDark;
-        if (!isDarkTheme) { body.classList.add("light-theme"); }
-        updateThemeButton(isDarkTheme);
+        tutorialState.isDarkTheme = prefersDark;
+        if (!tutorialState.isDarkTheme) { body.classList.add("light-theme"); }
+        updateThemeButton(tutorialState.isDarkTheme);
 
         renderIdleState();
         setMRDetailVisibility(false);
-        updateProgressBar();
+        setUltrasoundPanelExpanded(false);
+        renderProgress();
+        updateNavButtonState();
         updateXRButtonState();
 
         if (isMetaQuestBrowser()) {
@@ -1393,17 +1450,7 @@
 
   // ----- Text-to-Speech Function -----
   function speakText(text) {
-      if ('speechSynthesis' in window) {
-          speechSynthesis.cancel();
-          const utterance = new SpeechSynthesisUtterance(text);
-          utterance.lang = 'en-US';
-          utterance.rate = 1;
-          utterance.pitch = 1;
-          speechSynthesis.speak(utterance);
-          logCommand(`SpeechSynthesis: Spoke "${text}"`);
-      } else {
-          logCommand("SpeechSynthesis not supported in this browser.");
-      }
+      speechController.speak(text);
   }
 
   </script>

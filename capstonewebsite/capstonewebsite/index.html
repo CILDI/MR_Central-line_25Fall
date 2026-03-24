@@ -93,6 +93,10 @@
     .btn:disabled, .alpha-nav-btn:disabled, .holo-nav-btn:disabled { background-color: var(--dark-surface-2); color: var(--dark-text-secondary); cursor: not-allowed; opacity: 0.6; transform: none; box-shadow: none; }
     .light-theme .btn:disabled, .light-theme .alpha-nav-btn:disabled, .light-theme .holo-nav-btn:disabled { background-color: var(--light-surface-2); color: var(--light-text-secondary); }
     .btn-icon { font-size: 1.1rem; line-height: 1; }
+    .btn-secondary-accent { background: transparent; border: 1px solid rgba(74, 222, 128, 0.42); color: var(--dark-primary); }
+    .light-theme .btn-secondary-accent { border-color: rgba(16, 185, 129, 0.42); color: var(--light-primary); }
+    .btn-secondary-accent:hover:not(:disabled) { background: rgba(74, 222, 128, 0.08); }
+    .light-theme .btn-secondary-accent:hover:not(:disabled) { background: rgba(16, 185, 129, 0.08); }
 
     /* ---------- Main Content ---------- */
     .main-content { position: relative; display: flex; flex-direction: column; gap: var(--spacing-lg); width: 100%; }
@@ -345,6 +349,7 @@
   <button id="exitBetaBtn" class="exit-btn">Exit Voice Mode</button>
   <button id="exitAlphaBtn" class="exit-btn">Exit Touch Mode</button>
   <button id="exitHoloBtn" class="exit-btn">Exit MR Overlay</button>
+  <canvas id="xrCanvas" aria-hidden="true" style="display:none;"></canvas>
 
   <button id="micToggleBtn" class="btn">
       <span class="btn-icon">🎤</span>
@@ -372,6 +377,9 @@
       </button>
        <button id="holoModeBtn" class="btn btn-primary">
         <span class="btn-icon">👓</span> MR Overlay Mode
+      </button>
+      <button id="xrSessionBtn" class="btn btn-secondary-accent" style="display:none;">
+        <span class="btn-icon">🥽</span> <span class="btn-text">Start AR</span>
       </button>
     </div>
 
@@ -505,6 +513,12 @@
     let recognition = null;
     let isListening = false; // Tracks if recognition *should* be active
     let speechSupported = true; // Assume supported initially
+    let xrSession = null;
+    let xrRefSpace = null;
+    let xrSupported = false;
+    let xrSupportChecked = false;
+    let xrAnimationFrameId = null;
+    let xrGl = null;
 
     // --- Dwell-to-click timer variable ---
     let dwellTimer = null;
@@ -547,6 +561,8 @@
     const betaModeBtn = document.getElementById("betaModeBtn");
     const alphaModeBtn = document.getElementById("alphaModeBtn");
     const holoModeBtn = document.getElementById("holoModeBtn");
+    const xrSessionBtn = document.getElementById("xrSessionBtn");
+    const xrCanvas = document.getElementById("xrCanvas");
 
     // Mic Toggle Button
     const micToggleBtn = document.getElementById("micToggleBtn");
@@ -555,6 +571,13 @@
     const exitBetaBtn = document.getElementById("exitBetaBtn");
     const exitAlphaBtn = document.getElementById("exitAlphaBtn");
     const exitHoloBtn = document.getElementById("exitHoloBtn");
+
+    function setMRStatusChip(text, tone = "status-ready") {
+        if (!mrStatusChip) return;
+        mrStatusChip.classList.remove("status-ready", "status-caution");
+        mrStatusChip.classList.add(tone);
+        mrStatusChip.innerText = text;
+    }
 
     function renderIdleState() {
         if (stepTitle) stepTitle.innerText = procedure.title;
@@ -629,11 +652,128 @@
         if (mrUltrasoundHint) mrUltrasoundHint.innerText = overlay.ultrasoundHint;
         if (mrTrajectoryHint) mrTrajectoryHint.innerText = overlay.trajectoryHint;
         if (mrBottomPrompt) mrBottomPrompt.innerText = overlay.bottomPrompt;
-        if (mrStatusChip) {
-            mrStatusChip.classList.remove("status-ready", "status-caution");
-            mrStatusChip.classList.add(overlay.statusTone);
-            mrStatusChip.innerText = overlay.statusText;
+        setMRStatusChip(overlay.statusText, overlay.statusTone);
+    }
+
+    function updateXRButtonState() {
+        if (!xrSessionBtn) return;
+        const xrText = xrSessionBtn.querySelector(".btn-text");
+
+        if (!xrSupportChecked) {
+            xrSessionBtn.style.display = "none";
+            return;
         }
+
+        if (!xrSupported) {
+            xrSessionBtn.style.display = "inline-flex";
+            xrSessionBtn.disabled = true;
+            xrSessionBtn.title = "Immersive AR is not available in this browser/device";
+            if (xrText) xrText.textContent = "AR Unavailable";
+            return;
+        }
+
+        xrSessionBtn.style.display = "inline-flex";
+        xrSessionBtn.disabled = false;
+        xrSessionBtn.title = xrSession ? "End immersive AR session" : "Start immersive AR session";
+        if (xrText) xrText.textContent = xrSession ? "End AR" : "Start AR";
+    }
+
+    async function detectXRSupport() {
+        xrSupportChecked = true;
+
+        if (!navigator.xr || typeof navigator.xr.isSessionSupported !== "function") {
+            xrSupported = false;
+            updateXRButtonState();
+            return false;
+        }
+
+        try {
+            xrSupported = await navigator.xr.isSessionSupported("immersive-ar");
+            logCommand(`XR: immersive-ar ${xrSupported ? "supported" : "not supported"}.`);
+        } catch (error) {
+            xrSupported = false;
+            logCommand(`XR: support check failed (${error.message}).`);
+        }
+
+        updateXRButtonState();
+        return xrSupported;
+    }
+
+    function onXRFrame(time, frame) {
+        if (!xrSession) return;
+        xrAnimationFrameId = xrSession.requestAnimationFrame(onXRFrame);
+        if (!frame || !xrRefSpace) return;
+        frame.getViewerPose(xrRefSpace);
+    }
+
+    async function startXRSession() {
+        if (!navigator.xr || xrSession) return;
+
+        try {
+            const session = await navigator.xr.requestSession("immersive-ar", {
+                requiredFeatures: ["dom-overlay"],
+                domOverlay: { root: document.body },
+                optionalFeatures: ["local-floor", "bounded-floor", "hit-test"]
+            });
+
+            let baseLayerSet = false;
+            if (xrCanvas && window.WebGLRenderingContext) {
+                xrGl = xrCanvas.getContext("webgl", { xrCompatible: true, alpha: true });
+                if (xrGl && typeof xrGl.makeXRCompatible === "function") {
+                    await xrGl.makeXRCompatible();
+                }
+                if (xrGl && window.XRWebGLLayer) {
+                    await session.updateRenderState({ baseLayer: new XRWebGLLayer(session, xrGl) });
+                    baseLayerSet = true;
+                }
+            }
+
+            xrRefSpace = await session.requestReferenceSpace("local");
+            xrSession = session;
+            xrSession.addEventListener("end", handleXRSessionEnded);
+            xrAnimationFrameId = xrSession.requestAnimationFrame(onXRFrame);
+            if (!body.classList.contains("hololens-mode")) setMode("holo");
+
+            updateXRButtonState();
+            setMRStatusChip(baseLayerSet ? "Status: immersive AR live" : "Status: AR session live", "status-ready");
+            if (mrBottomPrompt) mrBottomPrompt.innerText = "Immersive AR active. Use headset placement and system permissions to align the overlay.";
+            logCommand("XR: immersive AR session started.");
+        } catch (error) {
+            xrSession = null;
+            xrRefSpace = null;
+            xrAnimationFrameId = null;
+            setMRStatusChip("Status: AR start failed", "status-caution");
+            if (mrBottomPrompt) mrBottomPrompt.innerText = "AR session failed to start. On a headset, use HTTPS or localhost and grant camera permissions.";
+            logCommand(`XR: failed to start immersive AR (${error.message}).`);
+        }
+    }
+
+    async function endXRSession() {
+        if (!xrSession) return;
+        try {
+            await xrSession.end();
+        } catch (error) {
+            logCommand(`XR: end session failed (${error.message}).`);
+        }
+    }
+
+    function handleXRSessionEnded() {
+        xrSession = null;
+        xrRefSpace = null;
+        xrAnimationFrameId = null;
+        updateXRButtonState();
+        if (body.classList.contains("hololens-mode")) {
+            renderMROverlay(currentStep >= 0 ? steps[currentStep] : null);
+        }
+        logCommand("XR: immersive AR session ended.");
+    }
+
+    function toggleXRSession() {
+        if (xrSession) {
+            endXRSession();
+            return;
+        }
+        startXRSession();
     }
 
     function buildSpokenStepText(step, stepNumber) {
@@ -1072,6 +1212,7 @@
         // Stop/Cleanup Actions for Previous Mode
         if (wasBeta) { stopListening(); }
         if (micToggleBtn) micToggleBtn.style.display = 'none'; // Always hide mic toggle initially
+        if (mode !== "holo" && xrSession) { endXRSession(); }
 
         // Set New Mode
         body.classList.remove("alpha-mode", "beta-mode", "hololens-mode");
@@ -1092,6 +1233,7 @@
     if (alphaModeBtn) alphaModeBtn.addEventListener("click", () => setMode("alpha"));
     if (betaModeBtn) betaModeBtn.addEventListener("click", () => setMode("beta"));
     if (holoModeBtn) holoModeBtn.addEventListener("click", () => setMode("holo"));
+    if (xrSessionBtn) xrSessionBtn.addEventListener("click", toggleXRSession);
     if (exitAlphaBtn) exitAlphaBtn.addEventListener("click", () => setMode("none"));
     if (exitBetaBtn) exitBetaBtn.addEventListener("click", () => setMode("none"));
     if (exitHoloBtn) exitHoloBtn.addEventListener("click", () => setMode("none"));
@@ -1112,6 +1254,7 @@
 
         renderIdleState();
         updateProgressBar();
+        updateXRButtonState();
 
         if (isMetaQuestBrowser()) {
           logCommand("Detected Meta Quest Browser — Disabling Voice Mode (speech not supported).");
@@ -1127,6 +1270,7 @@
 
         // Setup recognition early to check support
         if (!recognition) { recognition = setupSpeechRecognition(); }
+        detectXRSupport();
         updateMicStatusUI(); // Set initial transcript/button state
 
         logCommand("Tutorial Initialized. Ready.");

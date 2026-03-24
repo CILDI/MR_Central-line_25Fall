@@ -235,12 +235,12 @@
     #mrAnatomyLabel { top: 86px; left: 26px; min-width: 210px; max-width: 280px; padding: 12px 14px; border-radius: 18px; }
     #mrAnatomyText { font-size: 1rem; font-weight: 700; line-height: 1.25; }
     #mrAnatomyHint { display: none; }
-    #mrStatusChip { top: 26px; right: 110px; padding: 12px 18px; border-radius: 999px; font-size: 0.95rem; font-weight: 700; }
+    #mrStatusChip { top: 26px; right: 180px; padding: 12px 18px; border-radius: 999px; font-size: 0.95rem; font-weight: 700; }
     #mrStatusChip.status-caution { border-color: rgba(248, 113, 113, 0.45); color: #fecaca; }
     .light-theme #mrStatusChip.status-caution { color: #b91c1c; }
     #mrStatusChip.status-ready { border-color: rgba(74, 222, 128, 0.45); color: #bbf7d0; }
     .light-theme #mrStatusChip.status-ready { color: #047857; }
-    #mrCautionChip { top: 78px; right: 110px; padding: 10px 14px; border-radius: 999px; font-size: 0.85rem; font-weight: 700; max-width: min(28vw, 320px); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-color: rgba(248, 113, 113, 0.42); color: #fecaca; }
+    #mrCautionChip { top: 78px; right: 180px; padding: 10px 14px; border-radius: 18px; font-size: 0.85rem; font-weight: 700; max-width: min(30vw, 360px); white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.35; border-color: rgba(248, 113, 113, 0.42); color: #fecaca; }
     .light-theme #mrCautionChip { color: #b91c1c; }
     #mrUltrasoundAnchor { top: 24%; left: 26px; width: min(29vw, 360px); padding: 18px; border-radius: 24px; }
     #mrUltrasoundFrame { position: relative; aspect-ratio: 4 / 3; border-radius: 20px; border: 1px solid rgba(74, 222, 128, 0.32); background:
@@ -300,7 +300,7 @@
       & #progressBarBackground { height: 6px; }
       & #progressText { font-size: 0.78rem; }
       & #holoNavButtons { display: flex !important; position: fixed; left: 50%; transform: translateX(-50%); bottom: 176px; width: min(42vw, 520px); padding: 0; gap: var(--spacing-md); z-index: 951; }
-      & #exitHoloBtn { display: flex !important; align-items: center; justify-content: center; position: fixed; top: 26px; right: 26px; padding: 10px 18px; width: auto; height: auto; border-radius: var(--border-radius-lg); font-size: 1rem; font-weight: 600; white-space: nowrap; background-color: rgba(30, 30, 30, 0.6); backdrop-filter: blur(8px); border: 2px solid var(--dark-text-secondary); color: var(--dark-text); z-index: 1001; cursor: pointer; transition: all var(--transition-normal); box-shadow: 0 2px 10px var(--dark-shadow);}
+      & #exitHoloBtn { display: flex !important; align-items: center; justify-content: center; position: fixed; top: 150px; right: 26px; padding: 10px 18px; width: auto; height: auto; border-radius: var(--border-radius-lg); font-size: 1rem; font-weight: 600; white-space: nowrap; background-color: rgba(30, 30, 30, 0.6); backdrop-filter: blur(8px); border: 2px solid var(--dark-text-secondary); color: var(--dark-text); z-index: 1001; cursor: pointer; transition: all var(--transition-normal); box-shadow: 0 2px 10px var(--dark-shadow);}
       .light-theme.hololens-mode #exitHoloBtn { background-color: rgba(255, 255, 255, 0.5); border-color: var(--light-text-secondary); color: var(--light-text); }
       & #exitHoloBtn:hover { background-color: rgba(50, 50, 50, 0.8); border-color: var(--dark-text); transform: scale(1.04); }
       .light-theme.hololens-mode #exitHoloBtn:hover { background-color: rgba(240, 240, 240, 0.7); border-color: var(--light-text); }
@@ -342,7 +342,7 @@
       }
       .hololens-mode #mrStepTag { top: 18px; }
       .hololens-mode #mrStatusChip { top: 66px; right: 16px; }
-      .hololens-mode #mrCautionChip { top: 108px; max-width: none; }
+      .hololens-mode #mrCautionChip { top: 108px; right: 16px; max-width: none; }
       .hololens-mode #mrAnatomyLabel { top: 150px; max-width: none; min-width: 0; }
       .hololens-mode #mrActionCard { top: 210px; }
       .hololens-mode #mrActionText { font-size: 1.15rem; }
@@ -775,10 +775,9 @@
         }
 
         if (!xrSupported) {
-            xrSessionBtn.style.display = "inline-flex";
+            xrSessionBtn.style.display = "none";
             xrSessionBtn.disabled = true;
             xrSessionBtn.title = "Immersive AR is not available in this browser/device";
-            if (xrText) xrText.textContent = "AR Unavailable";
             return;
         }
 

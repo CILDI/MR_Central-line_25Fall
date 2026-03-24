@@ -124,6 +124,15 @@
     .warning-panel { border-color: rgba(248, 113, 113, 0.45); box-shadow: inset 0 0 0 1px rgba(248, 113, 113, 0.1); }
     .warning-panel h3 { color: var(--dark-error); }
     .light-theme .warning-panel h3 { color: var(--light-error); }
+    .warning-panel.risk-low { border-color: rgba(74, 222, 128, 0.35); box-shadow: inset 0 0 0 1px rgba(74, 222, 128, 0.08); }
+    .warning-panel.risk-low h3 { color: var(--dark-primary); }
+    .light-theme .warning-panel.risk-low h3 { color: var(--light-primary); }
+    .warning-panel.risk-medium { border-color: rgba(251, 191, 36, 0.42); box-shadow: inset 0 0 0 1px rgba(251, 191, 36, 0.12); }
+    .warning-panel.risk-medium h3 { color: #fbbf24; }
+    .light-theme .warning-panel.risk-medium h3 { color: #b45309; }
+    .warning-panel.risk-high { border-color: rgba(248, 113, 113, 0.45); box-shadow: inset 0 0 0 1px rgba(248, 113, 113, 0.1); }
+    .warning-panel.risk-high h3 { color: var(--dark-error); }
+    .light-theme .warning-panel.risk-high h3 { color: var(--light-error); }
     .success-panel { border-color: rgba(74, 222, 128, 0.35); }
     #status { margin-top: var(--spacing-md); font-size: 0.95rem; color: var(--dark-text-secondary); text-align: center; font-weight: 500; transition: color var(--transition-normal); }
     .light-theme #status { color: var(--light-text-secondary); }
@@ -428,8 +437,8 @@
               <h3>Anatomical Cue</h3>
               <p id="anatomyCue">Ultrasound landmarks and vessel cues will appear here.</p>
             </div>
-            <div class="step-panel warning-panel">
-              <h3>Safety Warning</h3>
+            <div id="warningPanel" class="step-panel warning-panel risk-high">
+              <h3 id="warningHeading">Safety Warning • High Risk</h3>
               <p id="riskWarning">Critical warnings for the current maneuver will appear here.</p>
             </div>
             <div class="step-panel success-panel">
@@ -488,23 +497,23 @@
         id: "ij-central-line",
         title: "Ultrasound-Guided Internal Jugular Central Line",
         steps: [
-            { id: "1.1", phase: "Vessel Access", title: "Needle entry", action: "Advance introducer needle slowly under ultrasound toward the internal jugular vein.", anatomy: "Keep the needle tip aligned with the center of the compressible venous lumen and track the carotid position before advancing.", verify: "Needle tip remains visible on ultrasound and the vessel path is free of the carotid.", warning: "Do not advance if the tip is lost or if the carotid overlaps the intended path.", success: "Tip reaches the anterior wall of the target vein.", confidence: "Ultrasound tracking required" },
-            { id: "1.2", phase: "Vessel Access", title: "Venous puncture", action: "Advance in short controlled movements while maintaining negative pressure on the syringe.", anatomy: "Watch the tip tent and then enter the venous lumen rather than passing through the posterior wall.", verify: "The tip is still visualized at puncture and venous entry occurs without arterial pulsatility.", warning: "Stop if you lose tip visualization or if pulsatile bright blood suggests arterial access.", success: "Dark non-pulsatile flashback is obtained in the vessel.", confidence: "Confirm blood return" },
-            { id: "1.3", phase: "Vessel Access", title: "Needle stabilization", action: "Hold the needle completely still once venous access is confirmed.", anatomy: "Keep the bevel seated within the lumen and avoid changing insertion angle.", verify: "Blood return continues and the tip position does not migrate out of the vessel.", warning: "Needle motion at this stage can shear tissue or lose access.", success: "Stable intraluminal position maintained for wire passage.", confidence: "Maintain access" },
-            { id: "1.4", phase: "Vessel Access", title: "Syringe removal", action: "Disconnect the syringe while stabilizing the needle hub with your other hand.", anatomy: "Maintain the same depth and angle at the skin entry site.", verify: "Needle position remains unchanged during disconnection.", warning: "Do not release hub control while disconnecting the syringe.", success: "Needle remains intravascular and ready for guidewire insertion.", confidence: "Hub control critical" },
-            { id: "2.1", phase: "Guidewire Placement", title: "Guidewire entry", action: "Thread the guidewire gently through the needle without resistance.", anatomy: "The wire should follow the vessel course smoothly into the lumen.", verify: "Wire advances easily and does not buckle at the hub.", warning: "Never force the wire against resistance.", success: "Guidewire enters the vessel smoothly.", confidence: "Resistance check" },
-            { id: "2.2", phase: "Guidewire Placement", title: "Guidewire depth", action: "Advance the guidewire to the target depth while keeping a firm hold on the proximal end.", anatomy: "Track expected venous depth and avoid over-advancement.", verify: "Wire remains under control and depth target is reached, typically around 15 cm.", warning: "Do not let go of the proximal wire end at any time.", success: "Wire depth is appropriate and under continuous control.", confidence: "Wire secure" },
-            { id: "2.3", phase: "Guidewire Placement", title: "Needle removal", action: "Withdraw the needle over the guidewire while holding pressure at the skin.", anatomy: "Keep the wire fixed and centered through the skin tract.", verify: "Wire position remains unchanged as the needle is removed.", warning: "Do not pull the wire out with the needle.", success: "Needle is removed and guidewire remains in place.", confidence: "Hold pressure" },
-            { id: "2.4", phase: "Guidewire Placement", title: "Wire confirmation", action: "Reimage with ultrasound to confirm the guidewire remains intravascular before dilation.", anatomy: "Look for the wire within the internal jugular lumen on ultrasound.", verify: "Guidewire is visualized in the vein and not in surrounding tissue.", warning: "Do not dilate unless the wire location is confirmed.", success: "Guidewire course is confirmed within the vessel.", confidence: "Imaging confirmation" },
-            { id: "3.1", phase: "Tract Preparation", title: "Dilator setup", action: "Preload the dilator onto the guidewire and align it with the skin tract.", anatomy: "Center the dilator at the existing wire entry site to avoid creating a false passage.", verify: "Dilator sits on the wire smoothly before advancing.", warning: "Do not advance the dilator off-axis from the established tract.", success: "Dilator is aligned and ready for controlled entry.", confidence: "Track alignment" },
-            { id: "3.2", phase: "Tract Preparation", title: "Skin nick", action: "Make a small skin incision at the wire entry site to facilitate dilation.", anatomy: "Incision should release skin resistance without widening the tract excessively.", verify: "Wire remains secure and the skin nick is sufficient for dilator passage.", warning: "Avoid cutting the guidewire or enlarging the incision unnecessarily.", success: "Skin nick allows controlled dilator advancement.", confidence: "Incision complete" },
-            { id: "3.3", phase: "Tract Preparation", title: "Dilator insertion", action: "Advance the dilator over the guidewire with controlled rotational pressure.", anatomy: "Follow the wire path and limit insertion depth to the tissue tract.", verify: "Dilator tracks over the wire without kinking and meets expected tissue resistance only.", warning: "Do not over-insert the dilator into the vessel.", success: "Soft tissue tract is dilated sufficiently for catheter placement.", confidence: "Controlled dilation" },
-            { id: "3.4", phase: "Tract Preparation", title: "Dilator removal", action: "Remove the dilator while maintaining wire control and skin pressure.", anatomy: "Keep the guidewire fixed through the tract during withdrawal.", verify: "Wire remains at the planned depth after dilator removal.", warning: "Loss of wire control here can abort the entire access.", success: "Dilator is removed and the wire remains stable.", confidence: "Wire retained" },
-            { id: "3.5", phase: "Catheter Placement", title: "Catheter advancement", action: "Thread the catheter over the guidewire and advance to the planned insertion depth.", anatomy: "Follow the dilated tract smoothly into the vessel without forcing.", verify: "Catheter advances over the wire and reaches depth markers as intended.", warning: "Do not advance if the catheter hangs up or the wire is no longer moving freely.", success: "Catheter is seated at target depth.", confidence: "Depth marker check" },
-            { id: "3.6", phase: "Catheter Placement", title: "Guidewire removal", action: "Hold the catheter in place and remove the guidewire completely.", anatomy: "Keep the catheter hub stable while extracting the wire.", verify: "Wire is removed intact and catheter position remains stable.", warning: "Never let the catheter back out while removing the wire.", success: "Guidewire is fully removed with catheter maintained in position.", confidence: "Wire out" },
-            { id: "3.7", phase: "Catheter Placement", title: "Line patency", action: "Aspirate, flush, and cap each lumen according to sterile protocol.", anatomy: "Assess each lumen independently for blood return and flush resistance.", verify: "Each lumen aspirates blood and flushes without resistance.", warning: "Do not use a lumen that lacks blood return or flushes with resistance until evaluated.", success: "All lumens are patent and capped.", confidence: "Patency check" },
-            { id: "3.8", phase: "Securement", title: "Site cleanup", action: "Clean the insertion site and remove blood or prep residue.", anatomy: "Preserve the sterile field around the catheter entry point.", verify: "Site is clean and catheter position remains unchanged during cleanup.", warning: "Avoid contaminating the insertion site while cleaning.", success: "Insertion site is clean and ready for dressing.", confidence: "Sterile field maintained" },
-            { id: "3.9", phase: "Securement", title: "Sterile dressing", action: "Apply sterile securement and dressing over the catheter site.", anatomy: "Cover the insertion site fully while keeping hubs accessible.", verify: "Dressing seals the site and the catheter is secured without kinking.", warning: "Do not leave the site unsecured after line placement.", success: "Line is dressed, secured, and ready for post-placement confirmation.", confidence: "Procedure complete" }
+            { id: "1.1", phase: "Vessel Access", title: "Needle entry", action: "Advance introducer needle slowly under ultrasound toward the internal jugular vein.", anatomy: "Keep the needle tip aligned with the center of the compressible venous lumen and track the carotid position before advancing.", verify: "Needle tip remains visible on ultrasound and the vessel path is free of the carotid.", warning: "Do not advance if the tip is lost or if the carotid overlaps the intended path.", success: "Tip reaches the anterior wall of the target vein.", confidence: "Ultrasound tracking required", risk: "high" },
+            { id: "1.2", phase: "Vessel Access", title: "Venous puncture", action: "Advance in short controlled movements while maintaining negative pressure on the syringe.", anatomy: "Watch the tip tent and then enter the venous lumen rather than passing through the posterior wall.", verify: "The tip is still visualized at puncture and venous entry occurs without arterial pulsatility.", warning: "Stop if you lose tip visualization or if pulsatile bright blood suggests arterial access.", success: "Dark non-pulsatile flashback is obtained in the vessel.", confidence: "Confirm blood return", risk: "high" },
+            { id: "1.3", phase: "Vessel Access", title: "Needle stabilization", action: "Hold the needle completely still once venous access is confirmed.", anatomy: "Keep the bevel seated within the lumen and avoid changing insertion angle.", verify: "Blood return continues and the tip position does not migrate out of the vessel.", warning: "Needle motion at this stage can shear tissue or lose access.", success: "Stable intraluminal position maintained for wire passage.", confidence: "Maintain access", risk: "medium" },
+            { id: "1.4", phase: "Vessel Access", title: "Syringe removal", action: "Disconnect the syringe while stabilizing the needle hub with your other hand.", anatomy: "Maintain the same depth and angle at the skin entry site.", verify: "Needle position remains unchanged during disconnection.", warning: "Do not release hub control while disconnecting the syringe.", success: "Needle remains intravascular and ready for guidewire insertion.", confidence: "Hub control critical", risk: "medium" },
+            { id: "2.1", phase: "Guidewire Placement", title: "Guidewire entry", action: "Thread the guidewire gently through the needle without resistance.", anatomy: "The wire should follow the vessel course smoothly into the lumen.", verify: "Wire advances easily and does not buckle at the hub.", warning: "Never force the wire against resistance.", success: "Guidewire enters the vessel smoothly.", confidence: "Resistance check", risk: "high" },
+            { id: "2.2", phase: "Guidewire Placement", title: "Guidewire depth", action: "Advance the guidewire to the target depth while keeping a firm hold on the proximal end.", anatomy: "Track expected venous depth and avoid over-advancement.", verify: "Wire remains under control and depth target is reached, typically around 15 cm.", warning: "Do not let go of the proximal wire end at any time.", success: "Wire depth is appropriate and under continuous control.", confidence: "Wire secure", risk: "high" },
+            { id: "2.3", phase: "Guidewire Placement", title: "Needle removal", action: "Withdraw the needle over the guidewire while holding pressure at the skin.", anatomy: "Keep the wire fixed and centered through the skin tract.", verify: "Wire position remains unchanged as the needle is removed.", warning: "Do not pull the wire out with the needle.", success: "Needle is removed and guidewire remains in place.", confidence: "Hold pressure", risk: "medium" },
+            { id: "2.4", phase: "Guidewire Placement", title: "Wire confirmation", action: "Reimage with ultrasound to confirm the guidewire remains intravascular before dilation.", anatomy: "Look for the wire within the internal jugular lumen on ultrasound.", verify: "Guidewire is visualized in the vein and not in surrounding tissue.", warning: "Do not dilate unless the wire location is confirmed.", success: "Guidewire course is confirmed within the vessel.", confidence: "Imaging confirmation", risk: "high" },
+            { id: "3.1", phase: "Tract Preparation", title: "Dilator setup", action: "Preload the dilator onto the guidewire and align it with the skin tract.", anatomy: "Center the dilator at the existing wire entry site to avoid creating a false passage.", verify: "Dilator sits on the wire smoothly before advancing.", warning: "Do not advance the dilator off-axis from the established tract.", success: "Dilator is aligned and ready for controlled entry.", confidence: "Track alignment", risk: "medium" },
+            { id: "3.2", phase: "Tract Preparation", title: "Skin nick", action: "Make a small skin incision at the wire entry site to facilitate dilation.", anatomy: "Incision should release skin resistance without widening the tract excessively.", verify: "Wire remains secure and the skin nick is sufficient for dilator passage.", warning: "Avoid cutting the guidewire or enlarging the incision unnecessarily.", success: "Skin nick allows controlled dilator advancement.", confidence: "Incision complete", risk: "medium" },
+            { id: "3.3", phase: "Tract Preparation", title: "Dilator insertion", action: "Advance the dilator over the guidewire with controlled rotational pressure.", anatomy: "Follow the wire path and limit insertion depth to the tissue tract.", verify: "Dilator tracks over the wire without kinking and meets expected tissue resistance only.", warning: "Do not over-insert the dilator into the vessel.", success: "Soft tissue tract is dilated sufficiently for catheter placement.", confidence: "Controlled dilation", risk: "high" },
+            { id: "3.4", phase: "Tract Preparation", title: "Dilator removal", action: "Remove the dilator while maintaining wire control and skin pressure.", anatomy: "Keep the guidewire fixed through the tract during withdrawal.", verify: "Wire remains at the planned depth after dilator removal.", warning: "Loss of wire control here can abort the entire access.", success: "Dilator is removed and the wire remains stable.", confidence: "Wire retained", risk: "high" },
+            { id: "3.5", phase: "Catheter Placement", title: "Catheter advancement", action: "Thread the catheter over the guidewire and advance to the planned insertion depth.", anatomy: "Follow the dilated tract smoothly into the vessel without forcing.", verify: "Catheter advances over the wire and reaches depth markers as intended.", warning: "Do not advance if the catheter hangs up or the wire is no longer moving freely.", success: "Catheter is seated at target depth.", confidence: "Depth marker check", risk: "high" },
+            { id: "3.6", phase: "Catheter Placement", title: "Guidewire removal", action: "Hold the catheter in place and remove the guidewire completely.", anatomy: "Keep the catheter hub stable while extracting the wire.", verify: "Wire is removed intact and catheter position remains stable.", warning: "Never let the catheter back out while removing the wire.", success: "Guidewire is fully removed with catheter maintained in position.", confidence: "Wire out", risk: "medium" },
+            { id: "3.7", phase: "Catheter Placement", title: "Line patency", action: "Aspirate, flush, and cap each lumen according to sterile protocol.", anatomy: "Assess each lumen independently for blood return and flush resistance.", verify: "Each lumen aspirates blood and flushes without resistance.", warning: "Do not use a lumen that lacks blood return or flushes with resistance until evaluated.", success: "All lumens are patent and capped.", confidence: "Patency check", risk: "medium" },
+            { id: "3.8", phase: "Securement", title: "Site cleanup", action: "Clean the insertion site and remove blood or prep residue.", anatomy: "Preserve the sterile field around the catheter entry point.", verify: "Site is clean and catheter position remains unchanged during cleanup.", warning: "Avoid contaminating the insertion site while cleaning.", success: "Insertion site is clean and ready for dressing.", confidence: "Sterile field maintained", risk: "low" },
+            { id: "3.9", phase: "Securement", title: "Sterile dressing", action: "Apply sterile securement and dressing over the catheter site.", anatomy: "Cover the insertion site fully while keeping hubs accessible.", verify: "Dressing seals the site and the catheter is secured without kinking.", warning: "Do not leave the site unsecured after line placement.", success: "Line is dressed, secured, and ready for post-placement confirmation.", confidence: "Procedure complete", risk: "low" }
         ]
     };
     const steps = procedure.steps;
@@ -532,6 +541,8 @@
     const stepConfidence = document.getElementById("stepConfidence");
     const anatomyCue = document.getElementById("anatomyCue");
     const riskWarning = document.getElementById("riskWarning");
+    const warningPanel = document.getElementById("warningPanel");
+    const warningHeading = document.getElementById("warningHeading");
     const successCue = document.getElementById("successCue");
     const verifyCue = document.getElementById("verifyCue");
     const statusDisplay = document.getElementById("status");
@@ -579,6 +590,21 @@
         mrStatusChip.innerText = text;
     }
 
+    function formatRiskLabel(risk = "medium") {
+        const normalized = String(risk).toLowerCase();
+        if (normalized === "high") return "High Risk";
+        if (normalized === "low") return "Low Risk";
+        return "Medium Risk";
+    }
+
+    function renderWarningSeverity(step) {
+        if (!warningPanel || !warningHeading) return;
+        const risk = step?.risk || "high";
+        warningPanel.classList.remove("risk-low", "risk-medium", "risk-high");
+        warningPanel.classList.add(`risk-${risk}`);
+        warningHeading.innerText = `Safety Warning • ${formatRiskLabel(risk)}`;
+    }
+
     function renderIdleState() {
         if (stepTitle) stepTitle.innerText = procedure.title;
         if (stepMeta) stepMeta.innerText = "Select a navigation mode above to begin the guided procedure.";
@@ -586,6 +612,7 @@
         if (stepBox) stepBox.innerText = "Select a navigation mode above to begin the tutorial...";
         if (anatomyCue) anatomyCue.innerText = "Ultrasound landmarks and vessel cues will appear here.";
         if (riskWarning) riskWarning.innerText = "Critical warnings for the current maneuver will appear here.";
+        renderWarningSeverity({ risk: "high" });
         if (successCue) successCue.innerText = "The success cue for the step will appear here.";
         if (verifyCue) verifyCue.innerText = "Verification checks for the current step will appear here.";
         renderMROverlay(null);
@@ -799,6 +826,7 @@
         if (stepBox) stepBox.innerText = step.action;
         if (anatomyCue) anatomyCue.innerText = step.anatomy;
         if (riskWarning) riskWarning.innerText = step.warning;
+        renderWarningSeverity(step);
         if (successCue) successCue.innerText = step.success;
         if (verifyCue) verifyCue.innerText = step.verify;
         renderMROverlay(step);

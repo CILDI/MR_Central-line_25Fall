@@ -240,7 +240,7 @@
     .light-theme #mrStatusChip.status-caution { color: #b91c1c; }
     #mrStatusChip.status-ready { border-color: rgba(74, 222, 128, 0.45); color: #bbf7d0; }
     .light-theme #mrStatusChip.status-ready { color: #047857; }
-    #mrCautionChip { top: 78px; right: 180px; padding: 10px 14px; border-radius: 18px; font-size: 0.85rem; font-weight: 700; max-width: min(30vw, 360px); white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.35; border-color: rgba(248, 113, 113, 0.42); color: #fecaca; }
+    #mrCautionChip { top: 78px; right: 180px; padding: 10px 14px; border-radius: 18px; font-size: 0.85rem; font-weight: 700; max-width: min(34vw, 440px); white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.35; border-color: rgba(248, 113, 113, 0.42); color: #fecaca; }
     .light-theme #mrCautionChip { color: #b91c1c; }
     #mrUltrasoundAnchor { top: 24%; left: 26px; width: min(29vw, 360px); padding: 18px; border-radius: 24px; }
     #mrUltrasoundFrame { position: relative; aspect-ratio: 4 / 3; border-radius: 20px; border: 1px solid rgba(74, 222, 128, 0.32); background:
@@ -273,9 +273,9 @@
     #mrTrajectoryStart { left: 10%; bottom: 30%; }
     #mrTrajectoryTarget { right: 17%; top: 24%; }
     #mrTrajectoryText { max-width: 320px; padding: 14px 16px; border-radius: var(--border-radius-lg); text-align: center; font-size: 0.92rem; line-height: 1.4; }
-    #mrActionCard { top: 17%; left: 50%; transform: translateX(-50%); width: min(38vw, 560px); padding: 18px 20px; border-radius: 24px; }
-    #mrActionText { font-size: 1.55rem; line-height: 1.2; font-weight: 700; }
-    #mrBottomPrompt { left: 50%; bottom: 34px; transform: translateX(-50%); width: min(52vw, 640px); padding: 12px 18px; border-radius: 999px; text-align: center; font-size: 0.94rem; font-weight: 600; color: var(--dark-text-secondary); }
+    #mrActionCard { top: 17%; left: 50%; transform: translateX(-50%); width: min(46vw, 720px); padding: 18px 20px; border-radius: 24px; }
+    #mrActionText { font-size: 1.55rem; line-height: 1.2; font-weight: 700; white-space: normal; overflow: visible; text-overflow: clip; }
+    #mrBottomPrompt { left: 50%; bottom: 34px; transform: translateX(-50%); width: min(62vw, 860px); padding: 12px 18px; border-radius: 999px; text-align: center; font-size: 0.94rem; font-weight: 600; color: var(--dark-text-secondary); white-space: normal; overflow: visible; text-overflow: clip; }
     .light-theme #mrBottomPrompt { color: var(--light-text-secondary); }
     #mrDetailToggle { position: fixed; right: 26px; bottom: 34px; padding: 10px 14px; border-radius: 999px; border: 1px solid rgba(74, 222, 128, 0.28); background: rgba(10, 18, 17, 0.62); color: var(--dark-text); backdrop-filter: blur(14px); z-index: 952; pointer-events: auto; cursor: pointer; font-size: 0.9rem; font-weight: 700; }
     .light-theme #mrDetailToggle { background: rgba(255, 255, 255, 0.74); color: var(--light-text); border-color: rgba(16, 185, 129, 0.28); }
@@ -317,7 +317,7 @@
       #stepBox { font-size: 1.15rem; min-height: auto; }
       #stepTitle { font-size: 1.35rem; }
       .holo-nav-btn { width: 128px; height: 128px; font-size: 1.4rem; }
-      .hololens-mode #mrActionCard { width: min(46vw, 520px); }
+      .hololens-mode #mrActionCard { width: min(54vw, 640px); }
       .hololens-mode #mrUltrasoundAnchor { top: 146px; width: min(38vw, 320px); }
       .hololens-mode #mrTrajectoryOverlay { right: 4%; width: min(34vw, 320px); }
       .hololens-mode #mrBottomPrompt { width: min(62vw, 620px); }
@@ -649,9 +649,8 @@
         return "Medium Risk";
     }
 
-    function shortenOverlayText(text, fallback, maxLength = 54) {
-        if (!text) return fallback;
-        return text.length > maxLength ? `${text.slice(0, maxLength - 3)}...` : text;
+    function shortenOverlayText(text, fallback) {
+        return text || fallback;
     }
 
     function setMRDetailVisibility(visible) {
@@ -729,7 +728,7 @@
                 : "Projected safe trajectory: follow the established tract and stop if alignment is lost.";
         const actionText = shortenOverlayText(step.action, "Advance to the next maneuver.");
         const cautionText = shortenOverlayText(step.warning.replace(/^Do not\s+/i, "").replace(/^Avoid\s+/i, ""), "verify path", 42);
-        const bottomPrompt = step.verify.length > 82 ? `${step.verify.slice(0, 79)}...` : step.verify;
+        const bottomPrompt = step.verify;
         const status = deriveMRStatusText(step);
 
         return {

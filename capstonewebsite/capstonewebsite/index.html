@@ -107,20 +107,23 @@
     .step-card-shell { display: flex; flex-direction: column; gap: var(--spacing-lg); }
     .step-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--spacing-md); }
     .step-stepper { display: flex; flex-direction: column; gap: var(--spacing-xs); }
-    .step-label { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--dark-primary); }
+    .step-label { font-size: 0.82rem; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #9df7bf; }
     .light-theme .step-label { color: var(--light-primary); }
-    #stepTitle { font-size: 1.65rem; line-height: 1.2; font-weight: 700; }
-    #stepMeta { font-size: 0.95rem; color: var(--dark-text-secondary); }
-    .light-theme #stepMeta { color: var(--light-text-secondary); }
-    #stepConfidence { align-self: flex-start; padding: 6px 12px; border-radius: 999px; background: var(--dark-surface-2); color: var(--dark-text-secondary); font-size: 0.85rem; font-weight: 600; border: 1px solid var(--dark-border); }
-    .light-theme #stepConfidence { background: var(--light-surface-2); color: var(--light-text-secondary); border-color: var(--light-border); }
-    #stepBox { font-size: 1.35rem; line-height: 1.5; text-align: left; min-height: 90px; display: flex; align-items: flex-start; justify-content: flex-start; font-weight: 600; }
+    #stepTitle { font-size: 1.65rem; line-height: 1.2; font-weight: 700; color: #f5fff8; }
+    .light-theme #stepTitle { color: #10261a; }
+    #stepMeta { font-size: 0.95rem; color: #d5e3db; font-weight: 600; }
+    .light-theme #stepMeta { color: #425466; }
+    #stepConfidence { align-self: flex-start; padding: 6px 12px; border-radius: 999px; background: var(--dark-surface-2); color: #effdf4; font-size: 0.85rem; font-weight: 700; border: 1px solid rgba(74, 222, 128, 0.24); }
+    .light-theme #stepConfidence { background: var(--light-surface-2); color: #244437; border-color: rgba(16, 185, 129, 0.22); }
+    #stepBox { font-size: 1.35rem; line-height: 1.5; text-align: left; min-height: 90px; display: flex; align-items: flex-start; justify-content: flex-start; font-weight: 700; color: #f7fffa; text-shadow: 0 1px 10px rgba(74, 222, 128, 0.08); }
+    .light-theme #stepBox { color: #11261c; text-shadow: none; }
     .step-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--spacing-md); }
     .step-panel { background: var(--dark-surface-2); border: 1px solid var(--dark-border); border-radius: var(--border-radius-md); padding: var(--spacing-md); }
     .light-theme .step-panel { background: var(--light-surface-2); border-color: var(--light-border); }
-    .step-panel h3 { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: var(--spacing-sm); color: var(--dark-text-secondary); }
-    .light-theme .step-panel h3 { color: var(--light-text-secondary); }
-    .step-panel p { font-size: 1rem; line-height: 1.45; }
+    .step-panel h3 { font-size: 0.85rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: var(--spacing-sm); color: #d6e6dd; }
+    .light-theme .step-panel h3 { color: #485a6b; }
+    .step-panel p { font-size: 1rem; line-height: 1.45; color: #eef7f1; }
+    .light-theme .step-panel p { color: #1d2b36; }
     .warning-panel { border-color: rgba(248, 113, 113, 0.45); box-shadow: inset 0 0 0 1px rgba(248, 113, 113, 0.1); }
     .warning-panel h3 { color: var(--dark-error); }
     .light-theme .warning-panel h3 { color: var(--light-error); }
@@ -134,8 +137,8 @@
     .warning-panel.risk-high h3 { color: var(--dark-error); }
     .light-theme .warning-panel.risk-high h3 { color: var(--light-error); }
     .success-panel { border-color: rgba(74, 222, 128, 0.35); }
-    #status { margin-top: var(--spacing-md); font-size: 0.95rem; color: var(--dark-text-secondary); text-align: center; font-weight: 500; transition: color var(--transition-normal); }
-    .light-theme #status { color: var(--light-text-secondary); }
+    #status { margin-top: var(--spacing-md); font-size: 0.95rem; color: #dbe8e1; text-align: center; font-weight: 600; transition: color var(--transition-normal); }
+    .light-theme #status { color: #475968; }
 
     /* ---------- Progress Container ---------- */
     #progressContainer { width: 100%; margin: var(--spacing-lg) 0; }
@@ -143,8 +146,15 @@
     .light-theme #progressBarBackground { background: var(--light-surface-2); border-color: var(--light-border); }
     #progressBar { width: 0%; height: 100%; background: linear-gradient(90deg, var(--dark-secondary), var(--dark-primary)); transition: width 0.3s ease-out; border-radius: var(--border-radius-sm); }
     .light-theme #progressBar { background: linear-gradient(90deg, var(--light-secondary), var(--light-primary)); }
-    #progressText { font-size: 0.9rem; color: var(--dark-text-secondary); text-align: center; }
-    .light-theme #progressText { color: var(--light-text-secondary); }
+    #progressText { font-size: 0.92rem; color: #dce9e2; text-align: center; font-weight: 600; }
+    .light-theme #progressText { color: #4a5e6f; }
+    #progressTimeline { display: flex; gap: 6px; align-items: center; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+    .timeline-block { width: 18px; height: 8px; border-radius: 999px; background: rgba(160, 160, 160, 0.24); border: 1px solid rgba(255, 255, 255, 0.05); transition: transform var(--transition-fast), background var(--transition-fast), box-shadow var(--transition-fast); }
+    .timeline-block.is-complete { background: linear-gradient(90deg, rgba(139, 92, 246, 0.9), rgba(74, 222, 128, 0.95)); box-shadow: 0 0 12px rgba(74, 222, 128, 0.2); }
+    .timeline-block.is-current { transform: scale(1.15); background: #d8ffe7; box-shadow: 0 0 16px rgba(216, 255, 231, 0.32); }
+    .light-theme .timeline-block { background: rgba(71, 85, 105, 0.16); border-color: rgba(15, 23, 42, 0.06); }
+    .light-theme .timeline-block.is-complete { background: linear-gradient(90deg, rgba(99, 102, 241, 0.84), rgba(16, 185, 129, 0.92)); box-shadow: 0 0 10px rgba(16, 185, 129, 0.16); }
+    .light-theme .timeline-block.is-current { background: #0f766e; box-shadow: 0 0 14px rgba(15, 118, 110, 0.16); }
 
     /* ---------- Alpha/Holo Nav Buttons (Defaults Hidden) ---------- */
     #alphaNavButtons { display: none; gap: var(--spacing-md); margin: var(--spacing-lg) 0; width: 100%; justify-content: space-between; }
@@ -155,16 +165,23 @@
     .light-theme #prevBtn, .light-theme #nextBtn { background-color: var(--light-primary); color: var(--light-surface); }
     #restartBtn { background-color: var(--dark-secondary); color: var(--dark-text); }
     .light-theme #restartBtn { background-color: var(--light-secondary); color: var(--light-surface); }
+    #repeatBtn { background-color: transparent; color: #d7fbe3; border: 1px solid rgba(74, 222, 128, 0.34); }
+    .light-theme #repeatBtn { color: #166534; border-color: rgba(16, 185, 129, 0.3); }
 
     #holoNavButtons { display: none; justify-content: space-around; align-items: center; position: fixed; left: 0; right: 0; bottom: 10%; width: 100%; padding: 0 var(--spacing-lg); gap: var(--spacing-lg); }
-    .holo-nav-btn { flex-direction: column; width: 160px; height: 160px; font-size: 1.8rem; font-weight: 600; border-radius: 50%; background-color: var(--dark-primary); color: #000000; box-shadow: 0 8px 25px var(--dark-shadow); padding: var(--spacing-md); }
+    .holo-nav-btn { flex-direction: column; width: 176px; height: 176px; font-size: 1.8rem; font-weight: 600; border-radius: 50%; background-color: var(--dark-primary); color: #000000; box-shadow: 0 8px 25px var(--dark-shadow); padding: var(--spacing-md); }
     .light-theme .holo-nav-btn { background-color: var(--light-primary); box-shadow: 0 8px 25px var(--light-shadow); color: var(--light-surface); }
-    .holo-nav-btn:hover:not(:disabled) { opacity: 0.9; transform: scale(1.05); }
+    .holo-nav-btn:hover:not(:disabled) { opacity: 0.92; transform: scale(1.05); box-shadow: 0 0 0 8px rgba(74, 222, 128, 0.14), 0 12px 30px rgba(74, 222, 128, 0.28); }
+    .light-theme .holo-nav-btn:hover:not(:disabled) { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.12), 0 12px 30px rgba(16, 185, 129, 0.2); }
     .holo-nav-btn:active:not(:disabled) { transform: scale(1.0); }
     .holo-nav-btn .btn-icon { font-size: 3.5rem; margin-bottom: var(--spacing-sm); }
     #holoPrevBtn .btn-icon { transform: rotate(180deg); }
     #holoRestartBtn { background-color: var(--dark-secondary); color: var(--dark-text); }
     .light-theme #holoRestartBtn { background-color: var(--light-secondary); color: var(--light-surface); }
+    #holoRepeatBtn { background: rgba(15, 23, 42, 0.82); color: #eafff1; border: 2px solid rgba(74, 222, 128, 0.4); }
+    .light-theme #holoRepeatBtn { background: rgba(255, 255, 255, 0.96); color: #166534; border-color: rgba(16, 185, 129, 0.36); }
+    #holoNextBtn { width: 196px; height: 196px; font-size: 1.95rem; box-shadow: 0 0 0 8px rgba(74, 222, 128, 0.12), 0 12px 32px rgba(74, 222, 128, 0.26); }
+    .light-theme #holoNextBtn { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0.1), 0 12px 32px rgba(16, 185, 129, 0.2); }
 
     /* ---------- Dwell Visual Feedback ---------- */
      .alpha-nav-btn::after, .holo-nav-btn::after {
@@ -187,6 +204,20 @@
      .alpha-nav-btn.dwelling::after,
      .holo-nav-btn.dwelling::after {
          width: 100%; /* Animate to full width */
+     }
+     .holo-nav-btn.dwelling:not(:disabled) {
+         box-shadow: 0 0 0 10px rgba(74, 222, 128, 0.18), 0 0 28px rgba(74, 222, 128, 0.38), 0 12px 32px rgba(0, 0, 0, 0.28);
+     }
+    .light-theme .holo-nav-btn.dwelling:not(:disabled) {
+         box-shadow: 0 0 0 10px rgba(16, 185, 129, 0.14), 0 0 28px rgba(16, 185, 129, 0.22), 0 12px 32px rgba(15, 23, 42, 0.14);
+     }
+     .feedback-flash {
+         animation: navConfirmFlash 220ms ease-out;
+     }
+     @keyframes navConfirmFlash {
+         0% { filter: brightness(1); box-shadow: 0 0 0 0 rgba(255, 255, 255, 0); }
+         35% { filter: brightness(1.22); box-shadow: 0 0 0 12px rgba(255, 255, 255, 0.12); }
+         100% { filter: brightness(1); box-shadow: inherit; }
      }
      /* Ensure feedback doesn't show/animate on disabled buttons */
      .alpha-nav-btn:disabled::after,
@@ -229,20 +260,35 @@
     #mrOverlayLayer { display: none; position: fixed; inset: 0; pointer-events: none; z-index: 950; }
     .mr-region { position: fixed; backdrop-filter: blur(14px); background: rgba(10, 18, 17, 0.62); border: 1px solid rgba(74, 222, 128, 0.28); box-shadow: 0 18px 48px rgba(0, 0, 0, 0.28); color: var(--dark-text); }
     .light-theme .mr-region { background: rgba(255, 255, 255, 0.74); border-color: rgba(16, 185, 129, 0.28); color: var(--light-text); box-shadow: 0 18px 42px rgba(15, 23, 42, 0.12); }
-    .mr-region-label { display: block; margin-bottom: var(--spacing-xs); font-size: 0.74rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dark-primary); }
+    .depth-near { z-index: 956; transform: translateZ(0) scale(1.03); box-shadow: 0 24px 60px rgba(0, 0, 0, 0.34); }
+    .depth-mid { z-index: 953; transform: translateZ(0) scale(1); }
+    .depth-far { z-index: 949; opacity: 0.86; transform: translateZ(0) scale(0.96); box-shadow: 0 12px 32px rgba(0, 0, 0, 0.18); }
+    .light-theme .depth-near { box-shadow: 0 24px 56px rgba(15, 23, 42, 0.16); }
+    .light-theme .depth-far { box-shadow: 0 10px 26px rgba(15, 23, 42, 0.08); }
+    .mr-region-label { display: block; margin-bottom: var(--spacing-xs); font-size: 0.76rem; font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase; color: #b5ffd1; }
     .light-theme .mr-region-label { color: var(--light-primary); }
-    #mrStepTag { top: 26px; left: 26px; padding: 12px 16px; border-radius: 999px; font-size: 0.95rem; font-weight: 700; }
-    #mrAnatomyLabel { top: 86px; left: 26px; min-width: 210px; max-width: 280px; padding: 12px 14px; border-radius: 18px; }
-    #mrAnatomyText { font-size: 1rem; font-weight: 700; line-height: 1.25; }
+    #mrStepTag { top: 26px; left: 26px; padding: 12px 16px; border-radius: 999px; font-size: 0.98rem; font-weight: 800; color: #f2fff7; }
+    .light-theme #mrStepTag { color: #163224; }
+    #mrAnatomyLabel { top: 86px; left: 26px; min-width: 210px; max-width: 280px; padding: 12px 14px; border-radius: 18px; pointer-events: auto; cursor: pointer; }
+    #mrAnatomyLabel::after { content: "Tap for ultrasound"; display: block; margin-top: 8px; font-size: 0.76rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--dark-text-secondary); }
+    .light-theme #mrAnatomyLabel::after { color: var(--light-text-secondary); }
+    #mrOverlayLayer.ultrasound-expanded #mrAnatomyLabel::after { content: "Tap to hide ultrasound"; }
+    #mrAnatomyText { font-size: 1.02rem; font-weight: 800; line-height: 1.25; color: #f4fff8; }
+    .light-theme #mrAnatomyText { color: #163224; }
     #mrAnatomyHint { display: none; }
-    #mrStatusChip { top: 26px; right: 180px; padding: 12px 18px; border-radius: 999px; font-size: 0.95rem; font-weight: 700; }
+    #mrStatusChip { top: 26px; right: 180px; padding: 12px 18px; border-radius: 999px; font-size: 0.98rem; font-weight: 800; }
     #mrStatusChip.status-caution { border-color: rgba(248, 113, 113, 0.45); color: #fecaca; }
     .light-theme #mrStatusChip.status-caution { color: #b91c1c; }
     #mrStatusChip.status-ready { border-color: rgba(74, 222, 128, 0.45); color: #bbf7d0; }
     .light-theme #mrStatusChip.status-ready { color: #047857; }
-    #mrCautionChip { top: 78px; right: 180px; padding: 10px 14px; border-radius: 18px; font-size: 0.85rem; font-weight: 700; max-width: min(34vw, 440px); white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.35; border-color: rgba(248, 113, 113, 0.42); color: #fecaca; }
-    .light-theme #mrCautionChip { color: #b91c1c; }
-    #mrUltrasoundAnchor { top: 24%; left: 26px; width: min(29vw, 360px); padding: 18px; border-radius: 24px; }
+    #mrCautionChip { top: 78px; right: 180px; padding: 12px 16px; border-radius: 18px; font-size: 0.98rem; font-weight: 800; max-width: min(34vw, 460px); white-space: normal; overflow: visible; text-overflow: clip; line-height: 1.22; letter-spacing: 0.02em; border-color: rgba(248, 113, 113, 0.72); color: #fff7ed; background: linear-gradient(135deg, rgba(153, 27, 27, 0.96), rgba(234, 88, 12, 0.94)); box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.14), 0 18px 34px rgba(127, 29, 29, 0.28); }
+    .light-theme #mrCautionChip { color: #7f1d1d; background: linear-gradient(135deg, rgba(254, 226, 226, 0.98), rgba(254, 215, 170, 0.98)); box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.12), 0 16px 28px rgba(185, 28, 28, 0.12); }
+    #mrUltrasoundAnchor { top: 24%; left: 26px; width: min(29vw, 360px); padding: 18px; border-radius: 24px; opacity: 0; transform: translateY(-12px) scale(0.94); visibility: hidden; transition: opacity var(--transition-normal), transform var(--transition-normal), visibility var(--transition-normal); }
+    #mrOverlayLayer.ultrasound-expanded #mrUltrasoundAnchor { opacity: 1; transform: translateY(0) scale(0.97); visibility: visible; }
+    #mrUltrasoundAnchor::before { content: ""; position: absolute; left: 18px; bottom: -38px; width: 3px; height: 34px; border-radius: 999px; background: linear-gradient(180deg, rgba(74, 222, 128, 0.92), rgba(74, 222, 128, 0.1)); box-shadow: 0 0 12px rgba(74, 222, 128, 0.22); }
+    #mrUltrasoundAnchor::after { content: "Anchored to probe/patient field"; position: absolute; left: 10px; bottom: -66px; padding: 6px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; color: #e8fff1; background: rgba(10, 18, 17, 0.82); border: 1px solid rgba(74, 222, 128, 0.22); white-space: nowrap; }
+    .light-theme #mrUltrasoundAnchor::before { background: linear-gradient(180deg, rgba(16, 185, 129, 0.9), rgba(16, 185, 129, 0.08)); box-shadow: 0 0 10px rgba(16, 185, 129, 0.14); }
+    .light-theme #mrUltrasoundAnchor::after { color: #165f46; background: rgba(255, 255, 255, 0.95); border-color: rgba(16, 185, 129, 0.24); }
     #mrUltrasoundAnchorHeader { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 10px; }
     #mrUltrasoundAnchorHeader .mr-region-label { margin-bottom: 0; }
     #mrUltrasoundToggle { pointer-events: auto; cursor: pointer; border: 1px solid rgba(74, 222, 128, 0.28); background: rgba(10, 18, 17, 0.68); color: var(--dark-text); border-radius: 999px; padding: 8px 12px; font-size: 0.8rem; font-weight: 700; }
@@ -266,23 +312,39 @@
     .light-theme #mrUltrasoundCrosshair::before, .light-theme #mrUltrasoundCrosshair::after { background: rgba(16, 185, 129, 0.68); }
     #mrUltrasoundCrosshair::before { top: 50%; left: -16%; right: -16%; height: 2px; transform: translateY(-50%); }
     #mrUltrasoundCrosshair::after { left: 50%; top: -16%; bottom: -16%; width: 2px; transform: translateX(-50%); }
-    #mrUltrasoundHint { margin-top: 12px; font-size: 0.92rem; line-height: 1.45; color: var(--dark-text-secondary); }
-    .light-theme #mrUltrasoundHint { color: var(--light-text-secondary); }
+    #mrUltrasoundHint { margin-top: 12px; font-size: 0.94rem; line-height: 1.45; color: #deebe4; font-weight: 600; }
+    .light-theme #mrUltrasoundHint { color: #475968; }
     #mrTrajectoryOverlay { position: fixed; top: 31%; right: 7%; width: min(34vw, 420px); display: flex; flex-direction: column; gap: 14px; align-items: center; }
     #mrTrajectoryArrow { width: 100%; height: 170px; position: relative; }
-    #mrTrajectoryArrow::before { content: ""; position: absolute; left: 8%; right: 18%; top: 52%; height: 4px; border-radius: 999px; background: linear-gradient(90deg, rgba(74, 222, 128, 0.18), rgba(74, 222, 128, 0.92)); transform: translateY(-50%) rotate(-22deg); transform-origin: left center; box-shadow: 0 0 18px rgba(74, 222, 128, 0.26); }
-    #mrTrajectoryArrow::after { content: ""; position: absolute; right: 12%; top: 26%; width: 0; height: 0; border-left: 28px solid rgba(74, 222, 128, 0.96); border-top: 16px solid transparent; border-bottom: 16px solid transparent; transform: rotate(-22deg); }
-    .light-theme #mrTrajectoryArrow::before { background: linear-gradient(90deg, rgba(16, 185, 129, 0.18), rgba(16, 185, 129, 0.92)); box-shadow: 0 0 18px rgba(16, 185, 129, 0.18); }
-    .light-theme #mrTrajectoryArrow::after { border-left-color: rgba(16, 185, 129, 0.96); }
+    #mrTrajectoryArrow::before { content: ""; position: absolute; left: 7%; right: 17%; top: 52%; height: 10px; border-radius: 999px; background: linear-gradient(90deg, rgba(74, 222, 128, 0.9), rgba(74, 222, 128, 0.68) 52%, rgba(74, 222, 128, 0.2) 84%, rgba(74, 222, 128, 0.06)); transform: translateY(-50%) rotate(-22deg); transform-origin: left center; box-shadow: 0 0 22px rgba(74, 222, 128, 0.34), 0 0 42px rgba(74, 222, 128, 0.12); animation: trajectoryPulse 1.8s ease-in-out infinite; }
+    #mrTrajectoryArrow::after { content: ""; position: absolute; right: 11%; top: 22%; width: 0; height: 0; border-left: 38px solid rgba(74, 222, 128, 0.98); border-top: 22px solid transparent; border-bottom: 22px solid transparent; transform: rotate(-22deg); filter: drop-shadow(0 0 12px rgba(74, 222, 128, 0.34)); animation: trajectoryArrowPulse 1.8s ease-in-out infinite; }
+    .light-theme #mrTrajectoryArrow::before { background: linear-gradient(90deg, rgba(16, 185, 129, 0.9), rgba(16, 185, 129, 0.66) 52%, rgba(16, 185, 129, 0.22) 84%, rgba(16, 185, 129, 0.05)); box-shadow: 0 0 22px rgba(16, 185, 129, 0.24), 0 0 42px rgba(16, 185, 129, 0.1); }
+    .light-theme #mrTrajectoryArrow::after { border-left-color: rgba(16, 185, 129, 0.96); filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.2)); }
     #mrTrajectoryStart, #mrTrajectoryTarget { position: absolute; width: 18px; height: 18px; border-radius: 50%; border: 2px solid rgba(255, 255, 255, 0.72); background: rgba(74, 222, 128, 0.88); box-shadow: 0 0 0 10px rgba(74, 222, 128, 0.08); }
     .light-theme #mrTrajectoryStart, .light-theme #mrTrajectoryTarget { border-color: rgba(15, 23, 42, 0.16); background: rgba(16, 185, 129, 0.88); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0.08); }
     #mrTrajectoryStart { left: 10%; bottom: 30%; }
-    #mrTrajectoryTarget { right: 17%; top: 24%; }
+    #mrTrajectoryTarget { right: 17%; top: 24%; animation: trajectoryBeacon 1.8s ease-out infinite; }
     #mrTrajectoryText { max-width: 320px; padding: 14px 16px; border-radius: var(--border-radius-lg); text-align: center; font-size: 0.92rem; line-height: 1.4; }
-    #mrActionCard { top: 17%; left: 50%; transform: translateX(-50%); width: min(46vw, 720px); padding: 18px 20px; border-radius: 24px; }
-    #mrActionText { font-size: 1.55rem; line-height: 1.2; font-weight: 700; white-space: normal; overflow: visible; text-overflow: clip; }
-    #mrBottomPrompt { left: 50%; bottom: 34px; transform: translateX(-50%); width: min(62vw, 860px); padding: 12px 18px; border-radius: 999px; text-align: center; font-size: 0.94rem; font-weight: 600; color: var(--dark-text-secondary); white-space: normal; overflow: visible; text-overflow: clip; }
-    .light-theme #mrBottomPrompt { color: var(--light-text-secondary); }
+    @keyframes trajectoryPulse {
+      0%, 100% { opacity: 0.76; transform: translateY(-50%) rotate(-22deg) scaleX(0.98); }
+      50% { opacity: 1; transform: translateY(-50%) rotate(-22deg) scaleX(1.02); }
+    }
+    @keyframes trajectoryArrowPulse {
+      0%, 100% { opacity: 0.78; transform: rotate(-22deg) scale(0.96); }
+      50% { opacity: 1; transform: rotate(-22deg) scale(1.08); }
+    }
+    @keyframes trajectoryBeacon {
+      0% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.4), 0 0 0 10px rgba(74, 222, 128, 0.08); }
+      70% { box-shadow: 0 0 0 22px rgba(74, 222, 128, 0), 0 0 0 10px rgba(74, 222, 128, 0.08); }
+      100% { box-shadow: 0 0 0 0 rgba(74, 222, 128, 0), 0 0 0 10px rgba(74, 222, 128, 0.08); }
+    }
+    /* Keep the center sightline clear for anatomy by shifting primary guidance above eye-line. */
+    #mrActionCard { top: clamp(108px, 12vh, 156px); left: 50%; transform: translateX(-50%); width: min(38vw, 560px); padding: 14px 18px; border-radius: 22px; background: rgba(10, 18, 17, 0.54); }
+    .light-theme #mrActionCard { background: rgba(255, 255, 255, 0.68); }
+    #mrActionText { font-size: 1.32rem; line-height: 1.28; font-weight: 800; white-space: normal; overflow: visible; text-overflow: clip; color: #f6fff9; }
+    .light-theme #mrActionText { color: #10271b; }
+    #mrBottomPrompt { left: 50%; bottom: 34px; transform: translateX(-50%); width: min(62vw, 860px); padding: 12px 18px; border-radius: 999px; text-align: center; font-size: 0.96rem; font-weight: 700; color: #e1eee7; white-space: normal; overflow: visible; text-overflow: clip; }
+    .light-theme #mrBottomPrompt { color: #495b6a; }
     #mrDetailToggle { position: fixed; right: 26px; bottom: 34px; padding: 10px 14px; border-radius: 999px; border: 1px solid rgba(74, 222, 128, 0.28); background: rgba(10, 18, 17, 0.62); color: var(--dark-text); backdrop-filter: blur(14px); z-index: 952; pointer-events: auto; cursor: pointer; font-size: 0.9rem; font-weight: 700; }
     .light-theme #mrDetailToggle { background: rgba(255, 255, 255, 0.74); color: var(--light-text); border-color: rgba(16, 185, 129, 0.28); }
     #mrDetailPanel { position: fixed; right: 26px; bottom: 92px; width: min(27vw, 360px); padding: 16px 18px; border-radius: 22px; display: none; pointer-events: auto; }
@@ -301,8 +363,8 @@
     #mrOverlayLayer.ultrasound-expanded #mrDetailToggle,
     #mrOverlayLayer.ultrasound-expanded #mrDetailPanel { opacity: 0.18; transition: opacity var(--transition-normal); pointer-events: none; }
     #mrDetailPanel .detail-item + .detail-item { margin-top: 12px; }
-    #mrDetailPanel .detail-copy { color: var(--dark-text-secondary); font-size: 0.92rem; line-height: 1.45; }
-    .light-theme #mrDetailPanel .detail-copy { color: var(--light-text-secondary); }
+    #mrDetailPanel .detail-copy { color: #e2efe8; font-size: 0.94rem; line-height: 1.45; font-weight: 600; }
+    .light-theme #mrDetailPanel .detail-copy { color: #4b5f6f; }
 
     /* ---------- Mode Specific Styles ---------- */
     .beta-mode, .alpha-mode, .hololens-mode { & .header, & .control-bar, & #status, & #logContainer { display: none; } & .container { padding: 0; max-width: 100%; gap: 0; } }
@@ -315,7 +377,7 @@
       z-index: 900; pointer-events: none; }
       & .step-card { display: none; }
       & #mrOverlayLayer { display: block; }
-      & #progressContainer { position: fixed; right: 26px; bottom: 26px; width: min(18vw, 220px); z-index: 951; opacity: 0.8; }
+      & #progressContainer { position: fixed; right: 26px scale(1.02); bottom: 26px; width: min(18vw, 220px); z-index: 955; opacity: 0.92; }
       & #progressBarBackground { height: 6px; }
       & #progressText { font-size: 0.78rem; }
       & #holoNavButtons { display: flex !important; position: fixed; right: 26px; bottom: 86px; width: auto; padding: 0; gap: 10px; z-index: 951; justify-content: flex-end; }
@@ -335,9 +397,9 @@
       .step-grid { grid-template-columns: 1fr; }
       #stepBox { font-size: 1.15rem; min-height: auto; }
       #stepTitle { font-size: 1.35rem; }
-      .holo-nav-btn { width: 92px; height: 92px; font-size: 0.95rem; }
-      .holo-nav-btn .btn-icon { font-size: 1.8rem; margin-bottom: 4px; }
-      .hololens-mode #mrActionCard { width: min(54vw, 640px); }
+      .holo-nav-btn { width: 144px; height: 144px; font-size: 1.4rem; }
+      .hololens-mode #holoNextBtn { width: 164px; height: 164px; }
+      .hololens-mode #mrActionCard { top: clamp(112px, 13vh, 164px); width: min(46vw, 520px); }
       .hololens-mode #mrUltrasoundAnchor { top: 146px; width: min(38vw, 320px); }
       .hololens-mode #mrTrajectoryOverlay { right: 4%; width: min(34vw, 320px); }
       .hololens-mode #mrBottomPrompt { width: min(62vw, 620px); }
@@ -365,7 +427,7 @@
       .hololens-mode #mrStatusChip { top: 66px; right: 16px; }
       .hololens-mode #mrCautionChip { top: 108px; right: 16px; max-width: none; }
       .hololens-mode #mrAnatomyLabel { top: 150px; max-width: none; min-width: 0; }
-      .hololens-mode #mrActionCard { top: 210px; }
+      .hololens-mode #mrActionCard { top: 198px; }
       .hololens-mode #mrActionText { font-size: 1.15rem; }
       .hololens-mode #mrUltrasoundAnchor { top: 304px; }
       .hololens-mode #mrTrajectoryOverlay { top: auto; bottom: 334px; }
@@ -376,10 +438,9 @@
       .hololens-mode #holoNavButtons { left: auto; right: 16px; bottom: 64px; width: auto; justify-content: flex-end; }
       .hololens-mode #mrDetailToggle { right: 16px; bottom: 56px; }
       .hololens-mode #mrDetailPanel { left: 16px; right: 16px; width: auto; bottom: 108px; }
-      .hololens-mode #mrOverlayLayer.ultrasound-expanded #mrUltrasoundAnchor { top: 50%; bottom: auto; left: 16px; right: 16px; width: auto; transform: translateY(-50%); }
-      .hololens-mode #mrOverlayLayer.ultrasound-expanded #mrUltrasoundFrame { min-height: min(52vh, 480px); }
-      .hololens-mode .holo-nav-btn { width: 76px; height: 76px; font-size: 0.78rem; }
-      .hololens-mode .holo-nav-btn .btn-icon { font-size: 1.4rem; }
+      .hololens-mode .holo-nav-btn { width: 108px; height: 108px; font-size: 1rem; }
+      .hololens-mode #holoNextBtn { width: 124px; height: 124px; }
+      .hololens-mode .holo-nav-btn .btn-icon { font-size: 2.2rem; }
       .hololens-mode #exitHoloBtn { top: 18px; right: 16px; padding: 8px 12px; font-size: 0.9rem; }
     }
 
@@ -443,19 +504,19 @@
 
     <div class="main-content">
       <div id="mrOverlayLayer" aria-hidden="true">
-        <div id="mrStepTag" class="mr-region">MR procedural overlay</div>
-        <div id="mrAnatomyLabel" class="mr-region">
+        <div id="mrStepTag" class="mr-region depth-mid">MR procedural overlay</div>
+        <button id="mrAnatomyLabel" class="mr-region depth-mid" type="button" aria-expanded="false">
           <span class="mr-region-label">Target Anatomy</span>
           <div id="mrAnatomyText">Internal jugular target pending</div>
           <div id="mrAnatomyHint">Anatomy-specific MR labels will populate when the workflow starts.</div>
-        </div>
-        <div id="mrStatusChip" class="mr-region status-ready">Status: awaiting vessel view</div>
-        <div id="mrCautionChip" class="mr-region">Caution: verify path</div>
-        <div id="mrActionCard" class="mr-region">
+        </button>
+        <div id="mrStatusChip" class="mr-region depth-mid status-ready">Status: awaiting vessel view</div>
+        <div id="mrCautionChip" class="mr-region depth-mid">Caution: verify path</div>
+        <div id="mrActionCard" class="mr-region depth-mid">
           <span class="mr-region-label">Next Action</span>
           <div id="mrActionText">Align the ultrasound view and prepare for the next maneuver.</div>
         </div>
-        <div id="mrUltrasoundAnchor" class="mr-region">
+        <div id="mrUltrasoundAnchor" class="mr-region depth-mid">
           <div id="mrUltrasoundAnchorHeader">
             <span class="mr-region-label">Ultrasound Panel Anchor</span>
             <button id="mrUltrasoundToggle" type="button" aria-expanded="false">Full Screen</button>
@@ -465,19 +526,19 @@
           </div>
           <div id="mrUltrasoundHint">Reserved region for live probe feed, vessel centering, and future tool-tip tracking.</div>
         </div>
-        <div id="mrTrajectoryOverlay">
+        <div id="mrTrajectoryOverlay" class="depth-far">
           <div id="mrTrajectoryArrow">
             <div id="mrTrajectoryStart"></div>
             <div id="mrTrajectoryTarget"></div>
           </div>
-          <div id="mrTrajectoryText" class="mr-region">
+          <div id="mrTrajectoryText" class="mr-region depth-far">
             <span class="mr-region-label">Safe Trajectory</span>
             <div id="mrTrajectoryHint">Trajectory guidance will align to the target vessel and skin entry path.</div>
           </div>
         </div>
-        <div id="mrBottomPrompt" class="mr-region">Bottom prompt: align the ultrasound view, then confirm the next action.</div>
-        <button id="mrDetailToggle" type="button" aria-expanded="false">Show Details</button>
-        <div id="mrDetailPanel" class="mr-region">
+        <div id="mrBottomPrompt" class="mr-region depth-far">Bottom prompt: align the ultrasound view, then confirm the next action.</div>
+        <button id="mrDetailToggle" class="depth-near" type="button" aria-expanded="false">Show Details</button>
+        <div id="mrDetailPanel" class="mr-region depth-mid">
           <div class="detail-item">
             <span class="mr-region-label">Verification</span>
             <div id="mrDetailVerify" class="detail-copy">Verification details will appear here.</div>
@@ -489,6 +550,10 @@
           <div class="detail-item">
             <span class="mr-region-label">Anatomy Notes</span>
             <div id="mrDetailAnatomy" class="detail-copy">Anatomy details will appear here.</div>
+          </div>
+          <div class="detail-item">
+            <span class="mr-region-label">Hands-Free</span>
+            <div id="mrVoiceCommands" class="detail-copy">Say: next step, previous step, repeat step, show details, hide details, pause, or resume.</div>
           </div>
         </div>
       </div>
@@ -531,10 +596,12 @@
           <div id="progressBar"></div>
         </div>
         <div id="progressText">0% Complete</div>
+        <div id="progressTimeline" aria-hidden="true"></div>
       </div>
 
       <div id="alphaNavButtons">
         <button id="prevBtn" class="alpha-nav-btn" disabled>Previous</button>
+        <button id="repeatBtn" class="alpha-nav-btn">🔁 Repeat Instruction</button>
         <button id="restartBtn" class="alpha-nav-btn">Restart</button>
         <button id="nextBtn" class="alpha-nav-btn">Next</button>
       </div>
@@ -545,6 +612,9 @@
          </button>
          <button id="holoRestartBtn" class="holo-nav-btn">
            <span class="btn-icon">🔄</span> Restart
+         </button>
+         <button id="holoRepeatBtn" class="holo-nav-btn">
+           <span class="btn-icon">🔁</span> Repeat
          </button>
          <button id="holoNextBtn" class="holo-nav-btn">
            <span class="btn-icon">▶</span> Next
@@ -622,6 +692,7 @@
     const statusDisplay = document.getElementById("status");
     const progressBar = document.getElementById("progressBar");
     const progressText = document.getElementById("progressText");
+    const progressTimeline = document.getElementById("progressTimeline");
     const logDiv = document.getElementById("log");
     const liveTranscript = document.getElementById("liveTranscript");
     const mrOverlayLayer = document.getElementById("mrOverlayLayer");
@@ -640,13 +711,16 @@
     const mrDetailVerify = document.getElementById("mrDetailVerify");
     const mrDetailSuccess = document.getElementById("mrDetailSuccess");
     const mrDetailAnatomy = document.getElementById("mrDetailAnatomy");
+    const mrVoiceCommands = document.getElementById("mrVoiceCommands");
 
     // Navigation Buttons
     const prevBtn = document.getElementById("prevBtn");
     const nextBtn = document.getElementById("nextBtn");
+    const repeatBtn = document.getElementById("repeatBtn");
     const restartBtn = document.getElementById("restartBtn");
     const holoPrevBtn = document.getElementById("holoPrevBtn");
     const holoNextBtn = document.getElementById("holoNextBtn");
+    const holoRepeatBtn = document.getElementById("holoRepeatBtn");
     const holoRestartBtn = document.getElementById("holoRestartBtn");
 
     // Control Buttons
@@ -747,12 +821,20 @@
             document.querySelectorAll('.dwelling').forEach(el => el.classList.remove('dwelling'));
         }
     };
+    let mrUltrasoundExpanded = false;
+    let feedbackAudioContext = null;
 
     function setMRStatusChip(text, tone = "status-ready") {
         if (!mrStatusChip) return;
         mrStatusChip.classList.remove("status-ready", "status-caution");
         mrStatusChip.classList.add(tone);
         mrStatusChip.innerText = text;
+    }
+
+    function setMRUltrasoundVisibility(visible) {
+        mrUltrasoundExpanded = visible;
+        if (mrOverlayLayer) mrOverlayLayer.classList.toggle("ultrasound-expanded", visible);
+        if (mrAnatomyLabel) mrAnatomyLabel.setAttribute("aria-expanded", visible ? "true" : "false");
     }
 
     function formatRiskLabel(risk = "medium") {
@@ -766,6 +848,41 @@
         return text || fallback;
     }
 
+    function isVoiceInteractionMode() {
+        return body.classList.contains("beta-mode") || body.classList.contains("hololens-mode");
+    }
+
+    function getVoiceCommandHelpText() {
+        return "Say: next step, previous step, repeat step, show details, hide details, pause listening, or resume listening.";
+    }
+
+    function buildUrgentCautionText(step) {
+        const warning = String(step?.warning || "").toLowerCase();
+        const risk = String(step?.risk || "medium").toLowerCase();
+
+        if (warning.includes("tip is lost") || warning.includes("lose tip visualization")) {
+            if (warning.includes("carotid")) return "⚠️ TIP LOST OR CAROTID OVERLAP - STOP";
+            return "⚠️ TIP LOST - STOP";
+        }
+        if (warning.includes("pulsatile")) return "⚠️ PULSATILE BLOOD - STOP";
+        if (warning.includes("never force") || warning.includes("resistance")) return "⚠️ RESISTANCE FELT - STOP";
+        if (warning.includes("do not let go") || warning.includes("let go of the proximal wire")) return "⚠️ KEEP HOLD OF WIRE";
+        if (warning.includes("do not pull the wire")) return "⚠️ HOLD WIRE - REMOVE NEEDLE ONLY";
+        if (warning.includes("do not dilate")) return "⚠️ CONFIRM WIRE IN VEIN BEFORE DILATION";
+        if (warning.includes("off-axis") || warning.includes("false passage")) return "⚠️ OFF-AXIS TRACK - STOP";
+        if (warning.includes("over-insert")) return "⚠️ OVER-INSERTION RISK - STOP";
+        if (warning.includes("loss of wire control")) return "⚠️ DO NOT LOSE WIRE CONTROL";
+        if (warning.includes("hangs up")) return "⚠️ CATHETER HANG-UP - STOP";
+        if (warning.includes("back out")) return "⚠️ HOLD CATHETER - REMOVE WIRE";
+        if (warning.includes("lacks blood return") || warning.includes("flushes with resistance")) return "⚠️ PATENCY FAIL - RECHECK LINE";
+        if (warning.includes("site unsecured")) return "⚠️ SECURE LINE BEFORE FINISHING";
+        if (warning.includes("contaminating")) return "⚠️ STERILITY BREAK - STOP";
+        if (warning.includes("disconnecting the syringe")) return "⚠️ KEEP HUB STABLE";
+        if (warning.includes("needle motion")) return "⚠️ HOLD NEEDLE STILL";
+
+        return risk === "high" ? "⚠️ HIGH-RISK STEP - VERIFY BEFORE ADVANCING" : "⚠️ VERIFY BEFORE ADVANCING";
+    }
+
     function setMRDetailVisibility(visible) {
         tutorialState.mrDetailsVisible = visible;
         if (mrOverlayLayer) mrOverlayLayer.classList.toggle("show-details", visible);
@@ -773,6 +890,21 @@
             mrDetailToggle.innerText = visible ? "Hide Details" : "Show Details";
             mrDetailToggle.setAttribute("aria-expanded", visible ? "true" : "false");
         }
+        
+    }
+
+    function setUltrasoundPanelExpanded(expanded) {
+        tutorialState.ultrasoundExpanded = expanded;
+        if (mrOverlayLayer) mrOverlayLayer.classList.toggle("ultrasound-expanded", expanded);
+        if (mrUltrasoundToggle) {
+            mrUltrasoundToggle.innerText = expanded ? "Minimize" : "Full Screen";
+            mrUltrasoundToggle.setAttribute("aria-expanded", expanded ? "true" : "false");
+        }
+    }
+
+    function toggleUltrasoundPanelSize() {
+        setUltrasoundPanelExpanded(!tutorialState.ultrasoundExpanded);
+        logCommand(`MR Overlay: Ultrasound panel ${tutorialState.ultrasoundExpanded ? "expanded" : "minimized"}.`);
     }
 
     function setUltrasoundPanelExpanded(expanded) {
@@ -807,6 +939,7 @@
         renderWarningSeverity({ risk: "high" });
         if (successCue) successCue.innerText = "The success cue for the step will appear here.";
         if (verifyCue) verifyCue.innerText = "Verification checks for the current step will appear here.";
+        setMRUltrasoundVisibility(false);
         renderMROverlay(null);
     }
 
@@ -874,10 +1007,10 @@
                 stepTag: "MR procedural overlay",
                 anatomyText: "Target anatomy pending",
                 anatomyHint: "Anatomy-specific MR labels will populate when the workflow starts.",
-                ultrasoundHint: "Reserved region for live probe feed, vessel centering, and future tool-tip tracking.",
+                ultrasoundHint: "Anchor this panel beside the probe field or patient neck zone so imaging stays tied to the real anatomy workspace.",
                 trajectoryHint: "Trajectory guidance will align to the target vessel and skin entry path.",
                 actionText: "Align the ultrasound view.",
-                cautionText: "Caution: verify path",
+                cautionText: "⚠️ VERIFY PATH BEFORE ADVANCING",
                 bottomPrompt: "Say or tap for details only if you need them.",
                 detailVerify: "Verification details will appear here.",
                 detailSuccess: "Success criteria will appear here.",
@@ -893,17 +1026,17 @@
                 ? "Guidewire in venous lumen"
                 : "Tract and catheter path";
         const ultrasoundHint = step.phase === "Vessel Access"
-            ? "Anchor ultrasound panel near the probe view. Prioritize vessel centering and continuous tip visibility."
+            ? "Anchor this panel to the probe or patient neck zone. Prioritize vessel centering and continuous tip visibility."
             : step.phase === "Guidewire Placement"
-                ? "Anchor ultrasound panel for wire confirmation. Reserve space for lumen view and wire position verification."
-                : "Anchor ultrasound panel for tract and catheter confirmation after wire control is secured.";
+                ? "Anchor this panel to the patient field for wire confirmation. Reserve space for lumen view and wire position verification."
+                : "Anchor this panel to the table-side sterile field for tract and catheter confirmation after wire control is secured.";
         const trajectoryHint = step.phase === "Vessel Access"
             ? "Projected safe trajectory: skin entry to vein center while staying clear of the carotid."
             : step.phase === "Guidewire Placement"
                 ? "Projected safe trajectory: maintain the wire within the venous lumen without resistance or buckling."
                 : "Projected safe trajectory: follow the established tract and stop if alignment is lost.";
         const actionText = shortenOverlayText(step.action, "Advance to the next maneuver.");
-        const cautionText = shortenOverlayText(step.warning.replace(/^Do not\s+/i, "").replace(/^Avoid\s+/i, ""), "verify path", 42);
+        const cautionText = buildUrgentCautionText(step);
         const bottomPrompt = step.verify;
         const status = deriveMRStatusText(step);
 
@@ -914,7 +1047,7 @@
             ultrasoundHint,
             trajectoryHint,
             actionText,
-            cautionText: `Caution: ${cautionText}`,
+            cautionText,
             bottomPrompt,
             detailVerify: step.verify,
             detailSuccess: step.success,
@@ -937,6 +1070,7 @@
         if (mrDetailVerify) mrDetailVerify.innerText = overlay.detailVerify;
         if (mrDetailSuccess) mrDetailSuccess.innerText = overlay.detailSuccess;
         if (mrDetailAnatomy) mrDetailAnatomy.innerText = overlay.detailAnatomy;
+        if (mrVoiceCommands) mrVoiceCommands.innerText = getVoiceCommandHelpText();
         setMRStatusChip(overlay.statusText, overlay.statusTone);
     }
 
@@ -1072,23 +1206,228 @@
         ].join(" ");
     }
 
-    function updateStep(newStep) {
-        if (newStep < 0 || newStep >= steps.length) return;
-        tutorialState.currentStep = newStep;
-        renderStep(steps[tutorialState.currentStep]);
-        renderProgress();
-        dwellController.cancel();
-        if (speechController.autoSpeak) {
-            speechController.speakCurrentStep();
+    function triggerNavigationFlash(target) {
+        if (!target) return;
+        target.classList.remove("feedback-flash");
+        void target.offsetWidth;
+        target.classList.add("feedback-flash");
+        window.setTimeout(() => target.classList.remove("feedback-flash"), 240);
+    }
+
+    function playNavigationClick() {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        try {
+            if (!feedbackAudioContext) feedbackAudioContext = new AudioCtx();
+            if (feedbackAudioContext.state === "suspended") feedbackAudioContext.resume();
+            const ctx = feedbackAudioContext;
+            const now = ctx.currentTime;
+            const oscillator = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+            oscillator.type = "triangle";
+            oscillator.frequency.setValueAtTime(740, now);
+            oscillator.frequency.exponentialRampToValueAtTime(520, now + 0.05);
+            gainNode.gain.setValueAtTime(0.0001, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.035, now + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            oscillator.start(now);
+            oscillator.stop(now + 0.09);
+        } catch (error) {
+            logCommand(`Feedback: audio unavailable (${error.message}).`);
         }
     }
 
-    // ----- Navigate Steps -----
-    function nextStep() { if (tutorialState.currentStep < steps.length - 1) { updateStep(tutorialState.currentStep + 1); logCommand("Navigate: Next"); } else { if(statusDisplay) statusDisplay.innerText = "🚫 Already at the final step."; logCommand("Navigate: Attempted Next on Last Step"); } }
-    function prevStep() { if (tutorialState.currentStep > 0) { updateStep(tutorialState.currentStep - 1); logCommand("Navigate: Previous"); } else { if(statusDisplay) statusDisplay.innerText = "🚫 Already at the first step."; logCommand("Navigate: Attempted Previous on First Step"); } }
-    function restartTutorial() { updateStep(0); if(statusDisplay) statusDisplay.innerText = "🔄 Workflow restarted."; logCommand("Navigate: Restart"); }
+    function triggerHapticFeedback(pattern = [18]) {
+        if (navigator.vibrate) navigator.vibrate(pattern);
+    }
 
-    function updateProgressBar() { renderProgress(); }
+    function triggerNavigationFeedback(target, hapticPattern = [18]) {
+        triggerNavigationFlash(target);
+        playNavigationClick();
+        triggerHapticFeedback(hapticPattern);
+    }
+
+    function repeatCurrentStep() {
+        if (currentStep < 0 || currentStep >= steps.length) return;
+        const step = steps[currentStep];
+        speakText(buildSpokenStepText(step, currentStep + 1));
+        if (statusDisplay) statusDisplay.innerText = `🔁 Repeating step ${currentStep + 1} of ${steps.length}.`;
+        logCommand("Voice: Repeat current step");
+    }
+
+    function repeatInstruction(sourceButton = body.classList.contains("hololens-mode") ? holoRepeatBtn : repeatBtn, emitFeedback = true) {
+        repeatCurrentStep();
+        if (emitFeedback) triggerNavigationFeedback(sourceButton, [16, 8, 16]);
+    }
+
+    function pauseHandsFree() {
+        if ("speechSynthesis" in window) speechSynthesis.cancel();
+        updateTranscriptWithMessage("⏸️ Guidance paused. Say \"repeat step\" or \"resume listening\" to continue.");
+        logCommand("Voice: Guidance paused");
+    }
+
+    function handleVoiceCommand(cleaned, raw) {
+        if (cleaned.includes("next")) { nextStep(); return true; }
+        if (cleaned.includes("previous") || cleaned.includes("back") || cleaned.includes("go back")) { prevStep(); return true; }
+        if (cleaned.includes("restart") || cleaned.includes("start over")) { restartTutorial(); return true; }
+        if (cleaned.includes("repeat")) { repeatInstruction(undefined, false); return true; }
+        if (cleaned.includes("show details") || cleaned.includes("open details")) { setMRDetailVisibility(true); logCommand("Voice: Show details"); return true; }
+        if (cleaned.includes("hide details") || cleaned.includes("close details")) { setMRDetailVisibility(false); logCommand("Voice: Hide details"); return true; }
+        if (cleaned === "details") { setMRDetailVisibility(!mrDetailsVisible); logCommand("Voice: Toggle details"); return true; }
+        if (cleaned.includes("pause")) { pauseHandsFree(); return true; }
+        if (cleaned.includes("resume")) { startListening(); updateTranscriptWithMessage("🎤 Listening for hands-free commands..."); logCommand("Voice: Resume listening"); return true; }
+        if (cleaned.includes("help") || cleaned.includes("commands")) { updateTranscriptWithMessage(`🎤 ${getVoiceCommandHelpText()}`); logCommand("Voice: Help requested"); return true; }
+        return false;
+    }
+
+    function triggerNavigationFlash(target) {
+        if (!target) return;
+        target.classList.remove("feedback-flash");
+        void target.offsetWidth;
+        target.classList.add("feedback-flash");
+        window.setTimeout(() => target.classList.remove("feedback-flash"), 240);
+    }
+
+    function playNavigationClick() {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        try {
+            if (!feedbackAudioContext) feedbackAudioContext = new AudioCtx();
+            if (feedbackAudioContext.state === "suspended") feedbackAudioContext.resume();
+            const ctx = feedbackAudioContext;
+            const now = ctx.currentTime;
+            const oscillator = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+            oscillator.type = "triangle";
+            oscillator.frequency.setValueAtTime(740, now);
+            oscillator.frequency.exponentialRampToValueAtTime(520, now + 0.05);
+            gainNode.gain.setValueAtTime(0.0001, now);
+            gainNode.gain.exponentialRampToValueAtTime(0.035, now + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
+            oscillator.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            oscillator.start(now);
+            oscillator.stop(now + 0.09);
+        } catch (error) {
+            logCommand(`Feedback: audio unavailable (${error.message}).`);
+        }
+    }
+
+    function triggerHapticFeedback(pattern = [18]) {
+        if (navigator.vibrate) navigator.vibrate(pattern);
+    }
+
+    function triggerNavigationFeedback(target, hapticPattern = [18]) {
+        triggerNavigationFlash(target);
+        playNavigationClick();
+        triggerHapticFeedback(hapticPattern);
+    }
+
+    function repeatCurrentStep() {
+        if (currentStep < 0 || currentStep >= steps.length) return;
+        const step = steps[currentStep];
+        speakText(buildSpokenStepText(step, currentStep + 1));
+        if (statusDisplay) statusDisplay.innerText = `🔁 Repeating step ${currentStep + 1} of ${steps.length}.`;
+        logCommand("Voice: Repeat current step");
+    }
+
+    function repeatInstruction(sourceButton = body.classList.contains("hololens-mode") ? holoRepeatBtn : repeatBtn, emitFeedback = true) {
+        repeatCurrentStep();
+        if (emitFeedback) triggerNavigationFeedback(sourceButton, [16, 8, 16]);
+    }
+
+    function pauseHandsFree() {
+        if ("speechSynthesis" in window) speechSynthesis.cancel();
+        updateTranscriptWithMessage("⏸️ Guidance paused. Say \"repeat step\" or \"resume listening\" to continue.");
+        logCommand("Voice: Guidance paused");
+    }
+
+    function handleVoiceCommand(cleaned, raw) {
+        if (cleaned.includes("next")) { nextStep(); return true; }
+        if (cleaned.includes("previous") || cleaned.includes("back") || cleaned.includes("go back")) { prevStep(); return true; }
+        if (cleaned.includes("restart") || cleaned.includes("start over")) { restartTutorial(); return true; }
+        if (cleaned.includes("repeat")) { repeatInstruction(undefined, false); return true; }
+        if (cleaned.includes("show details") || cleaned.includes("open details")) { setMRDetailVisibility(true); logCommand("Voice: Show details"); return true; }
+        if (cleaned.includes("hide details") || cleaned.includes("close details")) { setMRDetailVisibility(false); logCommand("Voice: Hide details"); return true; }
+        if (cleaned === "details") { setMRDetailVisibility(!mrDetailsVisible); logCommand("Voice: Toggle details"); return true; }
+        if (cleaned.includes("pause")) { pauseHandsFree(); return true; }
+        if (cleaned.includes("resume")) { startListening(); updateTranscriptWithMessage("🎤 Listening for hands-free commands..."); logCommand("Voice: Resume listening"); return true; }
+        if (cleaned.includes("help") || cleaned.includes("commands")) { updateTranscriptWithMessage(`🎤 ${getVoiceCommandHelpText()}`); logCommand("Voice: Help requested"); return true; }
+        return false;
+    }
+
+
+    function updateStep(newStep) {
+        if (newStep < 0 || newStep >= steps.length) return;
+        currentStep = newStep;
+        const step = steps[currentStep];
+        if (stepTitle) stepTitle.innerText = `${step.phase}: ${step.title}`;
+        if (stepMeta) stepMeta.innerText = `Step ${currentStep + 1} of ${steps.length} • ${step.id}`;
+        if (stepConfidence) stepConfidence.innerText = step.confidence;
+        if (stepBox) stepBox.innerText = step.action;
+        if (anatomyCue) anatomyCue.innerText = step.anatomy;
+        if (riskWarning) riskWarning.innerText = step.warning;
+        renderWarningSeverity(step);
+        if (successCue) successCue.innerText = step.success;
+        if (verifyCue) verifyCue.innerText = step.verify;
+        renderMROverlay(step);
+        speakText(buildSpokenStepText(step, currentStep + 1));
+        const isFirstStep = currentStep === 0;
+        const isLastStep = currentStep === steps.length - 1;
+        if(statusDisplay) statusDisplay.innerText = isLastStep ? `✅ Final step ready for post-procedure confirmation (${currentStep + 1}/${steps.length})` : `${step.phase} • Step ${currentStep + 1} of ${steps.length}`;
+
+        // Update button disabled state first
+        if (prevBtn) prevBtn.disabled = isFirstStep;
+        if (nextBtn) nextBtn.disabled = isLastStep;
+        if (holoPrevBtn) holoPrevBtn.disabled = isFirstStep;
+        if (holoNextBtn) holoNextBtn.disabled = isLastStep;
+
+        // Cancel any dwell timer if the associated button just became disabled
+        cancelDwell(); // General cancel check is sufficient here
+
+        updateProgressBar();
+    }
+    
+
+    // ----- Navigate Steps -----
+    function nextStep(sourceButton = body.classList.contains("hololens-mode") ? holoNextBtn : nextBtn, emitFeedback = true) { if (tutorialState.currentStep < steps.length - 1) { updateStep(tutorialState.currentStep + 1); if (emitFeedback) triggerNavigationFeedback(sourceButton, [18, 8, 12]); logCommand("Navigate: Next"); } else { if(statusDisplay) statusDisplay.innerText = "🚫 Already at the final step."; logCommand("Navigate: Attempted Next on Last Step"); } }
+    function prevStep(sourceButton = body.classList.contains("hololens-mode") ? holoPrevBtn : prevBtn, emitFeedback = true) { if (tutorialState.currentStep > 0) { updateStep(tutorialState.currentStep - 1); if (emitFeedback) triggerNavigationFeedback(sourceButton, [14]); logCommand("Navigate: Previous"); } else { if(statusDisplay) statusDisplay.innerText = "🚫 Already at the first step."; logCommand("Navigate: Attempted Previous on First Step"); } }
+    function restartTutorial(sourceButton = body.classList.contains("hololens-mode") ? holoRestartBtn : restartBtn, emitFeedback = true) { updateStep(0); if (emitFeedback) triggerNavigationFeedback(sourceButton, [22, 10, 22]); if(statusDisplay) statusDisplay.innerText = "🔄 Workflow restarted."; logCommand("Navigate: Restart"); }
+
+    // ----- Update Progress Bar -----
+    function updateProgressBar() {
+        if (!progressBar || !progressText) return;
+        if (currentStep < 0) {
+            progressBar.style.width = "0%";
+            progressText.innerText = `${steps.length} procedural tasks queued`;
+            if (progressTimeline) {
+                progressTimeline.innerHTML = "";
+                for (let index = 0; index < steps.length; index += 1) {
+                    const block = document.createElement("span");
+                    block.className = "timeline-block";
+                    progressTimeline.appendChild(block);
+                }
+            }
+            return;
+        }
+        const fraction = (currentStep + 1) / steps.length;
+        progressBar.style.width = `${fraction * 100}%`;
+        const stepsRemaining = steps.length - (currentStep + 1);
+        progressText.innerText = stepsRemaining > 0 ? `${stepsRemaining} task${stepsRemaining !== 1 ? "s" : ""} remaining` : "Workflow complete";
+        if (progressTimeline) {
+            progressTimeline.innerHTML = "";
+            for (let index = 0; index < steps.length; index += 1) {
+                const block = document.createElement("span");
+                block.className = "timeline-block";
+                if (index < currentStep) block.classList.add("is-complete");
+                if (index === currentStep) block.classList.add("is-current");
+                if (index < currentStep && index === currentStep - 1) block.classList.add("is-complete");
+                progressTimeline.appendChild(block);
+            }
+        }
+    }
 
     // ----- Log Commands -----
     function logCommand(text) { logController.log(text); }
@@ -1116,6 +1455,7 @@
          }).observe(prevBtn, { attributes: true });
     }
     if (restartBtn) restartBtn.addEventListener("click", restartTutorial);
+    if (repeatBtn) repeatBtn.addEventListener("click", repeatInstruction);
 
     if (holoNextBtn) {
         holoNextBtn.addEventListener("click", nextStep);
@@ -1134,6 +1474,7 @@
         }).observe(holoPrevBtn, { attributes: true });
     }
     if (holoRestartBtn) holoRestartBtn.addEventListener("click", restartTutorial);
+    if (holoRepeatBtn) holoRepeatBtn.addEventListener("click", repeatInstruction);
 
     if (micToggleBtn) micToggleBtn.addEventListener("click", toggleMicListening);
     if (readAloudBtn) readAloudBtn.addEventListener("click", () => speechController.speakCurrentStep());
@@ -1175,6 +1516,17 @@
                 micToggleBtn.title = "Unmute Microphone";
                 if(micIcon) micIcon.textContent = '🎤'; // Mic icon
             }
+        } else if (body.classList.contains('hololens-mode')) {
+            micToggleBtn.disabled = true;
+            micToggleBtn.style.display = 'none';
+            micToggleBtn.classList.remove('mic-active');
+            if (isListening) {
+                liveTranscript.innerText = "🎤 Hands-free active. Say: next step, repeat step, show details, or pause.";
+                liveTranscript.classList.add('mic-active');
+            } else {
+                liveTranscript.innerText = "🎤 Hands-free available in MR Overlay Mode when speech is supported.";
+            }
+            if (micIcon) micIcon.textContent = '🎤';
         } else {
             liveTranscript.innerText = "🎤 Voice commands inactive.";
             micToggleBtn.disabled = true;
@@ -1213,15 +1565,15 @@
         recognition.onresult = (event) => {
             const raw = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
             const cleaned = raw.replace(/[.,!?;:]/g, "").trim();
-            if (!speechController.isListening || !body.classList.contains('beta-mode')) { logCommand(`Voice: Heard "${raw}" but ignored (not listening or not in beta mode).`); return; }
+            if (!speechController.isListening || !isVoiceInteractionMode()) { logCommand(`Voice: Heard "${raw}" but ignored (not listening or not in a voice-enabled mode).`); return; }
 
             updateTranscriptWithMessage(`🎤 Heard: "${raw}"`);
             logCommand(`Voice: "${raw}" (Cleaned: "${cleaned}")`);
 
-            if (cleaned.includes("next")) { nextStep(); }
-            else if (cleaned.includes("previous") || cleaned.includes("back") || cleaned.includes("go back")) { prevStep(); }
-            else if (cleaned.includes("restart") || cleaned.includes("start over")) { restartTutorial(); }
-            else { updateTranscriptWithMessage(`❓ Command not recognized: "${raw}"`); logCommand(`Voice: Unrecognized command "${raw}"`); }
+            if (!handleVoiceCommand(cleaned, raw)) {
+                updateTranscriptWithMessage(`❓ Command not recognized: "${raw}"`);
+                logCommand(`Voice: Unrecognized command "${raw}"`);
+            }
             // UI update happens in onend or next startListening call
         };
 
@@ -1367,15 +1719,17 @@
 
         logCommand(`Mode: Switching to ${mode === 'none' ? 'Standard View' : mode + ' mode'}`);
         const wasBeta = body.classList.contains('beta-mode');
+        const wasHolo = body.classList.contains('hololens-mode');
 
         // Stop/Cleanup Actions for Previous Mode
-        if (wasBeta) { stopListening(); }
+        if (wasBeta || wasHolo) { stopListening(); }
         if (micToggleBtn) micToggleBtn.style.display = 'none'; // Always hide mic toggle initially
         if (mode !== "holo" && xrSession) { endXRSession(); }
         if (mode !== "holo") {
             setMRDetailVisibility(false);
             setUltrasoundPanelExpanded(false);
         }
+        if (mode !== "holo") { setMRUltrasoundVisibility(false); }
 
         // Set New Mode
         body.classList.remove("alpha-mode", "beta-mode", "hololens-mode");
@@ -1383,11 +1737,11 @@
 
         switch (mode) {
             case "alpha":
-                body.classList.add("alpha-mode"); logCommand("Mode: Entered Touch Mode (Alpha)"); if (tutorialState.currentStep < 0) restartTutorial(); else { renderStep(steps[tutorialState.currentStep]); } break;
+                body.classList.add("alpha-mode"); logCommand("Mode: Entered Touch Mode (Alpha)"); if (tutorialState.currentStep < 0) restartTutorial(undefined, false); else { renderStep(steps[tutorialState.currentStep]); } break;
             case "beta":
-                body.classList.add("beta-mode"); logCommand("Mode: Entered Voice Mode (Beta)"); if (!recognition) { recognition = setupSpeechRecognition(); } if (speechController.supported) { startListening(); } else { logCommand("Voice Mode active, but speech not supported."); } if (tutorialState.currentStep < 0) restartTutorial(); else { renderStep(steps[tutorialState.currentStep]); } break;
+                body.classList.add("beta-mode"); logCommand("Mode: Entered Voice Mode (Beta)"); if (!recognition) { recognition = setupSpeechRecognition(); } if (speechController.supported) { startListening(); } else { logCommand("Voice Mode active, but speech not supported."); } if (tutorialState.currentStep < 0) restartTutorial(undefined, false); else { renderStep(steps[tutorialState.currentStep]); } break;
             case "holo":
-                body.classList.add("hololens-mode"); logCommand("Mode: Entered MR Overlay Mode"); if (tutorialState.currentStep < 0) restartTutorial(); else { renderStep(steps[tutorialState.currentStep]); } break;
+                body.classList.add("hololens-mode"); logCommand("Mode: Entered MR Overlay Mode"); if (tutorialState.!recognition) { recognition = setupSpeechRecognition(); } if (speechSupported) { startListening(); } else { logCommand("Hands-free commands unavailable in MR mode because speech is not supported."); } if (currentStep < 0) restartTutorial(undefined, false); else { renderStep(steps[tutorialState.currentStep]); } break;
             case "none": default: logCommand("Mode: Returned to Standard View"); renderProgress(); break;
         }
         updateMicStatusUI(); // Update global UI state after mode change
@@ -1399,6 +1753,7 @@
     if (holoModeBtn) holoModeBtn.addEventListener("click", () => setMode("holo"));
     if (xrSessionBtn) xrSessionBtn.addEventListener("click", toggleXRSession);
     if (mrDetailToggle) mrDetailToggle.addEventListener("click", () => setMRDetailVisibility(!tutorialState.mrDetailsVisible));
+    if (mrAnatomyLabel) mrAnatomyLabel.addEventListener("click", () => setMRUltrasoundVisibility(!mrUltrasoundExpanded));
     if (mrUltrasoundToggle) mrUltrasoundToggle.addEventListener("click", toggleUltrasoundPanelSize);
     if (exitAlphaBtn) exitAlphaBtn.addEventListener("click", () => setMode("none"));
     if (exitBetaBtn) exitBetaBtn.addEventListener("click", () => setMode("none"));

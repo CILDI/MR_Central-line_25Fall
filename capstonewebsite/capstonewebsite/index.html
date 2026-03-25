@@ -1393,6 +1393,8 @@
     function updateMicStatusUI() {
         if (!liveTranscript || !micToggleBtn) return;
         const micIcon = micToggleBtn.querySelector('.btn-icon');
+        const inVoiceMode = tutorialState.mode === "beta";
+        const inMRMode = tutorialState.mode === "holo";
 
         liveTranscript.classList.remove('mic-active', 'mic-error');
 
@@ -1406,7 +1408,7 @@
             return;
         }
 
-        if (body.classList.contains('beta-mode')) {
+        if (inVoiceMode) {
             micToggleBtn.disabled = false;
             micToggleBtn.style.display = 'inline-flex'; // Ensure visible
 
@@ -1425,7 +1427,7 @@
                 micToggleBtn.title = "Unmute Microphone";
                 if(micIcon) micIcon.textContent = '🎤'; // Mic icon
             }
-        } else if (body.classList.contains('hololens-mode')) {
+        } else if (inMRMode) {
             micToggleBtn.disabled = true;
             micToggleBtn.style.display = 'none';
             micToggleBtn.classList.remove('mic-active');
@@ -1433,11 +1435,11 @@
                 liveTranscript.innerText = "🎤 Hands-free active. Say: next step, repeat step, show details, or pause.";
                 liveTranscript.classList.add('mic-active');
             } else {
-                liveTranscript.innerText = "🎤 Hands-free available in MR Overlay Mode when speech is supported.";
+                liveTranscript.innerText = "🎤 Hands-free ready. If commands do not respond, allow mic access and say: next step.";
             }
             if (micIcon) micIcon.textContent = '🎤';
         } else {
-            liveTranscript.innerText = "🎤 Voice commands inactive.";
+            liveTranscript.innerText = "🎤 Voice idle. Enter Voice Mode or MR Overlay Mode to enable commands.";
             micToggleBtn.disabled = true;
             micToggleBtn.style.display = 'none'; // Hide button
             micToggleBtn.classList.remove('mic-active');
@@ -1639,7 +1641,7 @@
         dwellController.cancel(); // Cancel dwell timer on any mode change
 
         const currentModeClass = body.className.match(/(alpha|beta|hololens)-mode/)?.[0];
-        const targetModeClass = mode !== 'none' ? `${mode}-mode` : null;
+        const targetModeClass = mode === "holo" ? "hololens-mode" : mode !== "none" ? `${mode}-mode` : null;
         if (currentModeClass === targetModeClass) { logCommand(`Mode: Already in ${mode} mode.`); return; }
 
         logCommand(`Mode: Switching to ${mode === 'none' ? 'Standard View' : mode + ' mode'}`);

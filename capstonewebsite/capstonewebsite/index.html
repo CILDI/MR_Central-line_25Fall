@@ -1600,15 +1600,26 @@
 
         recognition.onerror = (event) => {
             let errorMsg = `Speech Error: ${event.error}`;
-             let shouldStopListening = true;
+            let shouldStopListening = true;
+            let suppressVisibleError = false;
             if (event.error === 'no-speech') { errorMsg = "🎤 Didn't hear anything. Still listening..."; shouldStopListening = false; }
+            else if (event.error === 'aborted') {
+                errorMsg = "🎤 Listening restarted.";
+                shouldStopListening = false;
+                suppressVisibleError = true;
+            }
             else if (event.error === 'audio-capture') { errorMsg = "🎤 Mic Error. Check connection/permission."; }
             else if (event.error === 'not-allowed') { errorMsg = "🎤 Mic access denied. Enable in browser."; speechController.supported = false; }
             else { errorMsg = `🎤 Error: ${event.error}.`; }
 
-            if (statusDisplay) statusDisplay.innerText = `⚠ ${errorMsg.substring(2)}`;
-            updateTranscriptWithMessage(`⚠ ${errorMsg}`, true);
-            logCommand(`ERROR: ${errorMsg}`);
+            if (suppressVisibleError) {
+                if (isVoiceInteractionMode()) updateMicStatusUI();
+                logCommand(`Speech: ${event.error} handled as expected restart.`);
+            } else {
+                if (statusDisplay) statusDisplay.innerText = `⚠ ${errorMsg.substring(2)}`;
+                updateTranscriptWithMessage(`⚠ ${errorMsg}`, true);
+                logCommand(`ERROR: ${errorMsg}`);
+            }
 
             if (shouldStopListening) {
                 speechController.isListening = false;

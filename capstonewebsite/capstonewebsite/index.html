@@ -377,7 +377,7 @@
       z-index: 900; pointer-events: none; }
       & .step-card { display: none; }
       & #mrOverlayLayer { display: block; }
-      & #progressContainer { position: fixed; right: 26px scale(1.02); bottom: 26px; width: min(18vw, 220px); z-index: 955; opacity: 0.92; }
+      & #progressContainer { position: fixed; right: 26px; transform: scale(1.02); bottom: 26px; width: min(18vw, 220px); z-index: 955; opacity: 0.92; }
       & #progressBarBackground { height: 6px; }
       & #progressText { font-size: 0.78rem; }
       & #holoNavButtons { display: flex !important; position: fixed; right: 26px; bottom: 86px; width: auto; padding: 0; gap: 10px; z-index: 951; justify-content: flex-end; }
@@ -890,21 +890,7 @@
             mrDetailToggle.innerText = visible ? "Hide Details" : "Show Details";
             mrDetailToggle.setAttribute("aria-expanded", visible ? "true" : "false");
         }
-        
-    }
-
-    function setUltrasoundPanelExpanded(expanded) {
-        tutorialState.ultrasoundExpanded = expanded;
-        if (mrOverlayLayer) mrOverlayLayer.classList.toggle("ultrasound-expanded", expanded);
-        if (mrUltrasoundToggle) {
-            mrUltrasoundToggle.innerText = expanded ? "Minimize" : "Full Screen";
-            mrUltrasoundToggle.setAttribute("aria-expanded", expanded ? "true" : "false");
-        }
-    }
-
-    function toggleUltrasoundPanelSize() {
-        setUltrasoundPanelExpanded(!tutorialState.ultrasoundExpanded);
-        logCommand(`MR Overlay: Ultrasound panel ${tutorialState.ultrasoundExpanded ? "expanded" : "minimized"}.`);
+        if (mrVoiceCommands) mrVoiceCommands.innerText = getVoiceCommandHelpText();
     }
 
     function setUltrasoundPanelExpanded(expanded) {
@@ -1250,10 +1236,10 @@
     }
 
     function repeatCurrentStep() {
-        if (currentStep < 0 || currentStep >= steps.length) return;
-        const step = steps[currentStep];
-        speakText(buildSpokenStepText(step, currentStep + 1));
-        if (statusDisplay) statusDisplay.innerText = `🔁 Repeating step ${currentStep + 1} of ${steps.length}.`;
+        if (tutorialState.currentStep < 0 || tutorialState.currentStep >= steps.length) return;
+        const step = steps[tutorialState.currentStep];
+        speakText(buildSpokenStepText(step, tutorialState.currentStep + 1));
+        if (statusDisplay) statusDisplay.innerText = `🔁 Repeating step ${tutorialState.currentStep + 1} of ${steps.length}.`;
         logCommand("Voice: Repeat current step");
     }
 
@@ -1275,96 +1261,19 @@
         if (cleaned.includes("repeat")) { repeatInstruction(undefined, false); return true; }
         if (cleaned.includes("show details") || cleaned.includes("open details")) { setMRDetailVisibility(true); logCommand("Voice: Show details"); return true; }
         if (cleaned.includes("hide details") || cleaned.includes("close details")) { setMRDetailVisibility(false); logCommand("Voice: Hide details"); return true; }
-        if (cleaned === "details") { setMRDetailVisibility(!mrDetailsVisible); logCommand("Voice: Toggle details"); return true; }
+        if (cleaned === "details") { setMRDetailVisibility(!tutorialState.mrDetailsVisible); logCommand("Voice: Toggle details"); return true; }
         if (cleaned.includes("pause")) { pauseHandsFree(); return true; }
         if (cleaned.includes("resume")) { startListening(); updateTranscriptWithMessage("🎤 Listening for hands-free commands..."); logCommand("Voice: Resume listening"); return true; }
         if (cleaned.includes("help") || cleaned.includes("commands")) { updateTranscriptWithMessage(`🎤 ${getVoiceCommandHelpText()}`); logCommand("Voice: Help requested"); return true; }
         return false;
     }
-
-    function triggerNavigationFlash(target) {
-        if (!target) return;
-        target.classList.remove("feedback-flash");
-        void target.offsetWidth;
-        target.classList.add("feedback-flash");
-        window.setTimeout(() => target.classList.remove("feedback-flash"), 240);
-    }
-
-    function playNavigationClick() {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (!AudioCtx) return;
-        try {
-            if (!feedbackAudioContext) feedbackAudioContext = new AudioCtx();
-            if (feedbackAudioContext.state === "suspended") feedbackAudioContext.resume();
-            const ctx = feedbackAudioContext;
-            const now = ctx.currentTime;
-            const oscillator = ctx.createOscillator();
-            const gainNode = ctx.createGain();
-            oscillator.type = "triangle";
-            oscillator.frequency.setValueAtTime(740, now);
-            oscillator.frequency.exponentialRampToValueAtTime(520, now + 0.05);
-            gainNode.gain.setValueAtTime(0.0001, now);
-            gainNode.gain.exponentialRampToValueAtTime(0.035, now + 0.01);
-            gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.08);
-            oscillator.connect(gainNode);
-            gainNode.connect(ctx.destination);
-            oscillator.start(now);
-            oscillator.stop(now + 0.09);
-        } catch (error) {
-            logCommand(`Feedback: audio unavailable (${error.message}).`);
-        }
-    }
-
-    function triggerHapticFeedback(pattern = [18]) {
-        if (navigator.vibrate) navigator.vibrate(pattern);
-    }
-
-    function triggerNavigationFeedback(target, hapticPattern = [18]) {
-        triggerNavigationFlash(target);
-        playNavigationClick();
-        triggerHapticFeedback(hapticPattern);
-    }
-
-    function repeatCurrentStep() {
-        if (currentStep < 0 || currentStep >= steps.length) return;
-        const step = steps[currentStep];
-        speakText(buildSpokenStepText(step, currentStep + 1));
-        if (statusDisplay) statusDisplay.innerText = `🔁 Repeating step ${currentStep + 1} of ${steps.length}.`;
-        logCommand("Voice: Repeat current step");
-    }
-
-    function repeatInstruction(sourceButton = body.classList.contains("hololens-mode") ? holoRepeatBtn : repeatBtn, emitFeedback = true) {
-        repeatCurrentStep();
-        if (emitFeedback) triggerNavigationFeedback(sourceButton, [16, 8, 16]);
-    }
-
-    function pauseHandsFree() {
-        if ("speechSynthesis" in window) speechSynthesis.cancel();
-        updateTranscriptWithMessage("⏸️ Guidance paused. Say \"repeat step\" or \"resume listening\" to continue.");
-        logCommand("Voice: Guidance paused");
-    }
-
-    function handleVoiceCommand(cleaned, raw) {
-        if (cleaned.includes("next")) { nextStep(); return true; }
-        if (cleaned.includes("previous") || cleaned.includes("back") || cleaned.includes("go back")) { prevStep(); return true; }
-        if (cleaned.includes("restart") || cleaned.includes("start over")) { restartTutorial(); return true; }
-        if (cleaned.includes("repeat")) { repeatInstruction(undefined, false); return true; }
-        if (cleaned.includes("show details") || cleaned.includes("open details")) { setMRDetailVisibility(true); logCommand("Voice: Show details"); return true; }
-        if (cleaned.includes("hide details") || cleaned.includes("close details")) { setMRDetailVisibility(false); logCommand("Voice: Hide details"); return true; }
-        if (cleaned === "details") { setMRDetailVisibility(!mrDetailsVisible); logCommand("Voice: Toggle details"); return true; }
-        if (cleaned.includes("pause")) { pauseHandsFree(); return true; }
-        if (cleaned.includes("resume")) { startListening(); updateTranscriptWithMessage("🎤 Listening for hands-free commands..."); logCommand("Voice: Resume listening"); return true; }
-        if (cleaned.includes("help") || cleaned.includes("commands")) { updateTranscriptWithMessage(`🎤 ${getVoiceCommandHelpText()}`); logCommand("Voice: Help requested"); return true; }
-        return false;
-    }
-
 
     function updateStep(newStep) {
         if (newStep < 0 || newStep >= steps.length) return;
-        currentStep = newStep;
-        const step = steps[currentStep];
+        tutorialState.currentStep = newStep;
+        const step = steps[tutorialState.currentStep];
         if (stepTitle) stepTitle.innerText = `${step.phase}: ${step.title}`;
-        if (stepMeta) stepMeta.innerText = `Step ${currentStep + 1} of ${steps.length} • ${step.id}`;
+        if (stepMeta) stepMeta.innerText = `Step ${tutorialState.currentStep + 1} of ${steps.length} • ${step.id}`;
         if (stepConfidence) stepConfidence.innerText = step.confidence;
         if (stepBox) stepBox.innerText = step.action;
         if (anatomyCue) anatomyCue.innerText = step.anatomy;
@@ -1373,10 +1282,10 @@
         if (successCue) successCue.innerText = step.success;
         if (verifyCue) verifyCue.innerText = step.verify;
         renderMROverlay(step);
-        speakText(buildSpokenStepText(step, currentStep + 1));
-        const isFirstStep = currentStep === 0;
-        const isLastStep = currentStep === steps.length - 1;
-        if(statusDisplay) statusDisplay.innerText = isLastStep ? `✅ Final step ready for post-procedure confirmation (${currentStep + 1}/${steps.length})` : `${step.phase} • Step ${currentStep + 1} of ${steps.length}`;
+        speakText(buildSpokenStepText(step, tutorialState.currentStep + 1));
+        const isFirstStep = tutorialState.currentStep === 0;
+        const isLastStep = tutorialState.currentStep === steps.length - 1;
+        if(statusDisplay) statusDisplay.innerText = isLastStep ? `✅ Final step ready for post-procedure confirmation (${tutorialState.currentStep + 1}/${steps.length})` : `${step.phase} • Step ${tutorialState.currentStep + 1} of ${steps.length}`;
 
         // Update button disabled state first
         if (prevBtn) prevBtn.disabled = isFirstStep;
@@ -1399,7 +1308,7 @@
     // ----- Update Progress Bar -----
     function updateProgressBar() {
         if (!progressBar || !progressText) return;
-        if (currentStep < 0) {
+        if (tutorialState.currentStep < 0) {
             progressBar.style.width = "0%";
             progressText.innerText = `${steps.length} procedural tasks queued`;
             if (progressTimeline) {
@@ -1412,18 +1321,17 @@
             }
             return;
         }
-        const fraction = (currentStep + 1) / steps.length;
+        const fraction = (tutorialState.currentStep + 1) / steps.length;
         progressBar.style.width = `${fraction * 100}%`;
-        const stepsRemaining = steps.length - (currentStep + 1);
+        const stepsRemaining = steps.length - (tutorialState.currentStep + 1);
         progressText.innerText = stepsRemaining > 0 ? `${stepsRemaining} task${stepsRemaining !== 1 ? "s" : ""} remaining` : "Workflow complete";
         if (progressTimeline) {
             progressTimeline.innerHTML = "";
             for (let index = 0; index < steps.length; index += 1) {
                 const block = document.createElement("span");
                 block.className = "timeline-block";
-                if (index < currentStep) block.classList.add("is-complete");
-                if (index === currentStep) block.classList.add("is-current");
-                if (index < currentStep && index === currentStep - 1) block.classList.add("is-complete");
+                if (index < tutorialState.currentStep) block.classList.add("is-complete");
+                if (index === tutorialState.currentStep) block.classList.add("is-current");
                 progressTimeline.appendChild(block);
             }
         }
@@ -1520,7 +1428,7 @@
             micToggleBtn.disabled = true;
             micToggleBtn.style.display = 'none';
             micToggleBtn.classList.remove('mic-active');
-            if (isListening) {
+            if (speechController.isListening) {
                 liveTranscript.innerText = "🎤 Hands-free active. Say: next step, repeat step, show details, or pause.";
                 liveTranscript.classList.add('mic-active');
             } else {
@@ -1594,11 +1502,11 @@
         };
 
         recognition.onend = () => {
-            if (body.classList.contains('beta-mode') && speechController.isListening) {
-                 setTimeout(() => { if (body.classList.contains('beta-mode') && speechController.isListening) { startListening(); } }, 100);
+            if (isVoiceInteractionMode() && speechController.isListening) {
+                 setTimeout(() => { if (isVoiceInteractionMode() && speechController.isListening) { startListening(); } }, 100);
             } else {
                  speechController.isListening = false;
-                 if (body.classList.contains('beta-mode')) { updateMicStatusUI(); }
+                 if (isVoiceInteractionMode()) { updateMicStatusUI(); }
                  logCommand("Speech: Listening ended.");
             }
         };
@@ -1741,7 +1649,7 @@
             case "beta":
                 body.classList.add("beta-mode"); logCommand("Mode: Entered Voice Mode (Beta)"); if (!recognition) { recognition = setupSpeechRecognition(); } if (speechController.supported) { startListening(); } else { logCommand("Voice Mode active, but speech not supported."); } if (tutorialState.currentStep < 0) restartTutorial(undefined, false); else { renderStep(steps[tutorialState.currentStep]); } break;
             case "holo":
-                body.classList.add("hololens-mode"); logCommand("Mode: Entered MR Overlay Mode"); if (tutorialState.!recognition) { recognition = setupSpeechRecognition(); } if (speechSupported) { startListening(); } else { logCommand("Hands-free commands unavailable in MR mode because speech is not supported."); } if (currentStep < 0) restartTutorial(undefined, false); else { renderStep(steps[tutorialState.currentStep]); } break;
+                body.classList.add("hololens-mode"); logCommand("Mode: Entered MR Overlay Mode"); if (!recognition) { recognition = setupSpeechRecognition(); } if (speechController.supported) { startListening(); } else { logCommand("Hands-free commands unavailable in MR mode because speech is not supported."); } if (tutorialState.currentStep < 0) restartTutorial(undefined, false); else { renderStep(steps[tutorialState.currentStep]); } break;
             case "none": default: logCommand("Mode: Returned to Standard View"); renderProgress(); break;
         }
         updateMicStatusUI(); // Update global UI state after mode change

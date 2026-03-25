@@ -1279,6 +1279,23 @@
         logCommand("Audio: Stopped spoken guidance and feedback.");
     }
 
+    function interruptSpokenGuidance(resumeListening = true) {
+        if (!speechController.isSpeaking) return false;
+        stopAllGuidanceAudio();
+        if (resumeListening && isVoiceInteractionMode()) {
+            updateTranscriptWithMessage("⏸️ Guidance stopped. Listening resumed.");
+            setTimeout(() => {
+                if (isVoiceInteractionMode() && !speechController.isListening && !speechController.isSpeaking) {
+                    startListening();
+                }
+            }, 80);
+        } else {
+            updateMicStatusUI();
+        }
+        logCommand("Audio: Spoken guidance interrupted by user.");
+        return true;
+    }
+
     function repeatCurrentStep() {
         if (tutorialState.currentStep < 0 || tutorialState.currentStep >= steps.length) return;
         const step = steps[tutorialState.currentStep];
@@ -1293,7 +1310,7 @@
     }
 
     function pauseHandsFree() {
-        if ("speechSynthesis" in window) speechSynthesis.cancel();
+        interruptSpokenGuidance(false);
         stopListening();
         updateTranscriptWithMessage("⏸️ Guidance paused. Say \"resume listening\" or tap the mic to continue.");
         logCommand("Voice: Guidance paused");
@@ -1408,7 +1425,9 @@
          }).observe(prevBtn, { attributes: true });
     }
     if (restartBtn) restartBtn.addEventListener("click", restartTutorial);
-    if (repeatBtn) repeatBtn.addEventListener("click", repeatInstruction);
+    if (repeatBtn) repeatBtn.addEventListener("click", () => {
+        if (!interruptSpokenGuidance()) repeatInstruction();
+    });
 
     if (holoNextBtn) {
         holoNextBtn.addEventListener("click", nextStep);
@@ -1427,10 +1446,20 @@
         }).observe(holoPrevBtn, { attributes: true });
     }
     if (holoRestartBtn) holoRestartBtn.addEventListener("click", restartTutorial);
-    if (holoRepeatBtn) holoRepeatBtn.addEventListener("click", repeatInstruction);
+    if (holoRepeatBtn) holoRepeatBtn.addEventListener("click", () => {
+        if (!interruptSpokenGuidance()) repeatInstruction();
+    });
 
     if (micToggleBtn) micToggleBtn.addEventListener("click", toggleMicListening);
-    if (readAloudBtn) readAloudBtn.addEventListener("click", () => speechController.speakCurrentStep());
+    if (readAloudBtn) readAloudBtn.addEventListener("click", () => {
+        if (!interruptSpokenGuidance()) speechController.speakCurrentStep();
+    });
+    document.addEventListener("keydown", (event) => {
+        if ((event.key === "Escape" || event.key.toLowerCase() === "p") && speechController.isSpeaking) {
+            event.preventDefault();
+            interruptSpokenGuidance();
+        }
+    });
 
 
     // ----- Update Live Transcript & Mic Button UI -----

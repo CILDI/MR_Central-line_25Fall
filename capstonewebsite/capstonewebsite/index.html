@@ -769,11 +769,40 @@
         autoSpeak: false,
         isSpeaking: false,
         pauseBetweenSegmentsMs: 650,
+        restartListeningAfterSpeech: false,
         speechSequenceId: 0,
         pendingSpeechTimer: null,
+        selectedVoice: null,
+        getPreferredVoice() {
+            if (!("speechSynthesis" in window)) return null;
+            const voices = speechSynthesis.getVoices();
+            if (!voices.length) return null;
+            const preferredVoice =
+                voices.find((voice) => voice.lang === "en-US" && /female|samantha|ava|allison/i.test(voice.name)) ||
+                voices.find((voice) => voice.lang === "en-US") ||
+                voices.find((voice) => voice.lang && voice.lang.toLowerCase().startsWith("en")) ||
+                voices[0];
+            this.selectedVoice = preferredVoice || null;
+            return this.selectedVoice;
+        },
+        initializeVoices() {
+            if (!("speechSynthesis" in window)) return;
+            this.getPreferredVoice();
+            if (typeof speechSynthesis.onvoiceschanged !== "undefined") {
+                speechSynthesis.onvoiceschanged = () => {
+                    this.getPreferredVoice();
+                    logController.log(`SpeechSynthesis: Loaded ${speechSynthesis.getVoices().length} voice(s).`);
+                };
+            }
+        },
         speak(text) {
             if (!('speechSynthesis' in window)) {
                 logController.log("SpeechSynthesis not supported in this browser.");
+                return;
+            }
+            const normalizedText = `${text || ""}`.trim();
+            if (!normalizedText) {
+                logController.log("SpeechSynthesis: Ignored empty text.");
                 return;
             }
             this.speechSequenceId += 1;
@@ -782,8 +811,13 @@
                 clearTimeout(this.pendingSpeechTimer);
                 this.pendingSpeechTimer = null;
             }
+            this.restartListeningAfterSpeech = isVoiceInteractionMode() && this.isListening;
+            if (this.restartListeningAfterSpeech) {
+                stopListening(true);
+            }
             speechSynthesis.cancel();
-            const segments = text
+            this.getPreferredVoice();
+            const segments = normalizedText
                 .split(/(?<=[.!?])\s+/)
                 .map((segment) => segment.trim())
                 .filter(Boolean);
@@ -800,12 +834,23 @@
                 utterance.lang = 'en-US';
                 utterance.rate = 1;
                 utterance.pitch = 1;
+                utterance.volume = 1;
+                const preferredVoice = this.selectedVoice || this.getPreferredVoice();
+                if (preferredVoice) utterance.voice = preferredVoice;
                 this.isSpeaking = true;
                 utterance.onend = () => {
                     if (sequenceId !== this.speechSequenceId) return;
                     if (index === segments.length - 1) {
                         this.isSpeaking = false;
                         this.pendingSpeechTimer = null;
+                        if (this.restartListeningAfterSpeech && isVoiceInteractionMode()) {
+                            this.restartListeningAfterSpeech = false;
+                            window.setTimeout(() => {
+                                if (!this.isSpeaking && !this.isListening && isVoiceInteractionMode()) {
+                                    startListening();
+                                }
+                            }, 120);
+                        }
                         if (isVoiceInteractionMode()) updateMicStatusUI();
                         return;
                     }
@@ -818,12 +863,23 @@
                     if (sequenceId !== this.speechSequenceId) return;
                     this.isSpeaking = false;
                     this.pendingSpeechTimer = null;
+                    if (this.restartListeningAfterSpeech && isVoiceInteractionMode()) {
+                        this.restartListeningAfterSpeech = false;
+                        window.setTimeout(() => {
+                            if (!this.isSpeaking && !this.isListening && isVoiceInteractionMode()) {
+                                startListening();
+                            }
+                        }, 120);
+                    }
                     if (isVoiceInteractionMode()) updateMicStatusUI();
                 };
-                speechSynthesis.speak(utterance);
+                window.setTimeout(() => {
+                    if (sequenceId !== this.speechSequenceId) return;
+                    speechSynthesis.speak(utterance);
+                }, index === 0 ? 80 : 0);
             };
             speakSegment(0);
-            logController.log(`SpeechSynthesis: Spoke "${text}"`);
+            logController.log(`SpeechSynthesis: Queued "${normalizedText}"`);
         },
         speakCurrentStep() {
             if (tutorialState.currentStep < 0 || tutorialState.currentStep >= steps.length) {
@@ -1286,6 +1342,7 @@
             clearTimeout(speechController.pendingSpeechTimer);
             speechController.pendingSpeechTimer = null;
         }
+        speechController.restartListeningAfterSpeech = false;
         if ("speechSynthesis" in window) {
             speechSynthesis.cancel();
         }
@@ -1835,6 +1892,7 @@
 
         // Setup recognition early to check support
         if (!recognition) { recognition = setupSpeechRecognition(); }
+        speechController.initializeVoices();
         detectXRSupport();
         updateMicStatusUI(); // Set initial transcript/button state
 

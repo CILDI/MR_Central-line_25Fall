@@ -1316,17 +1316,21 @@
         logCommand("Voice: Guidance paused");
     }
 
+    function commandHasPhrase(text, phrases) {
+        return phrases.some((phrase) => text === phrase || text.startsWith(`${phrase} `) || text.endsWith(` ${phrase}`) || text.includes(` ${phrase} `));
+    }
+
     function handleVoiceCommand(cleaned, raw) {
-        if (cleaned.includes("next")) { nextStep(); return true; }
-        if (cleaned.includes("previous") || cleaned.includes("back") || cleaned.includes("go back")) { prevStep(); return true; }
-        if (cleaned.includes("restart") || cleaned.includes("start over")) { restartTutorial(); return true; }
-        if (cleaned.includes("repeat")) { repeatInstruction(undefined, false); return true; }
-        if (cleaned.includes("show details") || cleaned.includes("open details")) { setMRDetailVisibility(true); logCommand("Voice: Show details"); return true; }
-        if (cleaned.includes("hide details") || cleaned.includes("close details")) { setMRDetailVisibility(false); logCommand("Voice: Hide details"); return true; }
+        if (commandHasPhrase(cleaned, ["next", "next step", "continue", "continue step"])) { nextStep(); return true; }
+        if (commandHasPhrase(cleaned, ["previous", "previous step", "back", "go back", "last step"])) { prevStep(); return true; }
+        if (commandHasPhrase(cleaned, ["restart", "restart step", "start over", "restart tutorial"])) { restartTutorial(); return true; }
+        if (commandHasPhrase(cleaned, ["repeat", "repeat step", "repeat instruction", "say again"])) { repeatInstruction(undefined, false); return true; }
+        if (commandHasPhrase(cleaned, ["show details", "open details"])) { setMRDetailVisibility(true); logCommand("Voice: Show details"); return true; }
+        if (commandHasPhrase(cleaned, ["hide details", "close details"])) { setMRDetailVisibility(false); logCommand("Voice: Hide details"); return true; }
         if (cleaned === "details") { setMRDetailVisibility(!tutorialState.mrDetailsVisible); logCommand("Voice: Toggle details"); return true; }
-        if (cleaned.includes("pause")) { pauseHandsFree(); return true; }
-        if (cleaned.includes("resume")) { startListening(); updateTranscriptWithMessage("🎤 Listening for hands-free commands..."); logCommand("Voice: Resume listening"); return true; }
-        if (cleaned.includes("help") || cleaned.includes("commands")) { updateTranscriptWithMessage(`🎤 ${getVoiceCommandHelpText()}`); logCommand("Voice: Help requested"); return true; }
+        if (commandHasPhrase(cleaned, ["pause", "pause guidance", "stop guidance", "pause listening"])) { pauseHandsFree(); return true; }
+        if (commandHasPhrase(cleaned, ["resume", "resume listening", "continue listening"])) { startListening(); updateTranscriptWithMessage("🎤 Listening for hands-free commands..."); logCommand("Voice: Resume listening"); return true; }
+        if (commandHasPhrase(cleaned, ["help", "commands", "show commands"])) { updateTranscriptWithMessage(`🎤 ${getVoiceCommandHelpText()}`); logCommand("Voice: Help requested"); return true; }
         return false;
     }
 

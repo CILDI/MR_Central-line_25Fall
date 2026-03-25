@@ -1331,9 +1331,8 @@
     }
 
     function pauseHandsFree() {
-        interruptSpokenGuidance(false);
-        stopListening();
-        updateTranscriptWithMessage("⏸️ Guidance paused. Say \"resume listening\" or tap the mic to continue.");
+        interruptSpokenGuidance(true);
+        updateTranscriptWithMessage("⏸️ Guidance paused. Voice control is still active. Say \"resume\", \"repeat step\", or \"next step\".");
         logCommand("Voice: Guidance paused");
     }
 
@@ -1553,6 +1552,19 @@
         if (isError) { liveTranscript.classList.add('mic-error'); }
     }
 
+    function shouldKeepMRListening() {
+        return tutorialState.mode === "holo" && speechController.supported;
+    }
+
+    function ensureMRListening(delayMs = 100) {
+        if (!shouldKeepMRListening()) return;
+        window.setTimeout(() => {
+            if (shouldKeepMRListening() && !speechController.isListening) {
+                startListening();
+            }
+        }, delayMs);
+    }
+
 
     // ----- Speech Recognition -----
     function setupSpeechRecognition() {
@@ -1598,12 +1610,21 @@
             updateTranscriptWithMessage(`⚠ ${errorMsg}`, true);
             logCommand(`ERROR: ${errorMsg}`);
 
-            if (shouldStopListening) { speechController.isListening = false; }
+            if (shouldStopListening) {
+                speechController.isListening = false;
+                if (shouldKeepMRListening()) {
+                    speechController.isListening = true;
+                    ensureMRListening(160);
+                }
+            }
             updateMicStatusUI(); // Update UI based on outcome
         };
 
         recognition.onend = () => {
-            if (isVoiceInteractionMode() && speechController.isListening) {
+            if (shouldKeepMRListening()) {
+                 speechController.isListening = true;
+                 ensureMRListening(100);
+            } else if (isVoiceInteractionMode() && speechController.isListening) {
                  setTimeout(() => { if (isVoiceInteractionMode() && speechController.isListening) { startListening(); } }, 100);
             } else {
                  speechController.isListening = false;
@@ -1646,7 +1667,12 @@
         updateMicStatusUI();
     }
 
-    function stopListening() {
+    function stopListening(force = false) {
+        if (!force && shouldKeepMRListening()) {
+            logCommand("Speech: Stop ignored because MR hands-free listening is locked on.");
+            ensureMRListening(80);
+            return;
+        }
         const wasListening = speechController.isListening;
         speechController.isListening = false; // Set desired state OFF immediately
 
@@ -1747,7 +1773,7 @@
         const wasHolo = body.classList.contains('hololens-mode');
 
         // Stop/Cleanup Actions for Previous Mode
-        if (wasBeta || wasHolo) { stopListening(); }
+        if (wasBeta || wasHolo) { stopListening(mode !== "holo"); }
         if (wasHolo && mode !== "holo") { stopAllGuidanceAudio(); }
         if (micToggleBtn) micToggleBtn.style.display = 'none'; // Always hide mic toggle initially
         if (mode !== "holo" && xrSession) { endXRSession(); }

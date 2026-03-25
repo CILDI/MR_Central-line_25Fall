@@ -500,6 +500,9 @@
       <button id="xrSessionBtn" class="btn btn-secondary-accent" style="display:none;">
         <span class="btn-icon">🥽</span> <span class="btn-text">Start AR</span>
       </button>
+      <button id="audioTestBtn" class="btn">
+        <span class="btn-icon">🔊</span> <span class="btn-text">Test Audio</span>
+      </button>
     </div>
 
     <div class="main-content">
@@ -730,6 +733,7 @@
     const alphaModeBtn = document.getElementById("alphaModeBtn");
     const holoModeBtn = document.getElementById("holoModeBtn");
     const xrSessionBtn = document.getElementById("xrSessionBtn");
+    const audioTestBtn = document.getElementById("audioTestBtn");
     const readAloudBtn = document.getElementById("readAloudBtn");
     const xrCanvas = document.getElementById("xrCanvas");
 
@@ -795,32 +799,87 @@
                 };
             }
         },
-        speak(text) {
-            if (!('speechSynthesis' in window)) {
+        speakDiagnostic(text, { skipListeningState = false } = {}) {
+            if (!("speechSynthesis" in window)) {
                 logController.log("SpeechSynthesis not supported in this browser.");
-                return;
+                return false;
             }
             const normalizedText = `${text || ""}`.trim();
-            if (!normalizedText) {
-                logController.log("SpeechSynthesis: Ignored empty text.");
-                return;
-            }
+            if (!normalizedText) return false;
             this.speechSequenceId += 1;
             const sequenceId = this.speechSequenceId;
             if (this.pendingSpeechTimer) {
                 clearTimeout(this.pendingSpeechTimer);
                 this.pendingSpeechTimer = null;
             }
-            this.restartListeningAfterSpeech = isVoiceInteractionMode() && this.isListening;
-            if (this.restartListeningAfterSpeech) {
-                stopListening(true);
+            if (!skipListeningState) {
+                this.restartListeningAfterSpeech = isVoiceInteractionMode() && this.isListening;
+                if (this.restartListeningAfterSpeech) stopListening(true);
+            } else {
+                this.restartListeningAfterSpeech = false;
             }
             speechSynthesis.cancel();
-            this.getPreferredVoice();
+            speechSynthesis.resume();
+            const utterance = new SpeechSynthesisUtterance(normalizedText);
+            utterance.lang = "en-US";
+            utterance.rate = 1;
+            utterance.pitch = 1;
+            utterance.volume = 1;
+            const preferredVoice = this.selectedVoice || this.getPreferredVoice();
+            if (preferredVoice) utterance.voice = preferredVoice;
+            this.isSpeaking = true;
+            utterance.onstart = () => {
+                logController.log(`SpeechSynthesis: Started "${normalizedText}"`);
+            };
+            utterance.onend = () => {
+                if (sequenceId !== this.speechSequenceId) return;
+                this.isSpeaking = false;
+                if (this.restartListeningAfterSpeech && isVoiceInteractionMode()) {
+                    this.restartListeningAfterSpeech = false;
+                    window.setTimeout(() => {
+                        if (!this.isSpeaking && !this.isListening && isVoiceInteractionMode()) startListening();
+                    }, 120);
+                }
+                if (isVoiceInteractionMode()) updateMicStatusUI();
+                logController.log(`SpeechSynthesis: Finished "${normalizedText}"`);
+            };
+            utterance.onerror = (event) => {
+                if (sequenceId !== this.speechSequenceId) return;
+                this.isSpeaking = false;
+                const errorCode = event && event.error ? event.error : "unknown";
+                logController.log(`SpeechSynthesis error: ${errorCode}`);
+                if (statusDisplay) statusDisplay.innerText = `⚠ Audio speech failed: ${errorCode}`;
+                if (this.restartListeningAfterSpeech && isVoiceInteractionMode()) {
+                    this.restartListeningAfterSpeech = false;
+                    window.setTimeout(() => {
+                        if (!this.isSpeaking && !this.isListening && isVoiceInteractionMode()) startListening();
+                    }, 120);
+                }
+                if (isVoiceInteractionMode()) updateMicStatusUI();
+            };
+            window.setTimeout(() => {
+                if (sequenceId !== this.speechSequenceId) return;
+                speechSynthesis.speak(utterance);
+            }, 80);
+            logController.log(`SpeechSynthesis: Queued "${normalizedText}"`);
+            return true;
+        },
+        speak(text) {
+            const normalizedText = `${text || ""}`.trim();
+            if (!normalizedText) {
+                logController.log("SpeechSynthesis: Ignored empty text.");
+                return;
+            }
             const segments = normalizedText
                 .split(/(?<=[.!?])\s+/)
                 .map((segment) => segment.trim())
                 .filter(Boolean);
+            this.speechSequenceId += 1;
+            const sequenceId = this.speechSequenceId;
+            if (this.pendingSpeechTimer) {
+                clearTimeout(this.pendingSpeechTimer);
+                this.pendingSpeechTimer = null;
+            }
             const speakSegment = (index) => {
                 if (sequenceId !== this.speechSequenceId) return;
                 const segment = segments[index];
@@ -830,56 +889,15 @@
                     if (isVoiceInteractionMode()) updateMicStatusUI();
                     return;
                 }
-                const utterance = new SpeechSynthesisUtterance(segment);
-                utterance.lang = 'en-US';
-                utterance.rate = 1;
-                utterance.pitch = 1;
-                utterance.volume = 1;
-                const preferredVoice = this.selectedVoice || this.getPreferredVoice();
-                if (preferredVoice) utterance.voice = preferredVoice;
-                this.isSpeaking = true;
-                utterance.onend = () => {
+                this.speakDiagnostic(segment, { skipListeningState: index > 0 });
+                if (index === segments.length - 1) return;
+                this.pendingSpeechTimer = window.setTimeout(() => {
                     if (sequenceId !== this.speechSequenceId) return;
-                    if (index === segments.length - 1) {
-                        this.isSpeaking = false;
-                        this.pendingSpeechTimer = null;
-                        if (this.restartListeningAfterSpeech && isVoiceInteractionMode()) {
-                            this.restartListeningAfterSpeech = false;
-                            window.setTimeout(() => {
-                                if (!this.isSpeaking && !this.isListening && isVoiceInteractionMode()) {
-                                    startListening();
-                                }
-                            }, 120);
-                        }
-                        if (isVoiceInteractionMode()) updateMicStatusUI();
-                        return;
-                    }
-                    this.pendingSpeechTimer = window.setTimeout(() => {
-                        this.pendingSpeechTimer = null;
-                        speakSegment(index + 1);
-                    }, this.pauseBetweenSegmentsMs);
-                };
-                utterance.onerror = () => {
-                    if (sequenceId !== this.speechSequenceId) return;
-                    this.isSpeaking = false;
                     this.pendingSpeechTimer = null;
-                    if (this.restartListeningAfterSpeech && isVoiceInteractionMode()) {
-                        this.restartListeningAfterSpeech = false;
-                        window.setTimeout(() => {
-                            if (!this.isSpeaking && !this.isListening && isVoiceInteractionMode()) {
-                                startListening();
-                            }
-                        }, 120);
-                    }
-                    if (isVoiceInteractionMode()) updateMicStatusUI();
-                };
-                window.setTimeout(() => {
-                    if (sequenceId !== this.speechSequenceId) return;
-                    speechSynthesis.speak(utterance);
-                }, index === 0 ? 80 : 0);
+                    speakSegment(index + 1);
+                }, this.pauseBetweenSegmentsMs + 900);
             };
             speakSegment(0);
-            logController.log(`SpeechSynthesis: Queued "${normalizedText}"`);
         },
         speakCurrentStep() {
             if (tutorialState.currentStep < 0 || tutorialState.currentStep >= steps.length) {
@@ -1334,6 +1352,19 @@
         triggerNavigationFlash(target);
         playNavigationClick();
         triggerHapticFeedback(hapticPattern);
+    }
+
+    function runAudioDiagnostic() {
+        playNavigationClick();
+        const voices = "speechSynthesis" in window ? speechSynthesis.getVoices().length : 0;
+        const message = "Audio test. If you hear this voice, speech synthesis is working.";
+        if (statusDisplay) statusDisplay.innerText = `🔊 Running audio test. Voices detected: ${voices}.`;
+        logCommand(`Audio Test: started with ${voices} detected voice(s).`);
+        speechController.initializeVoices();
+        const started = speechController.speakDiagnostic(message, { skipListeningState: true });
+        if (!started && statusDisplay) {
+            statusDisplay.innerText = "⚠ Audio test failed. Speech synthesis is unavailable in this browser.";
+        }
     }
 
     function stopAllGuidanceAudio() {
@@ -1869,6 +1900,7 @@
     if (betaModeBtn) betaModeBtn.addEventListener("click", () => setMode("beta"));
     if (holoModeBtn) holoModeBtn.addEventListener("click", () => setMode("holo"));
     if (xrSessionBtn) xrSessionBtn.addEventListener("click", toggleXRSession);
+    if (audioTestBtn) audioTestBtn.addEventListener("click", runAudioDiagnostic);
     if (mrDetailToggle) mrDetailToggle.addEventListener("click", () => setMRDetailVisibility(!tutorialState.mrDetailsVisible));
     if (mrAnatomyLabel) mrAnatomyLabel.addEventListener("click", () => setMRUltrasoundVisibility(!mrUltrasoundExpanded));
     if (mrUltrasoundToggle) mrUltrasoundToggle.addEventListener("click", toggleUltrasoundPanelSize);

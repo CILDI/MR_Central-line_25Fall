@@ -1250,7 +1250,8 @@
 
     function pauseHandsFree() {
         if ("speechSynthesis" in window) speechSynthesis.cancel();
-        updateTranscriptWithMessage("⏸️ Guidance paused. Say \"repeat step\" or \"resume listening\" to continue.");
+        stopListening();
+        updateTranscriptWithMessage("⏸️ Guidance paused. Say \"resume listening\" or tap the mic to continue.");
         logCommand("Voice: Guidance paused");
     }
 
@@ -1515,16 +1516,32 @@
     }
 
     function startListening() {
-        if (!speechController.supported || !recognition) { logCommand("Speech: Cannot start - Not supported or setup failed."); updateMicStatusUI(); return; }
+        if (!recognition) {
+            recognition = setupSpeechRecognition();
+        }
+        if (!speechController.supported || !recognition) {
+            logCommand("Speech: Cannot start - Not supported or setup failed.");
+            updateMicStatusUI();
+            return;
+        }
         if (recognition && typeof recognition.start !== 'function') { logCommand("Speech: Recognition object invalid."); return; }
         if (speechController.isListening) { logCommand("Speech: Start called but already listening."); return; }
 
         try {
-            recognition.start();
             speechController.isListening = true;
+            recognition.start();
             logCommand("Speech: Listening started via startListening().");
         } catch (e) {
-            console.error("Error starting recognition:", e); logCommand(`Error starting speech: ${e.message}`); speechController.isListening = false;
+            console.error("Error starting recognition:", e);
+            const message = e && e.message ? e.message : "Unknown speech startup error";
+            logCommand(`Error starting speech: ${message}`);
+            speechController.isListening = false;
+            if (message.toLowerCase().includes("already started")) {
+                speechController.isListening = true;
+                logCommand("Speech: Recognition was already active; keeping listening state on.");
+            } else if (message.toLowerCase().includes("not allowed") || message.toLowerCase().includes("permission")) {
+                updateTranscriptWithMessage("🎤 Mic access blocked. Allow microphone permission in the browser.", true);
+            }
         }
         updateMicStatusUI();
     }
@@ -1667,13 +1684,6 @@
     if (exitBetaBtn) exitBetaBtn.addEventListener("click", () => setMode("none"));
     if (exitHoloBtn) exitHoloBtn.addEventListener("click", () => setMode("none"));
 
-    // ----- Detect Meta Quest Browser -----
-    function isMetaQuestBrowser() {
-      const ua = navigator.userAgent || navigator.vendor || window.opera;
-      // Known Quest Browser identifiers
-      return /OculusBrowser|Quest|Meta Quest/i.test(ua);
-    }
-
     // ----- Initialization -----
     function initializeTutorial() {
         const prefersDark = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)').matches : true;
@@ -1687,18 +1697,6 @@
         renderProgress();
         updateNavButtonState();
         updateXRButtonState();
-
-        if (isMetaQuestBrowser()) {
-          logCommand("Detected Meta Quest Browser — Disabling Voice Mode (speech not supported).");
-          if (betaModeBtn) {
-              betaModeBtn.disabled = true;
-              betaModeBtn.title = "Voice commands not supported on Meta Quest Browser";
-              betaModeBtn.style.opacity = "0.5";
-              betaModeBtn.style.cursor = "not-allowed";
-          }
-          // Optional: also hide it completely instead of disabling
-          betaModeBtn.style.display = "none";
-        }
 
         // Setup recognition early to check support
         if (!recognition) { recognition = setupSpeechRecognition(); }

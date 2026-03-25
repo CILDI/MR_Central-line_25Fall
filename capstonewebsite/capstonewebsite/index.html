@@ -770,16 +770,44 @@
         supported: true,
         isListening: false,
         autoSpeak: false,
+        isSpeaking: false,
+        resumeListeningAfterSpeech: false,
         speak(text) {
             if (!('speechSynthesis' in window)) {
                 logController.log("SpeechSynthesis not supported in this browser.");
                 return;
+            }
+            const shouldResumeListening = isVoiceInteractionMode() && this.isListening;
+            this.resumeListeningAfterSpeech = shouldResumeListening;
+            if (shouldResumeListening) {
+                stopListening();
+                updateTranscriptWithMessage("🔊 Playing guidance. Listening resumes when speech ends.");
             }
             speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'en-US';
             utterance.rate = 1;
             utterance.pitch = 1;
+            this.isSpeaking = true;
+            utterance.onend = () => {
+                this.isSpeaking = false;
+                const shouldRestart = this.resumeListeningAfterSpeech && isVoiceInteractionMode();
+                this.resumeListeningAfterSpeech = false;
+                if (shouldRestart) {
+                    setTimeout(() => {
+                        if (isVoiceInteractionMode() && !this.isListening && !this.isSpeaking) {
+                            startListening();
+                        }
+                    }, 120);
+                } else if (isVoiceInteractionMode()) {
+                    updateMicStatusUI();
+                }
+            };
+            utterance.onerror = () => {
+                this.isSpeaking = false;
+                this.resumeListeningAfterSpeech = false;
+                if (isVoiceInteractionMode()) updateMicStatusUI();
+            };
             speechSynthesis.speak(utterance);
             logController.log(`SpeechSynthesis: Spoke "${text}"`);
         },
@@ -1242,6 +1270,8 @@
         if ("speechSynthesis" in window) {
             speechSynthesis.cancel();
         }
+        speechController.isSpeaking = false;
+        speechController.resumeListeningAfterSpeech = false;
         if (feedbackAudioContext && typeof feedbackAudioContext.suspend === "function" && feedbackAudioContext.state === "running") {
             feedbackAudioContext.suspend().catch(() => {});
         }

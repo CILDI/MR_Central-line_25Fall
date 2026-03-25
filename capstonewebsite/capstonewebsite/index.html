@@ -1238,6 +1238,17 @@
         triggerHapticFeedback(hapticPattern);
     }
 
+    function stopAllGuidanceAudio() {
+        if ("speechSynthesis" in window) {
+            speechSynthesis.cancel();
+        }
+        if (feedbackAudioContext && typeof feedbackAudioContext.suspend === "function" && feedbackAudioContext.state === "running") {
+            feedbackAudioContext.suspend().catch(() => {});
+        }
+        if (navigator.vibrate) navigator.vibrate(0);
+        logCommand("Audio: Stopped spoken guidance and feedback.");
+    }
+
     function repeatCurrentStep() {
         if (tutorialState.currentStep < 0 || tutorialState.currentStep >= steps.length) return;
         const step = steps[tutorialState.currentStep];
@@ -1653,6 +1664,7 @@
 
         // Stop/Cleanup Actions for Previous Mode
         if (wasBeta || wasHolo) { stopListening(); }
+        if (wasHolo && mode !== "holo") { stopAllGuidanceAudio(); }
         if (micToggleBtn) micToggleBtn.style.display = 'none'; // Always hide mic toggle initially
         if (mode !== "holo" && xrSession) { endXRSession(); }
         if (mode !== "holo") {

@@ -771,28 +771,61 @@
         isListening: false,
         autoSpeak: false,
         isSpeaking: false,
+        pauseBetweenSegmentsMs: 650,
+        speechSequenceId: 0,
+        pendingSpeechTimer: null,
         speak(text) {
             if (!('speechSynthesis' in window)) {
                 logController.log("SpeechSynthesis not supported in this browser.");
                 return;
             }
+            this.speechSequenceId += 1;
+            const sequenceId = this.speechSequenceId;
+            if (this.pendingSpeechTimer) {
+                clearTimeout(this.pendingSpeechTimer);
+                this.pendingSpeechTimer = null;
+            }
             speechSynthesis.cancel();
-            const utterance = new SpeechSynthesisUtterance(text);
-            utterance.lang = 'en-US';
-            utterance.rate = 1;
-            utterance.pitch = 1;
-            this.isSpeaking = true;
-            utterance.onend = () => {
-                this.isSpeaking = false;
-                if (isVoiceInteractionMode()) {
-                    updateMicStatusUI();
+            const segments = text
+                .split(/(?<=[.!?])\s+/)
+                .map((segment) => segment.trim())
+                .filter(Boolean);
+            const speakSegment = (index) => {
+                if (sequenceId !== this.speechSequenceId) return;
+                const segment = segments[index];
+                if (!segment) {
+                    this.isSpeaking = false;
+                    this.pendingSpeechTimer = null;
+                    if (isVoiceInteractionMode()) updateMicStatusUI();
+                    return;
                 }
+                const utterance = new SpeechSynthesisUtterance(segment);
+                utterance.lang = 'en-US';
+                utterance.rate = 1;
+                utterance.pitch = 1;
+                this.isSpeaking = true;
+                utterance.onend = () => {
+                    if (sequenceId !== this.speechSequenceId) return;
+                    if (index === segments.length - 1) {
+                        this.isSpeaking = false;
+                        this.pendingSpeechTimer = null;
+                        if (isVoiceInteractionMode()) updateMicStatusUI();
+                        return;
+                    }
+                    this.pendingSpeechTimer = window.setTimeout(() => {
+                        this.pendingSpeechTimer = null;
+                        speakSegment(index + 1);
+                    }, this.pauseBetweenSegmentsMs);
+                };
+                utterance.onerror = () => {
+                    if (sequenceId !== this.speechSequenceId) return;
+                    this.isSpeaking = false;
+                    this.pendingSpeechTimer = null;
+                    if (isVoiceInteractionMode()) updateMicStatusUI();
+                };
+                speechSynthesis.speak(utterance);
             };
-            utterance.onerror = () => {
-                this.isSpeaking = false;
-                if (isVoiceInteractionMode()) updateMicStatusUI();
-            };
-            speechSynthesis.speak(utterance);
+            speakSegment(0);
             logController.log(`SpeechSynthesis: Spoke "${text}"`);
         },
         speakCurrentStep() {
@@ -1251,6 +1284,11 @@
     }
 
     function stopAllGuidanceAudio() {
+        speechController.speechSequenceId += 1;
+        if (speechController.pendingSpeechTimer) {
+            clearTimeout(speechController.pendingSpeechTimer);
+            speechController.pendingSpeechTimer = null;
+        }
         if ("speechSynthesis" in window) {
             speechSynthesis.cancel();
         }

@@ -1,11 +1,28 @@
 import slicer
 import vtk
+import qt
+
+# ------------------------------------------
+# Install/import speech packages if needed
+# ------------------------------------------
+try:
+    import speech_recognition as sr
+except ImportError:
+    slicer.util.pip_install("SpeechRecognition")
+    import speech_recognition as sr
+
+try:
+    import pyaudio  # required for Microphone()
+except ImportError:
+    slicer.util.pip_install("PyAudio")
+    import pyaudio
 
 # ==========================================
 # Central Line Instruction HUD for Slicer
 # - Fixed instruction text in 3D view
 # - Clickable 2D PREV / NEXT buttons
 # - Keyboard controls: N and P
+# - Voice controls: "next" and "previous"
 # ==========================================
 
 # -----------------------------
@@ -47,27 +64,35 @@ oldActorNames = [
     "cliInstructionActor",
     "cliHintActor",
     "cliNextButtonActor",
-    "cliPrevButtonActor"
+    "cliPrevButtonActor",
+    "cliVoiceStatusActor",
 ]
 
 for attr in oldActorNames:
     if hasattr(slicer, attr):
         try:
             renderer.RemoveActor2D(getattr(slicer, attr))
-        except:
+        except Exception:
             pass
 
 for obsName in ["cliLeftClickObserverTag", "cliKeyPressObserverTag"]:
     if hasattr(slicer, obsName):
         try:
             interactor.RemoveObserver(getattr(slicer, obsName))
-        except:
+        except Exception:
             pass
+
+# Stop old voice listener if script is rerun
+if hasattr(slicer, "cliVoiceStopListening"):
+    try:
+        slicer.cliVoiceStopListening(wait_for_stop=False)
+    except Exception:
+        pass
 
 # -----------------------------
 # Helper to make text actors
 # -----------------------------
-def makeTextActor(text, x, y, fontSize=20, bold=False, color=(1,1,1)):
+def makeTextActor(text, x, y, fontSize=20, bold=False, color=(1, 1, 1)):
     actor = vtk.vtkTextActor()
     actor.SetInput(text)
     prop = actor.GetTextProperty()
@@ -80,7 +105,6 @@ def makeTextActor(text, x, y, fontSize=20, bold=False, color=(1,1,1)):
 
 # -----------------------------
 # Layout positions
-# These are display coordinates
 # -----------------------------
 TITLE_X = 35
 TITLE_Y = 150
@@ -94,13 +118,15 @@ INSTR_Y = 78
 HINT_X = 35
 HINT_Y = 42
 
+VOICE_X = 35
+VOICE_Y = 15
+
 PREV_X = 520
 PREV_Y = 42
 
 NEXT_X = 650
 NEXT_Y = 42
 
-# approximate click box sizes
 BUTTON_W = 100
 BUTTON_H = 35
 
@@ -110,7 +136,7 @@ BUTTON_H = 35
 titleActor = makeTextActor(
     "Central Line Insertion Guidance",
     TITLE_X, TITLE_Y,
-    fontSize=24, bold=True, color=(1,1,1)
+    fontSize=24, bold=True, color=(1, 1, 1)
 )
 
 stepActor = makeTextActor(
@@ -122,16 +148,21 @@ stepActor = makeTextActor(
 instructionActor = makeTextActor(
     "",
     INSTR_X, INSTR_Y,
-    fontSize=18, bold=False, color=(1,1,1)
+    fontSize=18, bold=False, color=(1, 1, 1)
 )
 
 hintActor = makeTextActor(
-    "Keyboard: N = NEXT    P = PREV",
+    "Keyboard: N = NEXT    P = PREV    Voice: say NEXT or PREVIOUS",
     HINT_X, HINT_Y,
     fontSize=16, bold=False, color=(0.7, 0.9, 1.0)
 )
 
-# bigger button text so it is easy to click
+voiceStatusActor = makeTextActor(
+    "Voice: starting...",
+    VOICE_X, VOICE_Y,
+    fontSize=14, bold=False, color=(0.8, 1.0, 0.8)
+)
+
 prevButtonActor = makeTextActor(
     "[ PREV ]",
     PREV_X, PREV_Y,
@@ -144,13 +175,27 @@ nextButtonActor = makeTextActor(
     fontSize=22, bold=True, color=(1.0, 1.0, 1.0)
 )
 
-# store them on slicer so rerunning works
+# Store actors on slicer so rerunning works
 slicer.cliTitleActor = titleActor
 slicer.cliStepActor = stepActor
 slicer.cliInstructionActor = instructionActor
 slicer.cliHintActor = hintActor
+slicer.cliVoiceStatusActor = voiceStatusActor
 slicer.cliPrevButtonActor = prevButtonActor
 slicer.cliNextButtonActor = nextButtonActor
+
+# -----------------------------
+# UI helpers
+# -----------------------------
+def renderNow():
+    renderWindow.Render()
+
+def runOnMainThread(fn, *args, **kwargs):
+    qt.QTimer.singleShot(0, lambda: fn(*args, **kwargs))
+
+def setVoiceStatus(text):
+    voiceStatusActor.SetInput(text)
+    renderNow()
 
 # -----------------------------
 # Update display
@@ -159,7 +204,7 @@ def updateHUD():
     global currentStep
     stepActor.SetInput(f"Step {currentStep + 1} / {len(steps)}")
     instructionActor.SetInput(steps[currentStep])
-    renderWindow.Render()
+    renderNow()
 
 # -----------------------------
 # Navigation functions
@@ -178,24 +223,17 @@ def prevStep():
     updateHUD()
     print(f"PREV -> Step {currentStep + 1}: {steps[currentStep]}")
 
-# expose for manual testing
 slicer.cliNextStep = nextStep
 slicer.cliPrevStep = prevStep
 
 # -----------------------------
-# Click detection using screen coordinates
-# This is more reliable than 3D picking
+# Click detection
 # -----------------------------
 def insideBox(px, py, x, y, w, h):
     return (x <= px <= x + w) and (y <= py <= y + h)
 
 def onLeftClick(caller, event):
-    # event position is in display coords
     clickX, clickY = interactor.GetEventPosition()
-
-    # Only react to clicks in the top-right 3D view
-    # but since this observer is attached to that interactor,
-    # checking button boxes is enough.
 
     if insideBox(clickX, clickY, PREV_X, PREV_Y, BUTTON_W, BUTTON_H):
         prevStep()
@@ -217,7 +255,86 @@ def onKeyPress(caller, event):
     elif key == "p":
         prevStep()
 
-# attach observers
+# -----------------------------
+# Voice command handling
+# -----------------------------
+VOICE_NEXT_WORDS = ["next", "next step", "go next", "continue", "forward"]
+VOICE_PREV_WORDS = ["previous", "prev", "go back", "back", "previous step"]
+
+def handleVoiceCommand(text):
+    t = text.lower().strip()
+    print(f"VOICE HEARD: {t}")
+
+    if any(cmd in t for cmd in VOICE_NEXT_WORDS):
+        runOnMainThread(setVoiceStatus, f"Voice heard: {text}  -> NEXT")
+        runOnMainThread(nextStep)
+        return
+
+    if any(cmd in t for cmd in VOICE_PREV_WORDS):
+        runOnMainThread(setVoiceStatus, f"Voice heard: {text}  -> PREV")
+        runOnMainThread(prevStep)
+        return
+
+    runOnMainThread(setVoiceStatus, f"Voice heard: {text}  -> ignored")
+
+def voiceCallback(recognizer, audio):
+    try:
+        # Fast/simple option for short commands
+        text = recognizer.recognize_google(audio)
+        handleVoiceCommand(text)
+
+    except sr.UnknownValueError:
+        runOnMainThread(setVoiceStatus, "Voice: command not understood")
+    except sr.RequestError as e:
+        runOnMainThread(setVoiceStatus, f"Voice service error: {e}")
+    except Exception as e:
+        runOnMainThread(setVoiceStatus, f"Voice error: {e}")
+
+def startVoiceControl():
+    try:
+        recognizer = sr.Recognizer()
+        recognizer.energy_threshold = 300
+        recognizer.dynamic_energy_threshold = True
+        recognizer.pause_threshold = 0.5
+
+        microphone = sr.Microphone()
+
+        setVoiceStatus("Voice: calibrating microphone...")
+        with microphone as source:
+            recognizer.adjust_for_ambient_noise(source, duration=1)
+
+        stopListening = recognizer.listen_in_background(
+            microphone,
+            voiceCallback,
+            phrase_time_limit=2
+        )
+
+        slicer.cliVoiceRecognizer = recognizer
+        slicer.cliVoiceMicrophone = microphone
+        slicer.cliVoiceStopListening = stopListening
+
+        setVoiceStatus("Voice: listening for NEXT or PREVIOUS")
+        print("Voice control started.")
+
+    except Exception as e:
+        setVoiceStatus(f"Voice init failed: {e}")
+        print(f"Voice control failed to start: {e}")
+
+def stopVoiceControl():
+    if hasattr(slicer, "cliVoiceStopListening"):
+        try:
+            slicer.cliVoiceStopListening(wait_for_stop=False)
+            setVoiceStatus("Voice: stopped")
+            print("Voice control stopped.")
+        except Exception as e:
+            print(f"Error stopping voice control: {e}")
+
+slicer.cliStartVoiceControl = startVoiceControl
+slicer.cliStopVoiceControl = stopVoiceControl
+
+# -----------------------------
+# Attach observers
+# -----------------------------
 leftClickObserverTag = interactor.AddObserver("LeftButtonPressEvent", onLeftClick)
 keyPressObserverTag = interactor.AddObserver("KeyPressEvent", onKeyPress)
 
@@ -229,10 +346,14 @@ slicer.cliKeyPressObserverTag = keyPressObserverTag
 # -----------------------------
 renderer.ResetCamera()
 updateHUD()
+startVoiceControl()
 
 print("Central line instruction HUD ready.")
 print("Controls:")
-print("  Click [ NEXT ] or [ PREV ] in the top-right 3D view")
+print("  Click [ NEXT ] or [ PREV ]")
 print("  Press N for next")
 print("  Press P for previous")
+print("  Say NEXT or PREVIOUS")
 print("  Manual test: slicer.cliNextStep() or slicer.cliPrevStep()")
+print("  Restart voice: slicer.cliStartVoiceControl()")
+print("  Stop voice: slicer.cliStopVoiceControl()")

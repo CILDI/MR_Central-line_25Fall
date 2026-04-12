@@ -3,21 +3,13 @@ import vtk
 import qt
 import os
 
-# ==========================================
-# Central Line Instruction HUD for Slicer
-# - Fixed instruction text in 3D view
-# - Clickable 2D PREV / NEXT buttons
-# - Keyboard controls: N and P
-# - External voice control via file polling
-#   Voice script writes:
-#       /tmp/slicer_voice_command.txt
-#   with contents:
-#       "next" or "prev"
-# ==========================================
+#clean central line instruction overlay system with top-aligned hud
+#displays step number, main instruction text, caution messages, and voice status
+#supports keyboard navigation (n/p keys) and external voice command polling via file system
+#minimal dark transparent panel with color-coded text for optimal visibility in 3d viewport
 
-# -----------------------------
-# Procedure steps
-# -----------------------------
+#procedural steps for central line placement procedure
+#nine sequential steps from patient verification through final placement confirmation
 steps = [
     "Verify patient identity and sterile setup",
     "Identify target vein using ultrasound",
@@ -30,15 +22,27 @@ steps = [
     "Secure the line and confirm placement"
 ]
 
-# -----------------------------
-# Global state
-# -----------------------------
+#safety caution messages corresponding one-to-one with each procedural step
+#each caution reinforces critical safety points specific to that step stage
+cautions = [
+    "Maintain sterile field at all times.",
+    "Confirm probe orientation and vessel identity before proceeding.",
+    "Do not confuse artery and vein; verify compressibility carefully.",
+    "Maintain continuous needle tip visualization.",
+    "Do not advance if access is uncertain.",
+    "Advance guidewire only after confirmed venous entry.",
+    "Avoid excessive force during dilation.",
+    "Do not advance catheter beyond intended depth.",
+    "Confirm placement and monitor for complications."
+]
+
+#global variables tracking current procedure step and voice command file path
+#current step ranges from 0 to 8 and determines which instruction and caution display
 currentStep = 0
 COMMAND_FILE = "/tmp/slicer_voice_command.txt"
 
-# -----------------------------
-# Access 3D view
-# -----------------------------
+#access slicer 3d viewport components for rendering overlay elements
+#obtains layout manager, 3d widget, render window, renderer, and interactor for event handling
 layoutManager = slicer.app.layoutManager()
 threeDWidget = layoutManager.threeDWidget(0)
 view = threeDWidget.threeDView()
@@ -46,17 +50,14 @@ renderWindow = view.renderWindow()
 renderer = renderWindow.GetRenderers().GetFirstRenderer()
 interactor = view.interactor()
 
-# -----------------------------
-# Clean up old version if rerun
-# -----------------------------
+#remove previous overlay actors and observers when script reruns to prevent duplicates
+#cleans up text actors, event observers, and timers from any prior execution
 oldActorNames = [
-    "cliTitleActor",
+    "cliPanelActor",
     "cliStepActor",
     "cliInstructionActor",
-    "cliHintActor",
-    "cliVoiceStatusActor",
-    "cliNextButtonActor",
-    "cliPrevButtonActor"
+    "cliCautionActor",
+    "cliVoiceStatusActor"
 ]
 
 for attr in oldActorNames:
@@ -79,117 +80,134 @@ if hasattr(slicer, "cliVoiceTimer"):
     except Exception:
         pass
 
-# -----------------------------
-# Helper to make text actors
-# -----------------------------
+#helper functions for creating overlay visual elements in the 3d viewport
+#maketestractor generates colored text with positioning; makepanelactor creates background rectangles
 def makeTextActor(text, x, y, fontSize=20, bold=False, color=(1, 1, 1)):
     actor = vtk.vtkTextActor()
     actor.SetInput(text)
+
     prop = actor.GetTextProperty()
     prop.SetFontSize(fontSize)
     prop.SetBold(1 if bold else 0)
-    prop.SetColor(color[0], color[1], color[2])
+    prop.SetColor(*color)
+    prop.SetJustificationToLeft()
+    prop.SetVerticalJustificationToTop()
+
     actor.SetDisplayPosition(x, y)
     renderer.AddActor2D(actor)
     return actor
 
-# -----------------------------
-# Layout positions
-# -----------------------------
-TITLE_X = 35
-TITLE_Y = 150
+def makePanelActor(x, y, width, height, color=(0.08, 0.08, 0.12), opacity=0.55):
+    points = vtk.vtkPoints()
+    points.InsertNextPoint(x, y, 0)
+    points.InsertNextPoint(x + width, y, 0)
+    points.InsertNextPoint(x + width, y + height, 0)
+    points.InsertNextPoint(x, y + height, 0)
 
-STEP_X = 35
-STEP_Y = 112
+    polygon = vtk.vtkPolygon()
+    polygon.GetPointIds().SetNumberOfIds(4)
+    for i in range(4):
+        polygon.GetPointIds().SetId(i, i)
 
-INSTR_X = 35
-INSTR_Y = 78
+    polygons = vtk.vtkCellArray()
+    polygons.InsertNextCell(polygon)
 
-HINT_X = 35
-HINT_Y = 42
+    polyData = vtk.vtkPolyData()
+    polyData.SetPoints(points)
+    polyData.SetPolys(polygons)
 
-VOICE_X = 35
-VOICE_Y = 15
+    mapper = vtk.vtkPolyDataMapper2D()
+    mapper.SetInputData(polyData)
 
-PREV_X = 520
-PREV_Y = 42
+    actor = vtk.vtkActor2D()
+    actor.SetMapper(mapper)
+    actor.GetProperty().SetColor(*color)
+    actor.GetProperty().SetOpacity(opacity)
 
-NEXT_X = 650
-NEXT_Y = 42
+    renderer.AddActor2D(actor)
+    return actor
 
-BUTTON_W = 100
-BUTTON_H = 35
+#pixel coordinates and dimensions for hud panel and text element positioning
+#panel provides dark background; text elements positioned within panel from top to bottom
+PANEL_X = 20
+PANEL_Y = 20
+PANEL_W = 760
+PANEL_H = 180
 
-# -----------------------------
-# Create overlay text
-# -----------------------------
-titleActor = makeTextActor(
-    "Central Line Insertion Guidance",
-    TITLE_X, TITLE_Y,
-    fontSize=24, bold=True, color=(1, 1, 1)
+STEP_X = 40
+STEP_Y = 170
+
+INSTR_X = 40
+INSTR_Y = 130
+
+CAUTION_X = 40
+CAUTION_Y = 82
+
+VOICE_X = 40
+VOICE_Y = 38
+
+#instantiate all hud visual elements: dark background panel and four text layers
+#step number in yellow, instruction in white, caution in red, voice status in light blue
+panelActor = makePanelActor(
+    PANEL_X, PANEL_Y, PANEL_W, PANEL_H,
+    color=(0.08, 0.08, 0.12), opacity=0.55
 )
 
 stepActor = makeTextActor(
     "",
     STEP_X, STEP_Y,
-    fontSize=20, bold=True, color=(1.0, 1.0, 0.2)
+    fontSize=24,
+    bold=True,
+    color=(1.0, 0.95, 0.15)
 )
 
 instructionActor = makeTextActor(
     "",
     INSTR_X, INSTR_Y,
-    fontSize=18, bold=False, color=(1, 1, 1)
+    fontSize=22,
+    bold=False,
+    color=(1, 1, 1)
 )
 
-hintActor = makeTextActor(
-    "Keyboard: N = NEXT    P = PREV    Voice: external listener active",
-    HINT_X, HINT_Y,
-    fontSize=16, bold=False, color=(0.7, 0.9, 1.0)
+cautionActor = makeTextActor(
+    "",
+    CAUTION_X, CAUTION_Y,
+    fontSize=18,
+    bold=True,
+    color=(1.0, 0.45, 0.45)
 )
 
 voiceStatusActor = makeTextActor(
     "Voice: waiting for external commands",
     VOICE_X, VOICE_Y,
-    fontSize=14, bold=False, color=(0.8, 1.0, 0.8)
+    fontSize=14,
+    bold=False,
+    color=(0.70, 0.90, 1.0)
 )
 
-prevButtonActor = makeTextActor(
-    "[ PREV ]",
-    PREV_X, PREV_Y,
-    fontSize=22, bold=True, color=(1.0, 1.0, 1.0)
-)
-
-nextButtonActor = makeTextActor(
-    "[ NEXT ]",
-    NEXT_X, NEXT_Y,
-    fontSize=22, bold=True, color=(1.0, 1.0, 1.0)
-)
-
-# store them on slicer so rerunning works
-slicer.cliTitleActor = titleActor
+#store all actors as slicer module attributes for cleanup and access on subsequent script reruns
+slicer.cliPanelActor = panelActor
 slicer.cliStepActor = stepActor
 slicer.cliInstructionActor = instructionActor
-slicer.cliHintActor = hintActor
+slicer.cliCautionActor = cautionActor
 slicer.cliVoiceStatusActor = voiceStatusActor
-slicer.cliPrevButtonActor = prevButtonActor
-slicer.cliNextButtonActor = nextButtonActor
 
-# -----------------------------
-# Update display
-# -----------------------------
+#functions to refresh hud display content based on current procedure step
+#updatehud reflects current step and instruction; setvoicestatus shows voice feedback messages
 def updateHUD():
     global currentStep
-    stepActor.SetInput(f"Step {currentStep + 1} / {len(steps)}")
+
+    stepActor.SetInput(f"STEP {currentStep + 1} / {len(steps)}")
     instructionActor.SetInput(steps[currentStep])
+    cautionActor.SetInput(f"CAUTION: {cautions[currentStep]}")
     renderWindow.Render()
 
 def setVoiceStatus(text):
     voiceStatusActor.SetInput(text)
     renderWindow.Render()
 
-# -----------------------------
-# Navigation functions
-# -----------------------------
+#step navigation functions for advancing to next step or returning to previous step
+#updates current step index, refreshes hud display, and logs navigation action to console
 def nextStep():
     global currentStep
     if currentStep < len(steps) - 1:
@@ -204,27 +222,12 @@ def prevStep():
     updateHUD()
     print(f"PREV -> Step {currentStep + 1}: {steps[currentStep]}")
 
-# expose for manual testing
+#expose navigation functions to slicer module for manual console testing when needed
 slicer.cliNextStep = nextStep
 slicer.cliPrevStep = prevStep
 
-# -----------------------------
-# Click detection using screen coordinates
-# -----------------------------
-def insideBox(px, py, x, y, w, h):
-    return (x <= px <= x + w) and (y <= py <= y + h)
-
-def onLeftClick(caller, event):
-    clickX, clickY = interactor.GetEventPosition()
-
-    if insideBox(clickX, clickY, PREV_X, PREV_Y, BUTTON_W, BUTTON_H):
-        prevStep()
-        return
-
-    if insideBox(clickX, clickY, NEXT_X, NEXT_Y, BUTTON_W, BUTTON_H):
-        nextStep()
-        return
-
+#keyboard event handler for n and p key presses to control step navigation
+#n advances to next step, p returns to previous step; observer attached to 3d viewport
 def onKeyPress(caller, event):
     key = interactor.GetKeySym()
     if not key:
@@ -237,16 +240,11 @@ def onKeyPress(caller, event):
     elif key == "p":
         prevStep()
 
-# attach observers
-leftClickObserverTag = interactor.AddObserver("LeftButtonPressEvent", onLeftClick)
 keyPressObserverTag = interactor.AddObserver("KeyPressEvent", onKeyPress)
-
-slicer.cliLeftClickObserverTag = leftClickObserverTag
 slicer.cliKeyPressObserverTag = keyPressObserverTag
 
-# -----------------------------
-# External voice command polling
-# -----------------------------
+#periodic polling of external voice command file for next/prev commands from voice system
+#checks command file every 500ms; parses command and removes file on read to avoid duplicate processing
 def checkVoiceCommand():
     if not os.path.exists(COMMAND_FILE):
         return
@@ -262,7 +260,7 @@ def checkVoiceCommand():
             nextStep()
 
         elif cmd == "prev":
-            setVoiceStatus("Voice heard: PREV")
+            setVoiceStatus("Voice heard: PREVIOUS")
             prevStep()
 
         else:
@@ -274,19 +272,17 @@ def checkVoiceCommand():
 
 voiceTimer = qt.QTimer()
 voiceTimer.timeout.connect(checkVoiceCommand)
-voiceTimer.start(500)  # check every 500 ms
+voiceTimer.start(500)
 
 slicer.cliVoiceTimer = voiceTimer
 
-# -----------------------------
-# Initialize
-# -----------------------------
+#initialize viewport camera and display first step of procedure
+#starts voice command polling timer and confirms system ready via console output
 renderer.ResetCamera()
 updateHUD()
 
-print("Central line instruction HUD ready.")
+print("Clean instruction overlay ready.")
 print("Controls:")
-print("  Click [ NEXT ] or [ PREV ] in the top-right 3D view")
 print("  Press N for next")
 print("  Press P for previous")
 print("  Manual test: slicer.cliNextStep() or slicer.cliPrevStep()")

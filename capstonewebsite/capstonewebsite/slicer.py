@@ -5,7 +5,7 @@ import os
 
 #clean central line instruction overlay system with top-aligned hud
 #displays step number, main instruction text, caution messages, and voice status
-#supports keyboard navigation (n/p keys) and external voice command polling via file system
+#supports keyboard navigation (n/b keys) and external voice command polling via file system
 #minimal dark transparent panel with color-coded text for optimal visibility in 3d viewport
 
 #procedural steps for central line placement procedure
@@ -206,7 +206,7 @@ def setVoiceStatus(text):
     voiceStatusActor.SetInput(text)
     renderWindow.Render()
 
-#step navigation functions for advancing to next step or returning to previous step
+#step navigation functions for advancing to next step or going back one step
 #updates current step index, refreshes hud display, and logs navigation action to console
 def nextStep():
     global currentStep
@@ -220,14 +220,14 @@ def prevStep():
     if currentStep > 0:
         currentStep -= 1
     updateHUD()
-    print(f"PREV -> Step {currentStep + 1}: {steps[currentStep]}")
+    print(f"BACK -> Step {currentStep + 1}: {steps[currentStep]}")
 
 #expose navigation functions to slicer module for manual console testing when needed
 slicer.cliNextStep = nextStep
 slicer.cliPrevStep = prevStep
 
-#keyboard event handler for n and p key presses to control step navigation
-#n advances to next step, p returns to previous step; observer attached to 3d viewport
+#keyboard event handler for n and b key presses to control step navigation
+#n advances to next step, b goes back one step; observer attached to 3d viewport
 def onKeyPress(caller, event):
     key = interactor.GetKeySym()
     if not key:
@@ -237,13 +237,13 @@ def onKeyPress(caller, event):
 
     if key == "n":
         nextStep()
-    elif key == "p":
+    elif key == "b" or key == "p":
         prevStep()
 
 keyPressObserverTag = interactor.AddObserver("KeyPressEvent", onKeyPress)
 slicer.cliKeyPressObserverTag = keyPressObserverTag
 
-#periodic polling of external voice command file for next/prev commands from voice system
+#periodic polling of external voice command file for next/back commands from voice system
 #checks command file every 500ms; parses command and removes file on read to avoid duplicate processing
 def checkVoiceCommand():
     if not os.path.exists(COMMAND_FILE):
@@ -259,8 +259,8 @@ def checkVoiceCommand():
             setVoiceStatus("Voice heard: NEXT")
             nextStep()
 
-        elif cmd == "prev":
-            setVoiceStatus("Voice heard: PREVIOUS")
+        elif cmd == "back" or cmd == "prev":
+            setVoiceStatus("Voice heard: BACK")
             prevStep()
 
         else:
@@ -284,7 +284,7 @@ updateHUD()
 print("Clean instruction overlay ready.")
 print("Controls:")
 print("  Press N for next")
-print("  Press P for previous")
+print("  Press B for back")
 print("  Manual test: slicer.cliNextStep() or slicer.cliPrevStep()")
 print("  External voice polling active")
 print(f"  Watching command file: {COMMAND_FILE}")

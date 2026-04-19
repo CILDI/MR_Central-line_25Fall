@@ -257,14 +257,14 @@
       </div>
 
       <div id="alphaNavButtons">
-        <button id="prevBtn" class="alpha-nav-btn" disabled>Previous</button>
+        <button id="prevBtn" class="alpha-nav-btn" disabled>Back</button>
         <button id="restartBtn" class="alpha-nav-btn">Restart</button>
         <button id="nextBtn" class="alpha-nav-btn">Next</button>
       </div>
 
       <div id="holoNavButtons">
          <button id="holoPrevBtn" class="holo-nav-btn" disabled>
-           <span class="btn-icon">▶</span> Previous
+           <span class="btn-icon">▶</span> Back
          </button>
          <button id="holoRestartBtn" class="holo-nav-btn">
            <span class="btn-icon">🔄</span> Restart
@@ -374,7 +374,7 @@
 
     // ----- Navigate Steps -----
     function nextStep() { if (currentStep < steps.length - 1) { updateStep(currentStep + 1); logCommand("Navigate: Next"); } else { if(statusDisplay) statusDisplay.innerText = "🚫 Already at the final step."; logCommand("Navigate: Attempted Next on Last Step"); } }
-    function prevStep() { if (currentStep > 0) { updateStep(currentStep - 1); logCommand("Navigate: Previous"); } else { if(statusDisplay) statusDisplay.innerText = "🚫 Already at the first step."; logCommand("Navigate: Attempted Previous on First Step"); } }
+    function prevStep() { if (currentStep > 0) { updateStep(currentStep - 1); logCommand("Navigate: Back"); } else { if(statusDisplay) statusDisplay.innerText = "🚫 Already at the first step."; logCommand("Navigate: Attempted Back on First Step"); } }
     function restartTutorial() { updateStep(0); if(statusDisplay) statusDisplay.innerText = "🔄 Tutorial Restarted."; logCommand("Navigate: Restart"); }
 
     // ----- Update Progress Bar -----

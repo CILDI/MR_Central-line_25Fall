@@ -6,7 +6,7 @@ recognizer = sr.Recognizer()
 mic = sr.Microphone()
 
 print("Voice control ready.")
-print("Say: next or previous")
+print("Say: next or back")
 
 with mic as source:
     recognizer.adjust_for_ambient_noise(source, duration=0.5)
@@ -23,9 +23,9 @@ while True:
             with open(COMMAND_FILE, "w") as f:
                 f.write("next")
 
-        elif "previous" in text or "prev" in text or "back" in text:
+        elif "back" in text or "go back" in text or "previous" in text or "prev" in text:
             with open(COMMAND_FILE, "w") as f:
-                f.write("prev")
+                f.write("back")
 
     except sr.UnknownValueError:
         pass
